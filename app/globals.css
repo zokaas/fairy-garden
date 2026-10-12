@@ -302,3 +302,19 @@ h1 { animation: h1in 1s var(--ease) both; }
   .rv { opacity: 1; transform: none; filter: none; }
   ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
 }
+
+/* Kärki: ero sinuun */
+ol.rank .pt { text-align: right; }
+ol.rank .pt small { display: block; font: 500 .66rem var(--mono); color: var(--fg-3); }
+ol.rank .pt small.neg { color: var(--red); } ol.rank .pt small.pos2 { color: var(--green); }
+.seg.three a, .seg.four a { font-size: .7rem; }
+table.vs { width: 100%; border-collapse: collapse; font-size: .85rem; }
+table.vs th { font: 500 .62rem var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--fg-3); text-align: right; padding: 0 0 8px 8px; }
+table.vs td { padding: 9px 0 9px 8px; border-top: 1px solid var(--line); text-align: right; font-variant-numeric: tabular-nums; }
+table.vs td:first-child, table.vs th:first-child { text-align: left; padding-left: 0; color: var(--fg-2); }
+table.vs td.win { font-weight: 700; color: var(--green); }
+table.vs td.muted { color: var(--fg-3); }
+.seg.four a { font-size: .66rem; padding: 8px 2px; }
+
+ol.rank .pt { font-size: .9rem; white-space: nowrap; }
+ol.rank .nm > span:last-child { min-width: 0; line-height: 1.3; }

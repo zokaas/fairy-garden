@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { loadGarden } from '@/lib/data';
-import { DAILY_GOAL, STAGES, ago, phaseOf, stageFor, type Phase } from '@/lib/garden';
+import { DAILY_GOAL, STAGES, STEPS_PER_POINT, ago, phaseOf, stageFor, type Phase } from '@/lib/garden';
 import type { Fairy } from '@/lib/data';
 import { dailyQuests } from '@/lib/quests';
 import Journey from '@/components/Journey';
@@ -26,7 +26,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
   let me: Fairy | null = admin && searchParams.tyhja ? { ...realMe!, hasSteps: false, today: 0, yesterday: 0, totalSteps: 0, pts: 0, stageIdx: 0, badges: [], streak: 0 } : realMe;
   if (me && admin && searchParams.taso !== undefined) {
     const idx = Math.max(0, Math.min(5, Number(searchParams.taso) || 0));
-    me = { ...me, stageIdx: idx, pts: STAGES[idx].min / 1000, hasSteps: true };
+    me = { ...me, stageIdx: idx, pts: STAGES[idx].pts, hasSteps: true };
   }
   const contest = await getContest();
   const phase: Phase = admin && ['night', 'dawn', 'day', 'dusk'].includes(searchParams.aika ?? '') ? (searchParams.aika as Phase) : phaseOf();
@@ -74,7 +74,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
           <ol>
             <li><b>Liity</b> nimellä, joka näkyy kärkilistalla.</li>
             <li><b>Yhdistä askeleet</b> iPhonen Terveydestä (5 min, kerran).</li>
-            <li><b>Kävele</b>: jokainen 1 000 askelta kasvattaa puutarhaasi. Urheilu antaa pienen lisän.</li>
+            <li><b>Kävele</b>: jokainen 2 500 askelta on 1 piste. Urheilu antaa pienen lisän (1 p / 30 min).</li>
           </ol>
         </section>
       </>
@@ -95,7 +95,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         avatar={me}
         lines={[
           me.today < DAILY_GOAL ? `Vielä ${(DAILY_GOAL - me.today).toLocaleString('fi-FI')} askelta päivän tavoitteeseen! 👟` : 'Päivän tavoite täynnä, mahtavaa! ✨',
-          next ? `${next.emoji} ${next.name} odottaa ${Math.max(1, Math.ceil(next.min / 1000 - me.pts))} pisteen päässä` : 'Olet puutarhan kuningatar 👑',
+          next ? `${next.emoji} ${next.name} odottaa ${Math.max(1, next.pts - me.pts)} pisteen päässä` : 'Olet puutarhan kuningatar 👑',
           'Kukat kasvavat jokaisesta tuhannesta askeleesta 🌷',
           'Muista juoda vettä, keiju 💧',
           `${me.name}, sinä loistat! 🌸`,
@@ -140,7 +140,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
       <section className="card">
         <h2>{next ? `Matkalla: ${next.emoji} ${next.name}` : 'Olet huipulla '}</h2>
         <div className="bar"><i style={{ width: `${pct}%` }} /></div>
-        {next && <p className="muted">Vielä {Math.max(0, Math.ceil(next.min / 1000 - me.pts))} pistettä seuraavaan tasoon.</p>}
+        {next && <p className="muted">Vielä {Math.max(0, next.pts - me.pts)} pistettä seuraavaan tasoon.</p>}
       </section>
       {me.hasSteps && (() => {
         const quests = dailyQuests({ today: me.today, yesterday: me.yesterday, minsToday: me.minsToday, sentToday: sentToday.length });
@@ -172,7 +172,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         const below = myRank < board.length ? board[myRank] : null;
         const rows = [above, me, below].filter(Boolean) as typeof board;
         const hint = above
-          ? `Noin ${((above.pts - me.pts + 1) * 1000).toLocaleString('fi-FI')} askelta, niin ohitat keijun ${above.name}.`
+          ? `Noin ${((above.pts - me.pts + 1) * STEPS_PER_POINT).toLocaleString('fi-FI')} askelta, niin ohitat keijun ${above.name}.`
           : below ? `Johdat! Keiju ${below.name} on ${me.pts - below.pts} pisteen päässä.` : '';
         return (
           <section className="card duel">

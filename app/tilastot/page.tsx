@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { loadGarden, loadRaw } from '@/lib/data';
-import { ACTIVE_DAY, DAILY_GOAL, helsinkiDay, sportBonus, stepPoints, weekStart } from '@/lib/garden';
+import { ACTIVE_DAY, DAILY_GOAL, helsinkiDay, sportPoints, stepPoints, weekStart } from '@/lib/garden';
 import { TEAMS } from '@/lib/teams';
 import { byDay, route, routeText, daysBetween, km, series, sportStats, sum, trend, weekdayAvg, weeklyMinutes, weeklySteps } from '@/lib/stats';
 import BarChart from '@/components/BarChart';
@@ -24,11 +24,11 @@ function Tiles({ items }: { items: [string, string, string?, number?][] }) {
   );
 }
 
-export default async function Tilastot({ searchParams }: { searchParams: { nayta?: string } }) {
+export default async function Tilastot({ searchParams }: { searchParams: { nayta?: string; vs?: string } }) {
   if (!cookies().get('fg_token')) redirect('/');
   const [{ board, me }, raw] = await Promise.all([loadGarden(), loadRaw()]);
   if (!me) redirect('/');
-  const tab = ['ryhma', 'urheilu'].includes(searchParams.nayta ?? '') ? searchParams.nayta! : 'mina';
+  const tab = ['ryhma', 'urheilu', 'vertailu'].includes(searchParams.nayta ?? '') ? searchParams.nayta! : 'mina';
   const today = helsinkiDay();
   const wk = weekStart(today);
 
@@ -74,10 +74,11 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
   return (
     <>
       <h1>Tilastot</h1>
-      <div className="seg three">
+      <div className="seg four">
         <Link href="/tilastot" className={tab === 'mina' ? 'on' : ''}>Minä</Link>
         <Link href="/tilastot?nayta=ryhma" className={tab === 'ryhma' ? 'on' : ''}>Ryhmä</Link>
         <Link href="/tilastot?nayta=urheilu" className={tab === 'urheilu' ? 'on' : ''}>Urheilu</Link>
+        <Link href="/tilastot?nayta=vertailu" className={tab === 'vertailu' ? 'on' : ''}>Vertailu</Link>
       </div>
 
       {tab === 'mina' && (
@@ -130,6 +131,8 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
               ['Ryhmän matka Helsingistä', `${fi(km(groupTotal))} km`, routeText(km(groupTotal)), route(km(groupTotal)).pct],
               ['Keskiarvo / keiju-pv', fi(perFairyDay)],
               ['Keskiarvo / keiju yhteensä', fi(board.length ? groupTotal / board.length : 0)],
+              ['Mediaani / keiju yhteensä', fi((() => { const v = board.map((b) => b.totalSteps).sort((a, b) => a - b); return v.length ? (v[Math.floor((v.length - 1) / 2)] + v[Math.ceil((v.length - 1) / 2)]) / 2 : 0; })())],
+              ['Paras keiju (askeleet)', fi(Math.max(0, ...board.map((b) => b.totalSteps)))],
               ['Ennätyspäivä (ryhmä)', gBest ? fi(gBest[1]) : '–', gBest ? dm(gBest[0]) : undefined],
               ['Tänään yhteensä', fi(allDays.get(today) ?? 0)],
               ['Aktiivisia tänään', `${board.filter((b) => b.today >= ACTIVE_DAY).length} / ${board.length}`],
@@ -169,7 +172,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
               ['Keskimäärin / kerta', `${fi(myWork.length ? myMins / myWork.length : 0)} min`],
               ['Keskimäärin / viikko', `${fi(myMins / weeksSpan)} min`],
               ['Lempilaji', mySports[0]?.sport ?? '–', mySports[0] ? `${mySports[0].minutes} min` : undefined],
-              ['Urheilubonus', `${sportBonus(myTotal, myMins)} p`, `askelpisteet ${stepPoints(myTotal)} p (bonus 1 p / 30 min, max 15 %)`],
+              ['Pisteet urheilusta', `${sportPoints(myMins)} p`, `askelpisteet ${stepPoints(myTotal)} p`],
             ]} />
             {mySports.length > 0 && <BarChart items={mySports.slice(0, 6).map((s) => ({ label: s.sport, value: s.minutes }))} unit=" min" height={120} />}
             <h2 style={{ marginTop: 14 }}>Viikoittain (min), 8 viikkoa</h2>
@@ -206,6 +209,61 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
           )}
         </>
       )}
+
+      {tab === 'vertailu' && (() => {
+        const myIdx = board.findIndex((b) => b.mine);
+        const other = board.find((b) => b.id === searchParams.vs && !b.mine) ?? board[myIdx - 1] ?? board[myIdx + 1] ?? null;
+        const metrics: { label: string; get: (f: (typeof board)[number]) => number; fmt?: (v: number) => string }[] = [
+          { label: 'Pisteet', get: (f) => f.pts },
+          { label: 'Askelpisteet', get: (f) => f.stepPts },
+          { label: 'Urheilupisteet', get: (f) => f.sportPts },
+          { label: 'Askeleet yhteensä', get: (f) => f.totalSteps },
+          { label: 'Askelia / aktiivinen pv', get: (f) => f.avgSteps },
+          { label: 'Paras päivä', get: (f) => f.bestDay },
+          { label: 'Aktiivisia päiviä', get: (f) => f.activeDays },
+          { label: 'Putki nyt', get: (f) => f.streak },
+          { label: 'Ennätysputki', get: (f) => f.bestRun },
+          { label: 'Viikon askeleet', get: (f) => f.week.steps },
+          { label: 'Urheilu (min)', get: (f) => f.mins },
+          { label: 'Urheilukertoja', get: (f) => f.workouts },
+          { label: 'Keskim. / kerta (min)', get: (f) => f.avgSession },
+        ];
+        const avgOf = (get: (f: (typeof board)[number]) => number) => (board.length ? board.reduce((a, f) => a + get(f), 0) / board.length : 0);
+        return (
+          <>
+            <section className="card">
+              <h2>Valitse vastustaja</h2>
+              <div className="chips" style={{ margin: 0 }}>
+                {board.filter((b) => !b.mine).map((b) => (
+                  <Link key={b.id} className="chip" style={other?.id === b.id ? { background: 'var(--fg)', color: 'var(--bg)' } : undefined} href={`/tilastot?nayta=vertailu&vs=${b.id}`}>{b.name}</Link>
+                ))}
+              </div>
+            </section>
+            {other ? (
+              <section className="card">
+                <h2>Minä vs {other.name}</h2>
+                <table className="vs">
+                  <thead><tr><th></th><th>Minä</th><th>{other.name.length > 9 ? `${other.name.slice(0, 8)}…` : other.name}</th><th>Ryhmä ka.</th></tr></thead>
+                  <tbody>
+                    {metrics.map((m) => {
+                      const a = m.get(me), b = m.get(other);
+                      return (
+                        <tr key={m.label}>
+                          <td>{m.label}</td>
+                          <td className={a > b ? 'win' : ''}>{fi(a)}</td>
+                          <td className={b > a ? 'win' : ''}>{fi(b)}</td>
+                          <td className="muted">{fi(avgOf(m.get), 1)}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+                <p className="muted">Korostettu = suurempi arvo. Ryhmä ka. = kaikkien keijujen keskiarvo.</p>
+              </section>
+            ) : <p className="sub">Ei vertailtavia keijuja vielä.</p>}
+          </>
+        );
+      })()}
       <p className="muted" style={{ textAlign: 'center' }}>Matka = askeleet × 0,75 m (arvio).</p>
     </>
   );

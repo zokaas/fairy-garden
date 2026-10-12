@@ -28,7 +28,7 @@
 ## C. Arki
 - Jos automaatio ei laukea, paina etusivun Synkkaa askeleet nyt -nappia.
 - Liikunta kirjataan etusivulla (laji + minuutit).
-- Pisteet: 1 p / 1 000 askelta. Urheilu antaa pienen lisän: 1 p / 30 min, enintään 15 % askelpisteistä.
+- Pisteet: 1 p / 2 500 askelta ja 1 p / 30 min urheilua.
 
 ## D. Jos jokin ei toimi
 - “Tuntematon token”: avain on kopioitu väärin, kopioi se `/shortcut`-sivulta uudelleen.

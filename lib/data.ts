@@ -2,7 +2,7 @@ import 'server-only';
 import { cookies } from 'next/headers';
 import { db } from '@/lib/db';
 import { DEMO, demoRows } from '@/lib/demo';
-import { ACTIVE_DAY, DAILY_GOAL, bestStreak, dayBefore, helsinkiDay, points, stageFor, streak, weekStart } from '@/lib/garden';
+import { ACTIVE_DAY, DAILY_GOAL, bestStreak, dayBefore, helsinkiDay, points, sportPoints, stageFor, stepPoints, streak, weekStart } from '@/lib/garden';
 import { BADGES } from '@/lib/badges';
 
 export type Fairy = {
@@ -34,6 +34,11 @@ export type Fairy = {
   bestRun: number;
   workouts: number;
   cheersTotal: number;
+  activeDays: number;
+  avgSteps: number;
+  stepPts: number;
+  sportPts: number;
+  avgSession: number;
 };
 
 async function fetchRows() {
@@ -94,6 +99,11 @@ export async function loadGarden() {
         bestDay: stats.bestDay,
         bestRun: stats.bestStreak,
         workouts: ws.length,
+        activeDays: st.filter((x) => x.steps > 0).length,
+        avgSteps: st.filter((x) => x.steps > 0).length ? Math.round(totalSteps / st.filter((x) => x.steps > 0).length) : 0,
+        stepPts: stepPoints(totalSteps),
+        sportPts: sportPoints(mins),
+        avgSession: ws.length ? Math.round(mins / ws.length) : 0,
         cheersTotal: (cheers ?? []).filter((c) => c.to_id === f.id).length,
         stageIdx,
         yesterday: st.find((x) => x.day === dayBefore(today))?.steps ?? 0,

@@ -1,16 +1,15 @@
 import assert from 'node:assert/strict';
 import { points, stageFor, helsinkiDay, isDay, streak, bestStreak, dayBefore, ago, phaseOf, fairyName, weekStart } from './garden.ts';
 
-assert.equal(points(12_345, 25), 12); // alle 30 min: ei bonusta
-assert.equal(points(12_345, 60), 13); // 60 min = 2 p, mutta katto 15 % * 12 = 1
-assert.equal(points(100_000, 90), 103); // 3 p
-assert.equal(points(100_000, 5000), 115); // katto 15 %
-assert.equal(points(0, 600), 0); // ilman askelia ei bonusta
+assert.equal(points(12_345, 25), 4); // 4 askelpistettä, alle 30 min = 0
+assert.equal(points(12_345, 60), 6); // 4 + 2
+assert.equal(points(10_000, 90), 7); // 4 + 3
+assert.equal(points(0, 600), 20); // urheilu yksinään antaa pisteitä
 assert.equal(stageFor(0).stage.name, 'Siemen');
-assert.equal(stageFor(10).stage.name, 'Itu');
-assert.equal(stageFor(99).stage.name, 'Silmu');
-assert.equal(stageFor(500).stage.name, 'Keijukuningatar');
-assert.equal(stageFor(500).pct, 100);
+assert.equal(stageFor(5).stage.name, 'Itu');
+assert.equal(stageFor(59).stage.name, 'Silmu');
+assert.equal(stageFor(170).stage.name, 'Keijukuningatar');
+assert.equal(stageFor(170).pct, 100);
 assert.equal(helsinkiDay(new Date('2026-11-28T22:30:00Z')), '2026-11-29');
 assert.ok(isDay('2026-10-09'));
 assert.ok(!isDay('9.10.2026'));

@@ -74,8 +74,8 @@ export default async function Kisa({ searchParams }: { searchParams: { avaa?: st
       <section className="card how">
         <h2>Säännöt</h2>
         <ol>
-          <li><b>1 piste</b> jokaisesta 1 000 askeleesta.</li>
-          <li>Urheilu antaa <b>pienen lisän</b>: 1 piste / 30 min, enintään 15 % askelpisteistäsi. Kävely ratkaisee.</li>
+          <li><b>1 piste</b> jokaisesta 2 500 askeleesta.</li>
+          <li><b>1 piste</b> jokaisesta 30 liikuntaminuutista (urheilu on kävelyn lisä).</li>
           <li>Eniten pisteitä kisan päättyessä voittaa. Joukkueiden pisteet ovat jäsenten keskiarvo.</li>
           <li>Reilu peli: kirjaa vain omat askeleesi ja oma liikuntasi.</li>
         </ol>

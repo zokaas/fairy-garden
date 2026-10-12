@@ -1,35 +1,37 @@
 export const EVENT_DATE = '2026-11-28T16:00:00+02:00';
 export const SPORTS = ['Kävely', 'Juoksu', 'Pyöräily', 'Sali', 'Jooga', 'Tanssi', 'Uinti', 'Muu'] as const;
 
+/** Tasot pisteinä (1 p = 2 500 askelta tai 30 min urheilua). */
 export const STAGES = [
-  { min: 0, name: 'Siemen', emoji: '🌰' },
-  { min: 10_000, name: 'Itu', emoji: '🌱' },
-  { min: 50_000, name: 'Silmu', emoji: '🌷' },
-  { min: 100_000, name: 'Kukka', emoji: '🌸' },
-  { min: 250_000, name: 'Keiju', emoji: '🧚🏼‍♀️' },
-  { min: 500_000, name: 'Keijukuningatar', emoji: '👑' },
+  { pts: 0, name: 'Siemen', emoji: '🌰' },
+  { pts: 5, name: 'Itu', emoji: '🌱' },
+  { pts: 25, name: 'Silmu', emoji: '🌷' },
+  { pts: 60, name: 'Kukka', emoji: '🌸' },
+  { pts: 110, name: 'Keiju', emoji: '🧚🏼‍♀️' },
+  { pts: 170, name: 'Keijukuningatar', emoji: '👑' },
 ] as const;
 
-/** Askelpisteet: 1 piste / 1 000 askelta. */
-export const stepPoints = (steps: number) => Math.floor(steps / 1000);
+export const STEPS_PER_POINT = 2500;
+export const MINUTES_PER_POINT = 30;
 
-/** Urheilubonus: 1 piste / 30 min, enintään 15 % askelpisteistä. Kävely on pääasia, urheilu vain pieni lisä. */
-export function sportBonus(steps: number, workoutMinutes: number): number {
-  return Math.min(Math.floor(workoutMinutes / 30), Math.floor(stepPoints(steps) * 0.15));
-}
+/** Askelpisteet: 1 piste / 2 500 askelta. */
+export const stepPoints = (steps: number) => Math.floor(steps / STEPS_PER_POINT);
+
+/** Urheilupisteet: 1 piste / 30 min. */
+export const sportPoints = (workoutMinutes: number) => Math.floor(workoutMinutes / MINUTES_PER_POINT);
 
 export function points(steps: number, workoutMinutes: number): number {
-  return stepPoints(steps) + sportBonus(steps, workoutMinutes);
+  return stepPoints(steps) + sportPoints(workoutMinutes);
 }
 
 export function stageFor(points: number) {
   let idx = 0;
   STAGES.forEach((s, i) => {
-    if (points >= s.min / 1000) idx = i;
+    if (points >= s.pts) idx = i;
   });
   const cur = STAGES[idx];
   const next = STAGES[idx + 1] ?? null;
-  const pct = next ? Math.min(100, ((points - cur.min / 1000) / ((next.min - cur.min) / 1000)) * 100) : 100;
+  const pct = next ? Math.min(100, ((points - cur.pts) / (next.pts - cur.pts)) * 100) : 100;
   return { stage: cur, next, pct, idx };
 }
 
