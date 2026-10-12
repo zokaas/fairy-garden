@@ -4,7 +4,9 @@ export type DayEntry = { day: string; steps: number };
 
 const clean = (v: unknown): number => {
   if (typeof v === 'number') return Math.round(v);
-  const s = String(v ?? '').replace(/[\s ]/g, '').replace(',', '.');
+  let s = String(v ?? '').replace(/[\s\u00a0\u202f]/g, '');
+  // Englanninkielinen tuhaterotin "8,234" -> 8234; suomalainen desimaalipilkku "8234,5" -> 8234.5
+  s = /^\d{1,3}(,\d{3})+(\.\d+)?$/.test(s) ? s.replace(/,/g, '') : s.replace(',', '.');
   return Math.round(Number(s));
 };
 
