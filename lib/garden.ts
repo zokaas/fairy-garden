@@ -34,3 +34,19 @@ export function helsinkiDay(d = new Date()): string {
 export function isDay(s: unknown): s is string {
   return typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && !Number.isNaN(Date.parse(s));
 }
+
+export const DAILY_GOAL = 10_000;
+export const ACTIVE_DAY = 5_000;
+
+/** Peräkkäisten aktiivisten päivien määrä. Tämä päivä ei katkaise putkea, vaikka se olisi vielä kesken. */
+export function streak(days: { day: string; steps: number }[], today = helsinkiDay()): number {
+  const active = new Set(days.filter((d) => d.steps >= ACTIVE_DAY).map((d) => d.day));
+  let n = 0;
+  const d = new Date(`${today}T12:00:00Z`);
+  if (!active.has(today)) d.setUTCDate(d.getUTCDate() - 1);
+  while (active.has(d.toISOString().slice(0, 10))) {
+    n++;
+    d.setUTCDate(d.getUTCDate() - 1);
+  }
+  return n;
+}

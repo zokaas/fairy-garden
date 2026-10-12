@@ -37,3 +37,52 @@ a { color: #b0489a; }
 .sparkles span { position: absolute; bottom: -40px; font-size: 22px; opacity: .55; animation: float 16s linear infinite; }
 @keyframes float { to { transform: translateY(-115vh) rotate(25deg); } }
 @media (prefers-reduced-motion: reduce) { .sparkles { display: none; } }
+
+/* ---- Uusi ilme ---- */
+main.withnav { padding-bottom: 96px; }
+.center { text-align: center; }
+.how ol { margin: 0; padding-left: 1.2rem; } .how li { margin-bottom: 6px; }
+.setup { border-color: var(--pink); animation: glow 2.4s ease-in-out infinite; }
+@keyframes glow { 50% { box-shadow: 0 0 0 6px #f48fb133, 0 6px 24px #f48fb155; } }
+.toast { background: var(--mint); border-radius: 14px; padding: 10px 14px; text-align: center; animation: pop .5s ease; }
+@keyframes pop { from { transform: scale(.85); opacity: 0; } }
+.chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 14px 0; }
+.chip { background: #fff; border: 1.5px solid #f3cfe3; border-radius: 99px; padding: 4px 12px; font-size: .9rem; }
+.ring { position: relative; width: 190px; height: 190px; margin: 0 auto; }
+.ring svg { width: 100%; height: 100%; filter: drop-shadow(0 4px 10px #f48fb144); }
+.ring-txt { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.ring-txt b { font-size: 2.3rem; line-height: 1; }
+.ring-txt span { font-size: .8rem; color: var(--muted); }
+.ring-txt em { font-size: .8rem; font-style: normal; color: #c2185b; }
+ol.rank small { display: block; font-weight: 400; color: var(--muted); font-size: .78rem; }
+
+.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; display: flex; justify-content: space-around; background: #fffffff0; backdrop-filter: blur(10px); border-top: 1.5px solid #f3cfe3; padding: 6px 4px calc(6px + env(safe-area-inset-bottom)); }
+.tabs a { flex: 1; text-align: center; text-decoration: none; color: var(--muted); font-size: .72rem; padding: 4px; border-radius: 14px; }
+.tabs a span { display: block; font-size: 1.4rem; line-height: 1.2; transition: transform .2s; }
+.tabs a.on { color: #b0489a; font-weight: 700; background: #fff0f8; }
+.tabs a.on span { transform: translateY(-2px) scale(1.15); }
+
+/* Puutarhamaisema */
+.garden { position: relative; height: 230px; border-radius: 28px; overflow: hidden; margin-bottom: 14px; background: linear-gradient(#cfeaff 0%, #ffe4f2 62%, #ffe9c9 100%); border: 1.5px solid #f3cfe3; box-shadow: 0 8px 26px #c9b6f255; }
+.garden .sun { position: absolute; top: 10px; right: 16px; font-size: 38px; animation: spin 40s linear infinite; }
+.garden .cloud { position: absolute; font-size: 34px; opacity: .85; animation: drift 30s linear infinite; }
+.garden .c1 { top: 18px; left: -40px; } .garden .c2 { top: 56px; left: -90px; animation-delay: -14s; font-size: 26px; }
+.garden .meadow { position: absolute; left: -10%; right: -10%; bottom: -30px; height: 100px; border-radius: 50% 50% 0 0; background: linear-gradient(#bfeccd, #8fd9ae); }
+.garden .flower { position: absolute; transform-origin: bottom center; animation: sway 3.2s ease-in-out infinite, bloom .9s cubic-bezier(.3,1.6,.5,1) backwards; }
+.garden .fairy { position: absolute; left: 50%; top: 30%; font-size: 56px; transform: translateX(-50%); animation: hover 3.4s ease-in-out infinite; filter: drop-shadow(0 0 14px #fff); }
+.garden .gname { position: absolute; left: 0; right: 0; bottom: 8px; text-align: center; font-weight: 700; color: #3b6b50; text-shadow: 0 1px 6px #fff; }
+.garden .bfly { position: absolute; font-size: 22px; animation: flutter 9s ease-in-out infinite; }
+.garden .b1 { left: 12%; top: 40%; } .garden .b2 { left: 70%; top: 28%; animation-delay: -4s; }
+@keyframes sway { 50% { transform: rotate(6deg); } 0%, 100% { transform: rotate(-6deg); } }
+@keyframes bloom { from { transform: scale(0); opacity: 0; } }
+@keyframes hover { 50% { transform: translate(-50%, -12px); } }
+@keyframes flutter { 25% { transform: translate(40px, -18px) rotate(10deg); } 50% { transform: translate(80px, 6px); } 75% { transform: translate(30px, 16px) rotate(-8deg); } }
+@keyframes drift { to { transform: translateX(520px); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Juhlinta */
+.celebrate { position: fixed; inset: 0; z-index: 20; background: #ffffffb0; backdrop-filter: blur(3px); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.celebrate-card { background: #fff; border-radius: 28px; padding: 24px 36px; text-align: center; box-shadow: 0 10px 40px #f48fb177; animation: pop .6s cubic-bezier(.3,1.6,.5,1); }
+.confetti { position: absolute; top: -40px; animation: fall 3.2s ease-in forwards; }
+@keyframes fall { to { transform: translateY(110vh) rotate(540deg); } }
+@media (prefers-reduced-motion: reduce) { .garden *, .setup, .confetti { animation: none !important; } }

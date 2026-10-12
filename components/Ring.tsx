@@ -1,0 +1,41 @@
+'use client';
+import { useEffect, useState } from 'react';
+
+export default function Ring({ value, goal }: { value: number; goal: number }) {
+  const [shown, setShown] = useState(0);
+  const [pct, setPct] = useState(0);
+  useEffect(() => {
+    setPct(Math.min(1, value / goal));
+    const start = performance.now();
+    let raf = 0;
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - start) / 1200);
+      setShown(Math.round(value * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [value, goal]);
+  const r = 70, c = 2 * Math.PI * r;
+  return (
+    <div className="ring">
+      <svg viewBox="0 0 170 170" aria-hidden="true">
+        <defs>
+          <linearGradient id="rg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#a8e6cf" />
+            <stop offset="1" stopColor="#f48fb1" />
+          </linearGradient>
+        </defs>
+        <circle cx="85" cy="85" r={r} fill="none" stroke="#f3e6f5" strokeWidth="14" />
+        <circle cx="85" cy="85" r={r} fill="none" stroke="url(#rg)" strokeWidth="14" strokeLinecap="round"
+          strokeDasharray={c} strokeDashoffset={c * (1 - pct)} transform="rotate(-90 85 85)"
+          style={{ transition: 'stroke-dashoffset 1.4s cubic-bezier(.2,.8,.2,1)' }} />
+      </svg>
+      <div className="ring-txt">
+        <b>{shown.toLocaleString('fi-FI')}</b>
+        <span>/ {goal.toLocaleString('fi-FI')} askelta</span>
+        {value >= goal && <em>Tavoite täynnä ✨</em>}
+      </div>
+    </div>
+  );
+}

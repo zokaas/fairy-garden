@@ -15,7 +15,7 @@ export async function join(formData: FormData) {
   const { error } = await db().from('fairies').insert({ name, token });
   if (error) redirect('/?virhe=tallennus');
   cookies().set(COOKIE, token, { httpOnly: true, secure: true, sameSite: 'lax', maxAge: 60 * 60 * 24 * 365, path: '/' });
-  redirect('/shortcut');
+  redirect('/');
 }
 
 export async function logSteps(formData: FormData) {
@@ -28,7 +28,8 @@ export async function logSteps(formData: FormData) {
   const { data: fairy } = await supabase.from('fairies').select('id').eq('token', token).maybeSingle();
   if (!fairy) return;
   await supabase.from('steps').upsert({ fairy_id: fairy.id, day, steps, updated_at: new Date().toISOString() });
-  revalidatePath('/');
+  revalidatePath('/', 'layout');
+  redirect('/kirjaa?ok=askeleet');
 }
 
 export async function logWorkout(formData: FormData) {
@@ -40,7 +41,8 @@ export async function logWorkout(formData: FormData) {
   const { data: fairy } = await supabase.from('fairies').select('id').eq('token', token).maybeSingle();
   if (!fairy) return;
   await supabase.from('workouts').insert({ fairy_id: fairy.id, day: helsinkiDay(), sport, minutes });
-  revalidatePath('/');
+  revalidatePath('/', 'layout');
+  redirect('/kirjaa?ok=liikunta');
 }
 
 export async function leave() {

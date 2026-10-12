@@ -1,110 +1,77 @@
 import Link from 'next/link';
-import { cookies } from 'next/headers';
-import { db } from '@/lib/db';
-import { SPORTS, helsinkiDay, points, stageFor } from '@/lib/garden';
-import { join, leave, logSteps, logWorkout } from './actions';
+import { loadGarden } from '@/lib/data';
+import { DAILY_GOAL, stageFor } from '@/lib/garden';
+import { join } from './actions';
 import Countdown from '@/components/Countdown';
+import Garden from '@/components/Garden';
+import Ring from '@/components/Ring';
+import Celebrate from '@/components/Celebrate';
 import SyncButton from '@/components/SyncButton';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Home({ searchParams }: { searchParams: { virhe?: string; synkattu?: string } }) {
-  const token = cookies().get('fg_token')?.value;
-  const supabase = db();
-  const [{ data: fairies }, { data: steps }, { data: workouts }] = await Promise.all([
-    supabase.from('fairies').select('id, name, token'),
-    supabase.from('steps').select('fairy_id, day, steps'),
-    supabase.from('workouts').select('fairy_id, minutes'),
-  ]);
+  const { board, me, myRank } = await loadGarden();
 
-  const board = (fairies ?? [])
-    .map((f) => {
-      const st = (steps ?? []).filter((s) => s.fairy_id === f.id);
-      const totalSteps = st.reduce((a, s) => a + s.steps, 0);
-      const mins = (workouts ?? []).filter((w) => w.fairy_id === f.id).reduce((a, w) => a + w.minutes, 0);
-      const today = st.find((s) => s.day === helsinkiDay())?.steps ?? 0;
-      return { id: f.id, name: f.name, mine: f.token === token, totalSteps, mins, today, pts: points(totalSteps, mins) };
-    })
-    .sort((a, b) => b.pts - a.pts);
-  const me = board.find((b) => b.mine);
-
-  return (
-    <>
-      <h1>🌸 Fairy Garden 🧚🏼‍♀️</h1>
-      <p className="sub">Kävele kukkaan, kasva keijuksi</p>
-      <Countdown />
-
-      {!me ? (
+  if (!me) {
+    return (
+      <>
+        <Garden pts={Math.min(12, board.length * 3)} stageIdx={4} />
+        <h1>Fairy Garden 🧚🏼‍♀️</h1>
+        <p className="sub">Kävele kukkaan, kasva keijuksi ja tule gaalaan 28.11.</p>
+        <Countdown />
         <form action={join} className="card">
           <h2>Liity puutarhaan ✨</h2>
-          <input name="name" placeholder="Keijun nimi" maxLength={30} required />
+          <input name="name" placeholder="Keijun nimi" maxLength={30} required autoComplete="nickname" />
           {searchParams.virhe && <p className="err">Jokin meni pieleen, yritä uudelleen.</p>}
           <button className="btn">Istuta siemen 🌰</button>
         </form>
+        <section className="card how">
+          <h2>Näin se toimii</h2>
+          <ol>
+            <li><b>Liity</b> nimellä, joka näkyy kärkilistalla.</li>
+            <li><b>Yhdistä askeleet</b> iPhonen Terveydestä (5 min, kerran).</li>
+            <li><b>Kävele</b>: jokainen 1 000 askelta ja 10 min liikuntaa kasvattaa puutarhaasi.</li>
+          </ol>
+        </section>
+      </>
+    );
+  }
+
+  const { stage, next, pct } = stageFor(me.pts);
+  const stageIdx = [0, 10, 50, 100, 250, 500].findLastIndex((m) => me.pts >= m);
+
+  return (
+    <>
+      <Celebrate stageIdx={stageIdx} stageName={stage.name} emoji={stage.emoji} />
+      <Garden pts={me.pts} stageIdx={stageIdx} name={`${me.name} · ${stage.name}`} />
+      <Countdown />
+
+      {!me.hasSteps ? (
+        <section className="card setup">
+          <h2>✨ Aloita tästä</h2>
+          <p>Puutarha kasvaa vasta, kun askeleet tulevat mukaan.</p>
+          <Link className="btn" href="/shortcut">📲 Yhdistä askeleet (5 min)</Link>
+          <p className="muted" style={{ textAlign: 'center' }}>tai <Link href="/kirjaa">kirjaa ne käsin</Link></p>
+        </section>
       ) : (
-        <>
-          <section className="card hero">
-            {(() => {
-              const { stage, next, pct } = stageFor(me.pts);
-              return (
-                <>
-                  <div className="big">{stage.emoji}</div>
-                  <h2>{me.name} · {stage.name}</h2>
-                  <div className="bar"><i style={{ width: `${pct}%` }} /></div>
-                  <p className="muted">
-                    {me.pts} pistettä · {me.totalSteps.toLocaleString('fi-FI')} askelta · tänään {me.today.toLocaleString('fi-FI')}
-                    {next && <> · seuraavaksi {next.emoji} {next.name}</>}
-                  </p>
-                </>
-              );
-            })()}
-          </section>
-
-          <section className="card">
-            <h2>Askeleet</h2>
-            {searchParams.synkattu && <p className="muted">Synkkaus tehty ✨ Jos luvut eivät muuttuneet, tarkista <Link href="/shortcut">oikotie</Link>.</p>}
-            <SyncButton site={process.env.NEXT_PUBLIC_SITE_URL ?? ''} />
-            <p className="muted">Avaa Komennot-sovelluksen hetkeksi ja palaa tänne itse. Käsinkirjaus:</p>
-            <form action={logSteps}>
-              <div className="row">
-                <input name="steps" type="number" inputMode="numeric" min={0} max={200000} placeholder="Askelia" required />
-                <input name="day" type="date" defaultValue={helsinkiDay()} />
-              </div>
-              <button className="btn ghost">Tallenna</button>
-            </form>
-            <p className="muted">Automaattinen synkronointi: <Link href="/shortcut">Oikotie-ohje</Link></p>
-          </section>
-
-          <section className="card">
-            <h2>Kirjaa liikunta 💪</h2>
-            <form action={logWorkout}>
-              <div className="row">
-                <select name="sport">{SPORTS.map((s) => <option key={s}>{s}</option>)}</select>
-                <input name="minutes" type="number" inputMode="numeric" min={1} max={600} placeholder="Minuuttia" required />
-              </div>
-              <button className="btn ghost">Lisää</button>
-            </form>
-          </section>
-        </>
+        <section className="card center">
+          <Ring value={me.today} goal={DAILY_GOAL} />
+          <div className="chips">
+            <span className="chip">🔥 {me.streak} pv putki</span>
+            <span className="chip">🏆 sija {myRank}/{board.length}</span>
+            <span className="chip">⭐ {me.pts} p</span>
+          </div>
+          {searchParams.synkattu && <p className="muted">Synkkaus tehty ✨</p>}
+          <SyncButton site={process.env.NEXT_PUBLIC_SITE_URL ?? ''} />
+        </section>
       )}
 
       <section className="card">
-        <h2>Puutarhan kärki 🏆</h2>
-        {board.length === 0 ? <p className="muted">Ei vielä keijuja.</p> : (
-          <ol className="rank">
-            {board.map((b, i) => (
-              <li key={b.id} className={b.mine ? 'me' : ''}>
-                <span className="pos">{i + 1}</span>
-                <span className="nm">{stageFor(b.pts).stage.emoji} {b.name}</span>
-                <span className="pt">{b.pts} p</span>
-              </li>
-            ))}
-          </ol>
-        )}
-        <p className="muted">1 piste / 1 000 askelta ja 1 piste / 10 min liikuntaa.</p>
+        <h2>{next ? `Matkalla: ${next.emoji} ${next.name}` : 'Olet huipulla 👑'}</h2>
+        <div className="bar"><i style={{ width: `${pct}%` }} /></div>
+        {next && <p className="muted">Vielä {Math.max(0, Math.ceil(next.min / 1000 - me.pts))} pistettä seuraavaan tasoon.</p>}
       </section>
-
-      {me && <form action={leave}><button className="btn ghost">Poistu tältä laitteelta</button></form>}
     </>
   );
 }
