@@ -30,6 +30,7 @@ export default function Garden({ pts, stageIdx, name, avatar, phase = 'day', lin
           <g id="shroom"><rect x="-2.2" y="-8" width="4.4" height="8" rx="1.6" fill="#f5ead3" /><path d="M-9 -8C-9 -17 9 -17 9 -8Z" fill="#c64a63" /><circle cx="-3" cy="-12" r="1.4" fill="#fffaf0" /><circle cx="3.5" cy="-11" r="1.1" fill="#fffaf0" /></g>
         </defs>
 
+        <g className="l-sky">
         {night ? (
           <>
             {Array.from({ length: 22 }, (_, i) => <circle key={i} className="twk" cx={(i * 53) % 396 + 6} cy={(i * 31) % 110 + 8} r={i % 4 === 0 ? 1.4 : 0.8} fill="#fff6d6" style={{ animationDelay: `${(i % 6) * 0.5}s` }} />)}
@@ -43,6 +44,8 @@ export default function Garden({ pts, stageIdx, name, avatar, phase = 'day', lin
           </>
         )}
 
+        </g>
+        <g className="l-far">
         {stageIdx >= 4 && [0, 1, 2, 3].map((k) => <path key={k} d={`M${54 + k * 7} 150A${46 - k * 7} ${46 - k * 7} 0 0 1 ${146 - k * 7} 150`} fill="none" stroke={['#e98f9f', '#f2c47d', '#a9d6b2', '#a3bff0'][k]} strokeWidth="6" opacity={night ? 0.3 : 0.6} />)}
         {stageIdx >= 5 && (
           <g transform="translate(312 96)">
@@ -60,6 +63,8 @@ export default function Garden({ pts, stageIdx, name, avatar, phase = 'day', lin
             <ellipse cx="0" cy="-17" rx={9 + (i % 3) * 2} ry={13 + (i % 2) * 3} className="tree" />
           </g>
         ))}
+        </g>
+        <g className="l-mid">
         <path className="h2" d="M0 186C80 164 160 192 240 176S360 170 400 182V250H0Z" />
         {stageIdx >= 3 && (
           <g transform="translate(52 182)">
@@ -68,6 +73,8 @@ export default function Garden({ pts, stageIdx, name, avatar, phase = 'day', lin
             <rect x="-4" y="-12" width="8" height="12" rx="4" fill="#c9a24a" /><rect x="-13" y="-16" width="6" height="6" fill="#9fc8e8" /><rect x="7" y="-16" width="6" height="6" fill="#9fc8e8" />
           </g>
         )}
+        </g>
+        <g className="l-near">
         <path className="h3" d="M0 218C100 198 200 228 300 208S380 204 400 210V250H0Z" />
         {stageIdx >= 2 && [[96, 232, 1.1], [112, 238, 0.8], [270, 236, 1], [286, 232, 0.75], [304, 240, 0.9]].map(([x, y, s], i) => <g key={i} transform={`translate(${x} ${y}) scale(${s})`}><use href="#shroom" /></g>)}
 
@@ -78,6 +85,7 @@ export default function Garden({ pts, stageIdx, name, avatar, phase = 'day', lin
         ))}
         {n === 0 && <g transform="translate(200 232)"><ellipse rx="9" ry="5" fill="#8b6a46" /><path d="M0 -3V-12" stroke="#3f8a67" strokeWidth="2" /></g>}
         {night && [60, 150, 250, 340].map((x, i) => <circle key={x} className="ff" cx={x} cy={170 + (i % 2) * 24} r="2.4" fill="#fff7a8" style={{ animationDelay: `${i * 0.9}s` }} />)}
+        </g>
       </svg>
 
       <span className="bfly b1" /><span className="bfly b2" />

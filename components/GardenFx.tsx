@@ -1,5 +1,5 @@
 'use client';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type Spark = { id: number; x: number; y: number; e: string };
 
@@ -10,6 +10,21 @@ export default function GardenFx({ phase, lines, children }: { phase: string; li
   const [say, setSay] = useState<string | null>(null);
   const idRef = useRef(0);
   const timer = useRef<ReturnType<typeof setTimeout>>();
+
+  // Parallax: kerrokset liikkuvat eri nopeudella, kun sivua vieritetään
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const el = ref.current;
+      if (el) el.style.setProperty('--p', String(Math.min(1, Math.max(0, window.scrollY / 320))));
+    };
+    const on = () => { if (!raf) raf = requestAnimationFrame(update); };
+    update();
+    window.addEventListener('scroll', on, { passive: true });
+    return () => window.removeEventListener('scroll', on);
+  }, []);
 
   return (
     <div

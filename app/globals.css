@@ -105,11 +105,10 @@ code, .tok { display: block; word-break: break-all; background: var(--field); bo
 .seg a.on { background: var(--fg); color: var(--bg); }
 
 /* Alavalikko */
-.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; display: flex; background: color-mix(in srgb, var(--bg) 82%, transparent); -webkit-backdrop-filter: blur(20px) saturate(160%); backdrop-filter: blur(20px) saturate(160%); border-top: 1px solid var(--line); padding: 6px 4px calc(6px + env(safe-area-inset-bottom)); }
+.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; display: flex; background: color-mix(in srgb, var(--bg) 82%, transparent); -webkit-backdrop-filter: blur(20px) saturate(160%); backdrop-filter: blur(20px) saturate(160%); border-top: 1px solid var(--line); padding: 6px 0 calc(6px + env(safe-area-inset-bottom)); }
 .tabs a { flex: 1; text-align: center; text-decoration: none; color: var(--fg-3); font: 500 .6rem var(--mono); letter-spacing: .04em; text-transform: lowercase; padding: 8px 0 4px; position: relative; transition: color .2s; }
 .tabs a svg { display: block; margin: 0 auto 3px; width: 22px; height: 22px; stroke-width: 1.6; }
 .tabs a.on { color: var(--fg); }
-.tabs a.on::before { content: ''; position: absolute; top: -7px; left: 22%; right: 22%; height: 2px; border-radius: 2px; background: var(--grad); box-shadow: 0 0 12px var(--pink); }
 .tabs a.on svg { color: var(--pink); }
 
 /* Puutarha */
@@ -238,3 +237,68 @@ main > * { animation: rise-in .55s var(--ease) both; }
 main > :nth-child(2) { animation-delay: .04s; } main > :nth-child(3) { animation-delay: .08s; } main > :nth-child(4) { animation-delay: .12s; }
 main > :nth-child(5) { animation-delay: .16s; } main > :nth-child(6) { animation-delay: .2s; } main > :nth-child(7) { animation-delay: .24s; } main > :nth-child(n+8) { animation-delay: .28s; }
 @media (prefers-reduced-motion: reduce) { main > *, .bar-col i, .sway, .fairy, .walker, .bfly, .twk, .ff, .spark, .bubble, .confetti, .countdown::before { animation: none !important; } }
+
+/* ===== Liike 2.0: paljastukset, parallax, uutisnauha, valokeila, liukuva valikko ===== */
+@property --ang { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@keyframes ang { to { --ang: 360deg; } }
+@keyframes h1in { from { opacity: 0; filter: blur(14px); letter-spacing: .12em; transform: translateY(10px); } }
+@keyframes shimmer { to { background-position: -200% 0; } }
+@keyframes marquee { to { transform: translateX(-50%); } }
+@keyframes sheen { 0%, 70% { left: -60%; } 100% { left: 130%; } }
+
+h1 { animation: h1in 1s var(--ease) both; }
+
+/* Paljastus vieritettäessä */
+.rv { opacity: 0; transform: translateY(26px) scale(.985); filter: blur(8px); }
+.rv.in { opacity: 1; transform: none; filter: none; transition: opacity .7s var(--ease) var(--d, 0ms), transform .8s var(--ease) var(--d, 0ms), filter .7s var(--ease) var(--d, 0ms); }
+.rv .bar-col i, .rv .bar > i { animation: none; transform: scaleY(0); }
+.rv .bar > i { transform: scaleX(0); transform-origin: left; }
+.rv.in .bar-col i, .rv.in .bar > i { transform: none; transition: transform 1s var(--ease) .25s; }
+
+/* Valokeila seuraa sormea tai kursoria */
+.card::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .3s;
+  background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 0%), color-mix(in srgb, var(--violet) 22%, transparent), transparent 70%); }
+.card:hover::after, .card:active::after { opacity: 1; }
+
+/* Pyörivä värireunus tärkeille korteille */
+.card.setup, .secret.open, .quests.all {
+  background: linear-gradient(var(--surface), var(--surface)) padding-box, conic-gradient(from var(--ang), var(--pink), var(--violet), var(--sky), var(--pink)) border-box;
+  border: 1px solid transparent; animation: rise-in .55s var(--ease) both, ang 5s linear infinite;
+}
+
+/* Painikkeen kiilto */
+.btn:not(.ghost) { position: relative; overflow: hidden; }
+.btn:not(.ghost)::after { content: ''; position: absolute; top: 0; bottom: 0; width: 40%; left: -60%; transform: skewX(-20deg); background: linear-gradient(90deg, transparent, #ffffff99, transparent); animation: sheen 5s ease-in-out infinite; }
+
+/* Uutisnauha */
+.ticker { overflow: hidden; margin: 0 -16px 14px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+.ticker-track { display: flex; width: max-content; animation: marquee 34s linear infinite; }
+.ticker-track > div { display: flex; gap: 30px; padding-right: 30px; }
+.ticker span { display: flex; align-items: center; gap: 9px; white-space: nowrap; font: 500 .7rem var(--mono); letter-spacing: .05em; text-transform: uppercase; color: var(--fg-2); }
+.ticker i { width: 6px; height: 6px; border-radius: 50%; background: var(--grad); box-shadow: 0 0 8px var(--pink); }
+
+/* Parallax-kerrokset */
+.l-sky { transform: translateY(calc(var(--p, 0) * 8px)); } .l-far { transform: translateY(calc(var(--p, 0) * 16px)); }
+.l-mid { transform: translateY(calc(var(--p, 0) * 28px)); } .l-near { transform: translateY(calc(var(--p, 0) * 44px)); }
+.l-sky, .l-far, .l-mid, .l-near { will-change: transform; }
+
+/* Liukuva valikkoindikaattori */
+.tab-ind { position: absolute; top: -1px; left: 0; width: 20%; height: 2px; pointer-events: none; transition: transform .55s var(--ease); }
+.tab-ind::before { content: ''; position: absolute; left: 22%; right: 22%; top: 0; bottom: 0; border-radius: 2px; background: var(--grad); box-shadow: 0 0 14px var(--pink); }
+
+/* Latausluuranka */
+.skel { background: linear-gradient(90deg, var(--surface) 0%, var(--surface-2) 50%, var(--surface) 100%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; border: 1px solid var(--line); border-radius: 14px; margin-bottom: 12px; }
+
+/* Sivunsiirtymät (Safari 18.2+, muualla ei vaikutusta) */
+@view-transition { navigation: auto; }
+.tabs { view-transition-name: tabs; }
+::view-transition-old(root) { animation: vt-out .18s ease both; }
+::view-transition-new(root) { animation: vt-in .4s var(--ease) both; }
+@keyframes vt-out { to { opacity: 0; transform: translateY(-6px); } }
+@keyframes vt-in { from { opacity: 0; transform: translateY(10px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  h1, .ticker-track, .btn:not(.ghost)::after, .card.setup, .secret.open, .quests.all, .skel { animation: none !important; }
+  .rv { opacity: 1; transform: none; filter: none; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+}

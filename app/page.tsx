@@ -4,6 +4,7 @@ import { DAILY_GOAL, STAGES, ago, phaseOf, stageFor, type Phase } from '@/lib/ga
 import type { Fairy } from '@/lib/data';
 import { dailyQuests } from '@/lib/quests';
 import Journey from '@/components/Journey';
+import Ticker from '@/components/Ticker';
 import Avatar from '@/components/Avatar';
 import { challengeFor, groupTarget } from '@/lib/challenge';
 import NameDice from '@/components/NameDice';
@@ -102,6 +103,13 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
       />
       <p className="muted" style={{ textAlign: 'center', marginTop: -6 }}><Link href="/profiili">Muokkaa avataria</Link></p>
       <Countdown to={contest.end} />
+      <Ticker items={[
+        `Ryhmä tänään ${board.reduce((a, b) => a + b.today, 0).toLocaleString('fi-FI')} askelta`,
+        board[0] ? `Johtaa ${board[0].name} ${board[0].pts} p` : '',
+        board.some((b) => b.streak > 1) ? `Pisin putki ${Math.max(...board.map((b) => b.streak))} pv` : '',
+        `Viikon haaste: ${challengeFor().title}`,
+        `${board.filter((b) => b.today >= DAILY_GOAL).length} / ${board.length} on täyttänyt päivän tavoitteen`,
+      ].filter(Boolean)} />
 
       {!me.hasSteps ? (
         <section className="card setup">
