@@ -1,10 +1,13 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { loadGarden } from '@/lib/data';
+import { loadGarden, loadRaw } from '@/lib/data';
+import { syncWatch } from '@/lib/watch';
+import { DEMO } from '@/lib/demo';
+import { db } from '@/lib/db';
 import { STAGES, ago, helsinkiDay } from '@/lib/garden';
 import Avatar from '@/components/Avatar';
 import { getContest } from '@/lib/contest';
-import { adminDelete, adminResetPassword, adminSetSteps, clearTest, saveContest, seedTest, testPush, testWeekly } from './actions';
+import { adminDelete, adminResetPassword, adminSetSteps, clearTest, remindAll, remindFairy, saveContest, seedTest, testPush, testWeekly } from './actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,8 +16,13 @@ export default async function Yllapito({ searchParams }: { searchParams: { ok?: 
   if (!me?.isAdmin) redirect('/');
   const contest = await getContest();
   const endLocal = new Date(contest.end).toLocaleString('sv-SE', { timeZone: 'Europe/Helsinki' }).slice(0, 16).replace(' ', 'T');
+  const [raw, subsRes] = await Promise.all([loadRaw(), DEMO ? Promise.resolve({ data: [] as { fairy_id: string }[] }) : db().from('push_subscriptions').select('fairy_id')]);
+  const subscribed = new Set((subsRes.data ?? []).map((x) => x.fairy_id as string));
+  const watch = syncWatch(board, raw.steps);
+  const problems = watch.filter((w) => w.level !== 'ok');
+  const dm2 = (d: string) => `${Number(d.slice(8))}.${Number(d.slice(5, 7))}.`;
   const synced = board.filter((b) => b.today > 0).length;
-  const stale = board.filter((b) => b.hasSteps && b.yesterday === 0 && !b.mine).length;
+  const stale = board.filter((b) => b.hasSteps && b.yesterday === 0).length;
 
   return (
     <>
@@ -28,6 +36,33 @@ export default async function Yllapito({ searchParams }: { searchParams: { ok?: 
           <span className="chip">👟 {synced} synkannut tänään</span>
           <span className="chip">🌙 {stale} ilman eilistä</span>
         </div>
+      </section>
+
+      <section className="card">
+        <h2>Synkkavahti</h2>
+        <p className="muted">Kenen askeleet puuttuvat viimeiseltä kolmelta päivältä. Muistutus lähtee push-ilmoituksena (jos keijulla on ilmoitukset päällä).</p>
+        {problems.length === 0 ? <p className="toast">Kaikilla on askeleet viimeiseltä kolmelta päivältä.</p> : (
+          <ul className="watch">
+            {problems.map((w) => (
+              <li key={w.fairy.id} className={`lv-${w.level}`}>
+                <Avatar a={w.fairy} size={34} stage={w.fairy.stageIdx} />
+                <span className="wt">
+                  <b>{w.fairy.name}</b>
+                  <small>
+                    {w.level === 'never' ? 'Ei yhtään kirjausta vielä' : `Puuttuu: ${w.missing.map(dm2).join(', ')}`} · viimeksi synkattu {ago(w.fairy.lastSync)}
+                    {!subscribed.has(w.fairy.id) && ' · ei ilmoituksia'}
+                  </small>
+                </span>
+                {w.level !== 'never' && (
+                  <form action={remindFairy}><input type="hidden" name="id" value={w.fairy.id} /><button className="btn ghost" disabled={!subscribed.has(w.fairy.id)}>Muistuta</button></form>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+        {problems.some((w) => w.level === 'warn' || w.level === 'alert') && (
+          <form action={remindAll}><button className="btn">Muistuta kaikkia puuttuvia</button></form>
+        )}
       </section>
 
       <section className="card">

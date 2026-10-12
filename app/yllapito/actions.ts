@@ -109,3 +109,37 @@ export async function testWeekly() {
   const r = await sendWeeklySummary(me.id);
   done(r.sent > 0 ? 'Viikkoyhteenveto lähetetty itsellesi' : 'Ei tilausta tai VAPID-avaimia, ei lähetetty');
 }
+
+function dm(d: string) {
+  return `${Number(d.slice(8))}.${Number(d.slice(5, 7))}.`;
+}
+
+async function watchRows() {
+  const [{ board }, raw] = await Promise.all([loadGarden(), (await import('@/lib/data')).loadRaw()]);
+  const { syncWatch } = await import('@/lib/watch');
+  return syncWatch(board, raw.steps);
+}
+
+/** Muistutus yhdelle keijulle: kertoo puuttuvat päivät ja kehottaa synkkaamaan. */
+export async function remindFairy(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get('id') ?? '');
+  const row = (await watchRows()).find((r) => r.fairy.id === id);
+  if (!row) return;
+  const { sendPush } = await import('@/lib/push');
+  const body = row.missing.length ? `Askeleet puuttuvat päiviltä ${row.missing.map(dm).join(', ')}. Avaa sovellus ja paina Synkkaa askeleet nyt.` : 'Muista synkata askeleesi. Avaa sovellus ja paina Synkkaa askeleet nyt.';
+  const n = await sendPush({ title: 'Fairy Garden 🌸', body, url: '/' }, [id]);
+  done(n > 0 ? `Muistutus lähetetty: ${row.fairy.name}` : `${row.fairy.name}: ei ilmoituksia päällä, muistutusta ei voitu lähettää`);
+}
+
+/** Muistutus kaikille, joilta puuttuu päiviä (ja joilla ilmoitukset ovat päällä). */
+export async function remindAll() {
+  await requireAdmin();
+  const rows = (await watchRows()).filter((r) => r.level === 'warn' || r.level === 'alert');
+  const { sendPush } = await import('@/lib/push');
+  let sent = 0;
+  for (const r of rows) {
+    sent += await sendPush({ title: 'Fairy Garden 🌸', body: `Askeleet puuttuvat päiviltä ${r.missing.map(dm).join(', ')}. Avaa sovellus ja paina Synkkaa askeleet nyt.`, url: '/' }, [r.fairy.id]);
+  }
+  done(`Muistutus lähetetty ${sent} keijulle (${rows.length} puuttuvaa)`);
+}

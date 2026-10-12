@@ -30,6 +30,7 @@ import { series, weekdayAvg, sportStats, trend, route, routeText, weeklyMinutes,
 import { challengeFor, groupTarget } from './challenge.ts';
 import { weekGoal, weeksDone } from './weekly.ts';
 import { parseDays } from './sync.ts';
+import { syncWatch } from './watch.ts';
 import { kindOf } from './garden.ts';
 const rows = [{ day: '2026-10-12', steps: 8000 }, { day: '2026-10-13', steps: 4000 }, { day: '2026-10-05', steps: 6000 }, { day: '2026-10-12', steps: 2000 }];
 assert.equal(series(rows, 3, '2026-10-14').map((x) => x.steps).join(), '10000,4000,0');
@@ -80,4 +81,16 @@ assert.deepEqual(parseDays({ steps: 8234 }, '2026-10-14'), [{ day: '2026-10-14',
 assert.deepEqual(parseDays({ lines: '2026-10-14=8 234,0\n2026-10-13: 7120\nroskaa\n2026-10-14=100' }, '2026-10-14'), [{ day: '2026-10-13', steps: 7120 }, { day: '2026-10-14', steps: 8234 }]);
 assert.deepEqual(parseDays({ days: [{ day: '2026-10-12', steps: 5000 }, { day: '2026-10-15', steps: 1 }, { day: '2026-09-01', steps: 1 }, { day: '2026-10-11', steps: 999999 }] }, '2026-10-14'), [{ day: '2026-10-12', steps: 5000 }]);
 assert.deepEqual(parseDays({}, '2026-10-14'), []);
+const mk = (id: string) => ({ id, name: id }) as never;
+const w = syncWatch(
+  [mk('a'), mk('b'), mk('c'), mk('d')],
+  [
+    { fairy_id: 'a', day: '2026-10-13', steps: 5 }, { fairy_id: 'a', day: '2026-10-12', steps: 5 }, { fairy_id: 'a', day: '2026-10-11', steps: 5 },
+    { fairy_id: 'b', day: '2026-10-11', steps: 5 }, { fairy_id: 'b', day: '2026-10-13', steps: 5 },
+    { fairy_id: 'c', day: '2026-10-05', steps: 5 },
+  ],
+  '2026-10-14',
+);
+assert.deepEqual(w.map((x) => `${x.fairy.id}:${x.level}:${x.missing.length}`), ['d:never:0', 'c:alert:3', 'b:warn:1', 'a:ok:0']);
+assert.deepEqual(w.find((x) => x.fairy.id === 'b')!.missing, ['2026-10-12']);
 console.log('garden: ok');
