@@ -17,13 +17,13 @@ export default function Journey({ steps, avatar }: { steps: number; avatar: Avat
   const d = PTS.map((p, i) => `${i ? 'L' : 'M'}${p[0]},${p[1]}`).join(' ');
   return (
     <section className="card journey">
-      <h2>Haltijan polku 🗺️</h2>
+      <h2>Haltijan polku</h2>
       <div className="trail">
         <svg viewBox="0 0 300 110" preserveAspectRatio="none" aria-hidden="true">
-          <path d={d} fill="none" stroke="#f3cfe3" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
-          <path d={d} fill="none" stroke="url(#tg)" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - f} />
+          <path d={d} fill="none" stroke="#e6d3a1" strokeWidth="7" strokeDasharray="1 9" strokeLinecap="round" strokeLinejoin="round" />
+          <path d={d} fill="none" stroke="url(#tg)" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - f} />
           <defs>
-            <linearGradient id="tg" x1="0" x2="1"><stop offset="0" stopColor="#a8e6cf" /><stop offset="1" stopColor="#f48fb1" /></linearGradient>
+            <linearGradient id="tg" x1="0" x2="1"><stop offset="0" stopColor="#2f7a5f" /><stop offset="1" stopColor="#d4527f" /></linearGradient>
           </defs>
         </svg>
         {STOPS.map((s) => {
@@ -33,7 +33,7 @@ export default function Journey({ steps, avatar }: { steps: number; avatar: Avat
         <span className="walker" style={{ left: `${(x / 300) * 100}%`, top: `${(y / 110) * 100}%` }}><Avatar a={avatar} size={34} /></span>
       </div>
       <p className="muted">
-        {next ? <>Seuraava etappi: {next.emoji} <b>{next.name}</b>, vielä {(next.at - steps).toLocaleString('fi-FI')} askelta.</> : <>Perillä Albertinkadulla! 🥂 Olet todellinen reippailija.</>}
+        {next ? <>Seuraava etappi: {next.emoji} <b>{next.name}</b>, vielä {(next.at - steps).toLocaleString('fi-FI')} askelta.</> : <>Perillä Albertinkadulla. Olet todellinen reippailija.</>}
       </p>
     </section>
   );

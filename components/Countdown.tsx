@@ -10,5 +10,5 @@ export default function Countdown({ to, label = 'päivää kisaa jäljellä', do
     const d = Math.floor(ms / 86_400_000);
     setText(d === 0 ? `Kisa päättyy tänään! ${Math.max(1, Math.ceil(ms / 3_600_000))} t jäljellä` : `${d} ${label}`);
   }, [to, label, doneText]);
-  return <p className="countdown">✨ {text ?? ''} ✨</p>;
+  return <p className="countdown"><span>{text ?? ''}</span></p>;
 }

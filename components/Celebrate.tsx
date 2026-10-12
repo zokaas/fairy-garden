@@ -20,17 +20,14 @@ export default function Celebrate({ stageIdx, stageName, emoji, force }: { stage
     } catch {}
   }, [stageIdx, force]);
   if (!show) return null;
-  const bits = ['🌸', '✨', '🦋', '🌷', '💖', '🌼'];
   return (
     <div className="celebrate" onClick={() => setShow(false)}>
       {Array.from({ length: 36 }, (_, i) => (
-        <span key={i} className="confetti" style={{ left: `${(i * 37) % 100}%`, animationDelay: `${(i % 9) * 0.18}s`, fontSize: 18 + (i % 4) * 6 }}>
-          {bits[i % bits.length]}
-        </span>
+        <span key={i} className={`confetti c${i % 5}`} style={{ left: `${(i * 37) % 100}%`, animationDelay: `${(i % 9) * 0.18}s`, ['--s' as string]: `${0.8 + (i % 4) * 0.25}` }} />
       ))}
       <div className="celebrate-card">
         <div style={{ fontSize: 64 }}>{emoji}</div>
-        <h2>Uusi taso!</h2>
+        <h2>Uusi taso</h2>
         <p>Olet nyt <b>{stageName}</b> ✨</p>
       </div>
     </div>

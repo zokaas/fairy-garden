@@ -1,6 +1,7 @@
 import 'server-only';
 import { cookies } from 'next/headers';
 import { db } from '@/lib/db';
+import { DEMO, demoRows } from '@/lib/demo';
 import { bestStreak, dayBefore, helsinkiDay, points, stageFor, streak, weekStart } from '@/lib/garden';
 import { BADGES } from '@/lib/badges';
 
@@ -34,15 +35,20 @@ export type Fairy = {
   cheersTotal: number;
 };
 
-export async function loadGarden() {
-  const token = cookies().get('fg_token')?.value;
+async function fetchRows() {
   const supabase = db();
   const [{ data: fairies }, { data: steps }, { data: workouts }, { data: cheers }] = await Promise.all([
     supabase.from('fairies').select('id, name, token, avatar_emoji, avatar_bg, avatar_path, avatar_acc, is_admin, team'),
     supabase.from('steps').select('fairy_id, day, steps, updated_at'),
-    supabase.from('workouts').select('fairy_id, minutes, day'),
+    supabase.from('workouts').select('fairy_id, minutes, day, sport'),
     supabase.from('cheers').select('from_id, to_id, day'),
   ]);
+  return { fairies: fairies ?? [], steps: steps ?? [], workouts: workouts ?? [], cheers: cheers ?? [] };
+}
+
+export async function loadGarden() {
+  const token = cookies().get('fg_token')?.value;
+  const { fairies, steps, workouts, cheers } = DEMO ? demoRows() : await fetchRows();
   const today = helsinkiDay();
   const wk = weekStart(today);
   const board: Fairy[] = (fairies ?? [])
@@ -96,6 +102,10 @@ export async function loadGarden() {
 
 /** Raakadata tilastoja varten: kaikkien askeleet ja liikunnat. */
 export async function loadRaw() {
+  if (DEMO) {
+    const r = demoRows();
+    return { steps: r.steps as import('./stats').StepRow[], workouts: r.workouts as import('./stats').WorkRow[] };
+  }
   const supabase = db();
   const [{ data: steps }, { data: workouts }] = await Promise.all([
     supabase.from('steps').select('fairy_id, day, steps'),

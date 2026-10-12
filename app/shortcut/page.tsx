@@ -16,11 +16,11 @@ export default function ShortcutGuide() {
 
   return (
     <>
-      <h1>📲 Askelten automaattisynkka</h1>
+      <h1>Askelten automaattisynkka</h1>
       <p className="sub">Tehdään kerran, sen jälkeen iPhone lähettää askeleesi itse.</p>
 
       <section className="card">
-        <h2>Sinun salainen avaimesi 🔑</h2>
+        <h2>Sinun salainen avaimesi</h2>
         <span className="tok">{token}</span>
         <CopyButton text={token} label="Kopioi avain" />
         <p className="muted">Älä jaa tätä muille: avaimella voi kirjata askelia sinun nimissäsi.</p>
@@ -34,7 +34,7 @@ export default function ShortcutGuide() {
             <li>Kun komento kysyy <b>Avain</b>, liitä yllä kopioimasi avain.</li>
             <li>Salli pääsy Terveyteen. Valmis!</li>
           </ol>
-          <a className="btn" href={install}>📲 Asenna oikotie</a>
+          <a className="btn" href={install}>Asenna oikotie</a>
         </section>
       )}
 

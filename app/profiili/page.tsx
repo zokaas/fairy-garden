@@ -16,11 +16,11 @@ export default async function Profiili({ searchParams }: { searchParams: { uusi?
   const uusi = !!searchParams.uusi;
   return (
     <>
-      <h1>{uusi ? 'Valitse oma keijusi ✨' : '🧚🏼‍♀️ Oma avatar'}</h1>
+      <h1>{uusi ? 'Valitse oma keijusi ' : 'Oma avatar'}</h1>
       <p className="sub">{uusi ? 'Voit vaihtaa tämän myöhemmin.' : 'Näkyy puutarhassa ja kärkilistalla.'}</p>
       {searchParams.ok && <p className="toast">Tallennettu 🌸</p>}
 
-      <div style={{ textAlign: 'center', marginBottom: 14 }}>
+      <div style={{ textAlign: 'center', margin: '30px 0 16px' }}>
         <Avatar a={me} size={120} />
       </div>
 
@@ -84,12 +84,12 @@ export default async function Profiili({ searchParams }: { searchParams: { uusi?
             <button className="btn ghost">Liity joukkueeseen</button>
           </form>
           <section className="card">
-            <h2>Askelten synkka 📲</h2>
+            <h2>Askelten synkka</h2>
             <p className="muted">Oikotie, jolla iPhone lähettää askeleesi automaattisesti.</p>
             <a className="btn ghost" href="/shortcut">Avaa Synkka-ohje</a>
           </section>
           <section className="card">
-            <h2>Ilmoitukset 🔔</h2>
+            <h2>Ilmoitukset</h2>
             <PushToggle />
           </section>
         </>

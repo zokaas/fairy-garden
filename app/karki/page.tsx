@@ -25,7 +25,7 @@ export default async function Karki({ searchParams }: { searchParams: { nayta?: 
 
   return (
     <>
-      <h1>🏆 Puutarhan kärki</h1>
+      <h1>Puutarhan kärki</h1>
       <div className="seg">
         <Link href="/karki" className={!week ? 'on' : ''}>Koko kausi</Link>
         <Link href="/karki?nayta=viikko" className={week ? 'on' : ''}>Tämä viikko</Link>
@@ -67,7 +67,7 @@ export default async function Karki({ searchParams }: { searchParams: { nayta?: 
             ))}
           </ol>
         )}
-        <p className="muted">Napauta ✨ ja lähetä keijulle kimalle (yksi / päivä / keiju). 1 piste / 1 000 askelta ja 1 piste / 10 min liikuntaa.</p>
+        <p className="muted">Napauta ja lähetä keijulle kimalle (yksi / päivä / keiju). 1 piste / 1 000 askelta ja 1 piste / 10 min liikuntaa.</p>
       </section>
       <form action={leave}><button className="btn ghost">Poistu tältä laitteelta</button></form>
     </>

@@ -9,7 +9,7 @@ export default function Kirjaa({ searchParams }: { searchParams: { ok?: string }
   if (!cookies().get('fg_token')) redirect('/');
   return (
     <>
-      <h1>👟 Kirjaa</h1>
+      <h1>Kirjaa</h1>
       {searchParams.ok && <p className="toast">{searchParams.ok === 'askeleet' ? 'Askeleet tallennettu 🌸' : 'Liikunta lisätty 💪'}</p>}
 
       <section className="card">

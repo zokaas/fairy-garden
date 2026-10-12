@@ -17,7 +17,7 @@ export default function GardenFx({ phase, lines, children }: { phase: string; li
       className={`garden ${phase}`}
       onPointerDown={(e) => {
         const r = ref.current!.getBoundingClientRect();
-        const bits = ['✨', '🌸', '💖', '⭐', '🦋'];
+        const bits = ['✦', '❀', '✧', '✿', '✦'];
         const batch = Array.from({ length: 6 }, (_, i) => ({
           id: ++idRef.current, x: e.clientX - r.left + (i - 3) * 6, y: e.clientY - r.top, e: bits[(idRef.current + i) % bits.length],
         }));

@@ -7,7 +7,7 @@ export default function NameDice({ inputId }: { inputId: string }) {
       const el = document.getElementById(inputId) as HTMLInputElement | null;
       if (el) { el.value = fairyName(); el.focus(); }
     }}>
-      🎲 Arvo keijunimi
+      Arvo keijunimi
     </button>
   );
 }

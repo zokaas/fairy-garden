@@ -1,23 +1,24 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { IconFlag, IconGarden, IconLog, IconStats, IconTrophy } from './Icons';
 
 const TABS = [
-  { href: '/', icon: '🌸', label: 'Puutarha' },
-  { href: '/kirjaa', icon: '👟', label: 'Kirjaa' },
-  { href: '/karki', icon: '🏆', label: 'Kärki' },
-  { href: '/tilastot', icon: '📊', label: 'Tilastot' },
-  { href: '/kisa', icon: '🏁', label: 'Kisa' },
+  { href: '/', Icon: IconGarden, label: 'Puutarha' },
+  { href: '/kirjaa', Icon: IconLog, label: 'Kirjaa' },
+  { href: '/karki', Icon: IconTrophy, label: 'Kärki' },
+  { href: '/tilastot', Icon: IconStats, label: 'Tilastot' },
+  { href: '/kisa', Icon: IconFlag, label: 'Kisa' },
 ];
 
 export default function BottomNav() {
   const path = usePathname();
   return (
-    <nav className="tabs">
-      {TABS.map((t) => (
-        <Link key={t.href} href={t.href} className={path === t.href || (t.href !== '/' && path.startsWith(t.href)) ? 'on' : ''}>
-          <span>{t.icon}</span>
-          {t.label}
+    <nav className="tabs" aria-label="Päävalikko">
+      {TABS.map(({ href, Icon, label }) => (
+        <Link key={href} href={href} className={path === href || (href !== '/' && path.startsWith(href)) ? 'on' : ''}>
+          <Icon />
+          {label}
         </Link>
       ))}
     </nav>

@@ -21,8 +21,8 @@ export default async function Kisa({ searchParams }: { searchParams: { avaa?: st
 
   return (
     <>
-      <h1>🏁 Kuka on reippain?</h1>
-      <p className="sub">Kisa päättyy {endDate}. Eniten pisteitä keränneestä tulee <b>Reippain keiju</b>.</p>
+      <h1>Kuka on reippain?</h1>
+      <p className="sub">Kisa päättyy {endDate} Eniten pisteitä keränneestä tulee <b>Reippain keiju</b>.</p>
       <Countdown to={contest.end} />
 
       <section className={`card secret ${over ? 'open' : ''}`}>
@@ -57,7 +57,7 @@ export default async function Kisa({ searchParams }: { searchParams: { avaa?: st
       </section>
 
       <section className="card">
-        <h2>{over ? 'Palkinnot 🏆' : 'Kategoriat: kuka johtaa 🏆'}</h2>
+        <h2>{over ? 'Palkinnot ' : 'Kategoriat: kuka johtaa '}</h2>
         {prizes.length === 0 ? <p className="muted">Palkinnot ilmestyvät, kun ensimmäiset askeleet on kirjattu.</p> : (
           <ul className="plain prizes">
             {prizes.map((p) => (

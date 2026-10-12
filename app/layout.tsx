@@ -1,11 +1,15 @@
 import type { Metadata, Viewport } from 'next';
+import { Figtree, Fraunces } from 'next/font/google';
 import { cookies } from 'next/headers';
 import './globals.css';
 import BottomNav from '@/components/BottomNav';
 
+const serif = Fraunces({ subsets: ['latin'], style: ['normal', 'italic'], variable: '--serif', display: 'swap' });
+const sans = Figtree({ subsets: ['latin'], variable: '--sans', display: 'swap' });
+
 export const metadata: Metadata = {
   title: 'Fairy Garden Askeleet',
-  description: 'Kävele kukkaan, keijuksi ja Fairy Gardeniin 28.11.2026',
+  description: 'Kävele kukkaan, kasva keijuksi ja ole reippain keiju',
   icons: { icon: '/icon-192.png', apple: '/icon-180.png' },
   appleWebApp: {
     capable: true,
@@ -20,17 +24,15 @@ export const metadata: Metadata = {
     ].map(([w, h, dw, dh]) => ({ url: `/splash-${w}x${h}.png`, media: `(device-width: ${dw}px) and (device-height: ${dh}px) and (-webkit-device-pixel-ratio: 3)` })),
   },
 };
-export const viewport: Viewport = { themeColor: '#f8d7ec', width: 'device-width', initialScale: 1 };
+export const viewport: Viewport = { themeColor: '#f7efdd', width: 'device-width', initialScale: 1 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const member = !!cookies().get('fg_token');
   return (
-    <html lang="fi">
+    <html lang="fi" className={`${serif.variable} ${sans.variable}`}>
       <body>
-        <div className="sparkles" aria-hidden="true">
-          {['🦋', '✨', '🌸', '🍄', '✨', '🦋'].map((e, i) => (
-            <span key={i} style={{ left: `${8 + i * 17}%`, animationDelay: `${i * 2.3}s` }}>{e}</span>
-          ))}
+        <div className="dust" aria-hidden="true">
+          {Array.from({ length: 9 }, (_, i) => <i key={i} style={{ left: `${(i * 37 + 8) % 96}%`, animationDelay: `${i * 1.7}s`, animationDuration: `${14 + (i % 4) * 4}s` }} />)}
         </div>
         <main className={member ? 'withnav' : ''}>{children}</main>
         {member && <BottomNav />}

@@ -74,7 +74,7 @@ export default function PushToggle() {
       {state === 'off' && (
         <>
           <p className="muted">Saat muistutuksen puuttuvista askelista ja kuulet, kun joku lähettää sinulle kimallen.</p>
-          <button type="button" className="btn" disabled={busy} onClick={enable}>{busy ? 'Hetki…' : '🔔 Laita ilmoitukset päälle'}</button>
+          <button type="button" className="btn" disabled={busy} onClick={enable}>{busy ? 'Hetki…' : 'Laita ilmoitukset päälle'}</button>
         </>
       )}
       {error && <p className="err">{error}</p>}

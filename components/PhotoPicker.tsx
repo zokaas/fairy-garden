@@ -44,7 +44,7 @@ export default function PhotoPicker({ hasPhoto }: { hasPhoto: boolean }) {
         }}
       />
       <button type="button" className="btn ghost" disabled={pending} onClick={() => ref.current?.click()}>
-        {pending ? 'Ladataan…' : hasPhoto ? '📷 Vaihda kuva' : '📷 Lisää oma kuva'}
+        {pending ? 'Ladataan…' : hasPhoto ? 'Vaihda kuva' : 'Lisää oma kuva'}
       </button>
       {msg && <p className="muted" style={{ textAlign: 'center' }}>{msg}</p>}
     </>

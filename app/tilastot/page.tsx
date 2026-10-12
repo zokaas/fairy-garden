@@ -72,7 +72,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
 
   return (
     <>
-      <h1>📊 Tilastot</h1>
+      <h1>Tilastot</h1>
       <div className="seg three">
         <Link href="/tilastot" className={tab === 'mina' ? 'on' : ''}>Minä</Link>
         <Link href="/tilastot?nayta=ryhma" className={tab === 'ryhma' ? 'on' : ''}>Ryhmä</Link>
@@ -192,7 +192,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
           </section>
           {minsRank.length > 0 && (
             <section className="card">
-              <h2>Liikuntakärki 💪</h2>
+              <h2>Liikuntakärki</h2>
               <ol className="rank">
                 {minsRank.slice(0, 10).map((b, i) => (
                   <li key={b.id} className={b.mine ? 'me' : ''}><span className="pos">{i + 1}</span><span className="nm"><span>{b.name}<small>{b.workouts} kertaa</small></span></span><span className="pt">{fi(b.mins)} min</span></li>

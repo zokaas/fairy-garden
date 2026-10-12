@@ -18,7 +18,7 @@ export default async function Yllapito({ searchParams }: { searchParams: { ok?: 
 
   return (
     <>
-      <h1>🛠 Ylläpito</h1>
+      <h1>Ylläpito</h1>
       {searchParams.ok && <p className="toast">{searchParams.ok} ✓</p>}
 
       <section className="card">
@@ -43,16 +43,16 @@ export default async function Yllapito({ searchParams }: { searchParams: { ok?: 
         <p className="muted">Muut:</p>
         <div className="chips" style={{ justifyContent: 'flex-start' }}>
           <Link className="chip" href="/?juhla=1&taso=2">🎉 Tasonnousujuhla</Link>
-          <Link className="chip" href="/?tyhja=1">🌰 Uuden käyttäjän aloitus</Link>
+          <Link className="chip" href="/?tyhja=1"> Uuden käyttäjän aloitus</Link>
           <Link className="chip" href="/kisa">🏁 Kisa (käynnissä)</Link>
           <Link className="chip" href="/kisa?avaa=1">🏆 Kisa (päättynyt)</Link>
           <Link className="chip" href="/profiili?uusi=1">🧚 Avatarin valinta</Link>
-          <Link className="chip" href="/shortcut">📲 Synkka-ohje</Link>
+          <Link className="chip" href="/shortcut">Synkka-ohje</Link>
         </div>
       </section>
 
       <section className="card">
-        <h2>Kisan asetukset 🏁</h2>
+        <h2>Kisan asetukset</h2>
         <p className="muted">Kisan päättymisaika (Suomen aikaa) ja palkinto. Tulokset näkyvät Kisa-sivulla; esikatsele: <Link href="/kisa?avaa=1">kisa päättynyt</Link>.</p>
         <form action={saveContest}>
           <input name="end" type="datetime-local" defaultValue={endLocal} required />
@@ -62,7 +62,7 @@ export default async function Yllapito({ searchParams }: { searchParams: { ok?: 
       </section>
 
       <section className="card">
-        <h2>Ilmoitukset 🔔</h2>
+        <h2>Ilmoitukset</h2>
         <p className="muted">Laita ensin ilmoitukset päälle omassa profiilissasi, ja lähetä sitten testi.</p>
         <form action={testPush}><button className="btn ghost">Lähetä testi-ilmoitus itselle</button></form>
       </section>

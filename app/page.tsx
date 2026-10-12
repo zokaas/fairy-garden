@@ -42,23 +42,23 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
     return (
       <>
         <Garden pts={Math.min(12, board.length * 3)} stageIdx={4} phase={phase} lines={['Tervetuloa puutarhaan ✨', 'Istuta siemen niin kasvamme yhdessä 🌱', 'Kimalle! 🦋']} />
-        <h1>Fairy Garden 🧚🏼‍♀️</h1>
+        <h1>Fairy Garden</h1>
         <p className="sub">Kävele kukkaan, kasva keijuksi ja ole reippain keiju!</p>
         <Countdown to={contest.end} />
         {errMsg && <p className="err">{errMsg}{searchParams.d && <><br /><small>{searchParams.d}</small></>}</p>}
         {!showLogin ? (
           <form action={join} className="card">
-            <h2>Liity puutarhaan ✨</h2>
+            <h2>Liity puutarhaan</h2>
             <input id="nm" name="name" placeholder="Keijun nimi" maxLength={30} required autoComplete="username" />
             <NameDice inputId="nm" />
             <input name="pin" type="password" placeholder="Salasana (väh. 4 merkkiä)" minLength={4} required autoComplete="new-password" />
             <p className="muted">Salasanalla pääset sisään myös toiselta puhelimelta tai kotinäytön sovelluksesta.</p>
-            <button className="btn">Istuta siemen 🌰</button>
+            <button className="btn">Istuta siemen </button>
             <p className="muted" style={{ textAlign: 'center' }}><Link href="/?kirjaudu=1">Minulla on jo keiju →</Link></p>
           </form>
         ) : (
           <form action={login} className="card">
-            <h2>Kirjaudu sisään 🔑</h2>
+            <h2>Kirjaudu sisään</h2>
             <input name="name" placeholder="Keijun nimi" maxLength={30} required autoComplete="username" />
             <input name="pin" type="password" placeholder="Salasana" minLength={4} required autoComplete="current-password" />
             <p className="muted">Vanha tunnus ilman salasanaa? Kirjoita nimi ja keksi uusi salasana, niin se tallentuu.</p>
@@ -98,23 +98,23 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
           `${me.name}, sinä loistat! 🌸`,
         ]}
       />
-      <p className="muted" style={{ textAlign: 'center', marginTop: -6 }}><Link href="/profiili">✏️ Muokkaa avataria</Link></p>
+      <p className="muted" style={{ textAlign: 'center', marginTop: -6 }}><Link href="/profiili">Muokkaa avataria</Link></p>
       <Countdown to={contest.end} />
 
       {!me.hasSteps ? (
         <section className="card setup">
-          <h2>✨ Aloita tästä</h2>
+          <h2>Aloita tästä</h2>
           <p>Puutarha kasvaa vasta, kun askeleet tulevat mukaan.</p>
-          <Link className="btn" href="/shortcut">📲 Yhdistä askeleet (5 min)</Link>
+          <Link className="btn" href="/shortcut">Yhdistä askeleet (5 min)</Link>
           <p className="muted" style={{ textAlign: 'center' }}>tai <Link href="/kirjaa">kirjaa ne käsin</Link></p>
         </section>
       ) : (
         <section className="card center">
           <Ring value={me.today} goal={DAILY_GOAL} />
           <div className="chips">
-            <span className="chip">🔥 {me.streak} pv putki</span>
-            <span className="chip">🏆 sija {myRank}/{board.length}</span>
-            <span className="chip">⭐ {me.pts} p</span>
+            <span className="chip">{me.streak} pv putki</span>
+            <span className="chip">sija {myRank}/{board.length}</span>
+            <span className="chip">{me.pts} p</span>
           </div>
           {searchParams.synkattu && <p className="muted">Synkkaus tehty ✨</p>}
           <SyncButton site={process.env.NEXT_PUBLIC_SITE_URL ?? ''} />
@@ -129,7 +129,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
       )}
 
       <section className="card">
-        <h2>{next ? `Matkalla: ${next.emoji} ${next.name}` : 'Olet huipulla 👑'}</h2>
+        <h2>{next ? `Matkalla: ${next.emoji} ${next.name}` : 'Olet huipulla '}</h2>
         <div className="bar"><i style={{ width: `${pct}%` }} /></div>
         {next && <p className="muted">Vielä {Math.max(0, Math.ceil(next.min / 1000 - me.pts))} pistettä seuraavaan tasoon.</p>}
       </section>
@@ -138,7 +138,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         const all = quests.every((x) => x.done);
         return (
           <section className={`card quests ${all ? 'all' : ''}`}>
-            <h2>{all ? '🌟 Taikapäivä täynnä!' : '✨ Päivän taika'}</h2>
+            <h2>{all ? 'Taikapäivä täynnä!' : 'Päivän taika'}</h2>
             <ul className="plain">
               {quests.map((x) => (
                 <li key={x.id} className={x.done ? 'done' : ''}>
@@ -153,7 +153,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
 
       {me.cheersToday > 0 && (
         <section className="card cheers">
-          <p>💌 Sait tänään <b>{me.cheersToday}</b> {me.cheersToday === 1 ? 'kimallen' : 'kimallusta'} ✨</p>
+          <p>Sait tänään <b>{me.cheersToday}</b> {me.cheersToday === 1 ? 'kimallen' : 'kimallusta'}</p>
         </section>
       )}
 
@@ -167,7 +167,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         </div>
         <p className="muted"><Link href="/kisa">Kaikki merkit ja kisan tilanne →</Link></p>
       </section>
-      {admin && <p className="muted" style={{ textAlign: 'center' }}><Link href="/yllapito">🛠 Ylläpito ja esikatselut</Link></p>}
+      {admin && <p className="muted" style={{ textAlign: 'center' }}><Link href="/yllapito">Ylläpito ja esikatselut</Link></p>}
     </>
   );
 }
