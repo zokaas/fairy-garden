@@ -107,6 +107,22 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
 
   return (
     <>
+      <Celebrate stageIdx={stageIdx} stageName={stage.name} emoji={stage.emoji} force={admin && !!searchParams.juhla} />
+      <Garden
+        pts={me.pts}
+        stageIdx={stageIdx}
+        phase={phase}
+        name={`${me.name} · ${stage.name}`}
+        avatar={me}
+        lines={[
+          me.today < me.goal.todayTarget ? `Vielä ${(me.goal.todayTarget - me.today).toLocaleString('fi-FI')} askelta päivän tavoitteeseen! 👟` : 'Päivän tavoite täynnä, mahtavaa! ✨',
+          next ? `${next.emoji} ${next.name} odottaa ${Math.max(1, next.pts - me.pts)} pisteen päässä` : 'Olet puutarhan kuningatar 👑',
+          'Kukat kasvavat askelista ja liikunnasta 🌷',
+          'Muista juoda vettä, keiju 💧',
+          `${me.name}, sinä loistat! 🌸`,
+        ]}
+      />
+      <p className="muted" style={{ textAlign: 'center', marginTop: -6 }}><Link href="/profiili">Muokkaa avataria</Link></p>
       <Countdown to={contest.end} />
 
       {!me.hasSteps ? (
