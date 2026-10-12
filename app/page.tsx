@@ -4,6 +4,8 @@ import { DAILY_GOAL, STAGES, ago, phaseOf, stageFor, type Phase } from '@/lib/ga
 import type { Fairy } from '@/lib/data';
 import { dailyQuests } from '@/lib/quests';
 import Journey from '@/components/Journey';
+import Avatar from '@/components/Avatar';
+import { challengeFor, groupTarget } from '@/lib/challenge';
 import NameDice from '@/components/NameDice';
 import { BADGES } from '@/lib/badges';
 import { join, login } from './actions';
@@ -156,6 +158,50 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
           <p>Sait tänään <b>{me.cheersToday}</b> {me.cheersToday === 1 ? 'kimallen' : 'kimallusta'}</p>
         </section>
       )}
+
+
+      {me.hasSteps && board.length > 1 && (() => {
+        const above = myRank > 1 ? board[myRank - 2] : null;
+        const below = myRank < board.length ? board[myRank] : null;
+        const rows = [above, me, below].filter(Boolean) as typeof board;
+        const hint = above
+          ? `Noin ${((above.pts - me.pts + 1) * 1000).toLocaleString('fi-FI')} askelta, niin ohitat keijun ${above.name}.`
+          : below ? `Johdat! Keiju ${below.name} on ${me.pts - below.pts} pisteen päässä.` : '';
+        return (
+          <section className="card duel">
+            <h2>Taistelu kärjestä</h2>
+            <ol className="rank">
+              {rows.map((b) => (
+                <li key={b.id} className={b.mine ? 'me' : ''}>
+                  <span className="pos">{board.indexOf(b) + 1}</span>
+                  <span className="nm"><Avatar a={b} size={34} stage={b.stageIdx} /><span>{b.name}<small>{b.mine ? 'sinä' : b.pts > me.pts ? `+${b.pts - me.pts} p edellä` : `${me.pts - b.pts} p perässä`}</small></span></span>
+                  <span className="pt">{b.pts} p</span>
+                </li>
+              ))}
+            </ol>
+            <p className="muted">{hint}</p>
+          </section>
+        );
+      })()}
+
+      {me.hasSteps && (() => {
+        const ch = challengeFor();
+        const val = ch.value(me.week);
+        const done = val >= ch.target;
+        const gt = groupTarget(board.length);
+        const gv = board.reduce((a, b) => a + b.week.steps, 0);
+        return (
+          <section className={`card ${done ? 'quests all' : ''}`}>
+            <h2>Viikon haaste: {ch.title}</h2>
+            <p className="muted" style={{ margin: '0 0 4px' }}>{ch.desc}</p>
+            <div className="bar"><i style={{ width: `${Math.min(100, (val / ch.target) * 100)}%` }} /></div>
+            <p className="muted">{done ? 'Haaste suoritettu!' : `${val.toLocaleString('fi-FI')} / ${ch.target.toLocaleString('fi-FI')} ${ch.unit}`}</p>
+            <h2 style={{ marginTop: 14 }}>Yhteinen tavoite</h2>
+            <div className="bar"><i style={{ width: `${Math.min(100, (gv / gt) * 100)}%` }} /></div>
+            <p className="muted">Ryhmä on kävellyt tällä viikolla {gv.toLocaleString('fi-FI')} / {gt.toLocaleString('fi-FI')} askelta.</p>
+          </section>
+        );
+      })()}
 
       {me.hasSteps && <Journey steps={me.totalSteps} avatar={me} stageIdx={stageIdx} />}
 

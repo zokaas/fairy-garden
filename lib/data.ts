@@ -2,7 +2,7 @@ import 'server-only';
 import { cookies } from 'next/headers';
 import { db } from '@/lib/db';
 import { DEMO, demoRows } from '@/lib/demo';
-import { bestStreak, dayBefore, helsinkiDay, points, stageFor, streak, weekStart } from '@/lib/garden';
+import { ACTIVE_DAY, DAILY_GOAL, bestStreak, dayBefore, helsinkiDay, points, stageFor, streak, weekStart } from '@/lib/garden';
 import { BADGES } from '@/lib/badges';
 
 export type Fairy = {
@@ -29,6 +29,7 @@ export type Fairy = {
   isAdmin: boolean;
   team: string | null;
   weekPts: number;
+  week: { steps: number; activeDays: number; goalDays: number; mins: number; sessions: number };
   bestDay: number;
   bestRun: number;
   workouts: number;
@@ -79,6 +80,13 @@ export async function loadGarden() {
         avatarAcc: f.avatar_acc,
         isAdmin: !!f.is_admin,
         team: f.team,
+        week: {
+          steps: st.filter((x) => x.day >= wk).reduce((a, x) => a + x.steps, 0),
+          activeDays: st.filter((x) => x.day >= wk && x.steps >= ACTIVE_DAY).length,
+          goalDays: st.filter((x) => x.day >= wk && x.steps >= DAILY_GOAL).length,
+          mins: ws.filter((w) => w.day >= wk).reduce((a, w) => a + w.minutes, 0),
+          sessions: ws.filter((w) => w.day >= wk).length,
+        },
         weekPts: points(
           st.filter((x) => x.day >= wk).reduce((a, x) => a + x.steps, 0),
           ws.filter((w) => w.day >= wk).reduce((a, w) => a + w.minutes, 0),

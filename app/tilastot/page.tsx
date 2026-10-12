@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { loadGarden, loadRaw } from '@/lib/data';
 import { ACTIVE_DAY, DAILY_GOAL, helsinkiDay, weekStart } from '@/lib/garden';
 import { TEAMS } from '@/lib/teams';
-import { byDay, compare, daysBetween, kcal, km, series, sportStats, sum, trend, weekdayAvg, weeklyMinutes } from '@/lib/stats';
+import { byDay, compare, daysBetween, km, series, sportStats, sum, trend, weekdayAvg, weeklyMinutes, weeklySteps } from '@/lib/stats';
 import BarChart from '@/components/BarChart';
 import CountUp from '@/components/CountUp';
 
@@ -92,13 +92,17 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
               [`Tavoitepäivät (${fi(DAILY_GOAL)}+)`, String(goalDays), activeDays.length ? `${Math.round((goalDays / activeDays.length) * 100)} % päivistä` : undefined],
               ['Putki nyt / ennätys', `${me.streak} / ${me.bestRun}`, `aktiivinen = ${fi(ACTIVE_DAY)}+`],
               ['Matka', `${fi(km(myTotal), 1)} km`, compare(km(myTotal))],
-              ['Kulutus (arvio)', `${fi(kcal(myTotal))} kcal`],
             ]} />
           </section>
           <section className="card">
             <h2>Viimeiset 14 päivää</h2>
             <BarChart items={series(mySteps, 14, today).map((d) => ({ label: String(Number(d.day.slice(8))), value: d.steps }))} highlight={13} />
             <p className="muted">Viikkotrendi: viimeiset 7 pv <b>{fi(tr.last)}</b> askelta vs edelliset 7 pv <b>{fi(tr.prev)}</b> ({trendTxt(tr)}).</p>
+          </section>
+          <section className="card">
+            <h2>Viikoittain, 8 viikkoa</h2>
+            <BarChart items={weeklySteps(mySteps, 8, wk).map((w) => ({ label: dm(w.day), value: w.steps }))} highlight={7} />
+            <p className="muted">Palkki = viikon askeleet (viikko alkaa maanantaina).</p>
           </section>
           <section className="card">
             <h2>Viikonpäivät: keskiarvosi</h2>
@@ -131,7 +135,6 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
               ['Aktiivisia tänään', `${board.filter((b) => b.today >= ACTIVE_DAY).length} / ${board.length}`],
               [`${fi(DAILY_GOAL)}+ päivät`, String(raw.steps.filter((r) => r.steps >= DAILY_GOAL).length)],
               ['Putkien keskiarvo', fi(board.length ? sum(board.map((b) => b.streak)) / board.length : 0, 1)],
-              ['Kulutus (arvio)', `${fi(kcal(groupTotal))} kcal`],
               ['Päiviä alusta', String(gSpan)],
               ['Pisteet yhteensä', fi(sum(board.map((b) => b.pts)))],
             ]} />
@@ -203,7 +206,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
           )}
         </>
       )}
-      <p className="muted" style={{ textAlign: 'center' }}>Matka = askeleet × 0,75 m, kulutus ≈ 0,04 kcal/askel (arvioita).</p>
+      <p className="muted" style={{ textAlign: 'center' }}>Matka = askeleet × 0,75 m (arvio).</p>
     </>
   );
 }

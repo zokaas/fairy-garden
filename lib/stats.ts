@@ -5,7 +5,6 @@ export type WorkRow = { fairy_id: string; day: string; sport: string; minutes: n
 
 export const sum = (a: number[]) => a.reduce((x, y) => x + y, 0);
 export const km = (steps: number) => steps * 0.00075;
-export const kcal = (steps: number) => steps * 0.04;
 
 export function daysBetween(from: string, to: string): number {
   return Math.round((Date.parse(`${to}T12:00:00Z`) - Date.parse(`${from}T12:00:00Z`)) / 86_400_000) + 1;
@@ -92,4 +91,20 @@ export function compare(distKm: number): string {
   for (const l of LANDMARKS) if (distKm >= l[1]) pick = l;
   const v = distKm / pick[1];
   return v < 1 ? `${Math.round(v * 100)} % matkasta ${pick[0]}` : `${v.toFixed(1).replace('.', ',')} × ${pick[0]}`;
+}
+
+/** Viikkojen askeleet (viimeiset n viikkoa, vanhin ensin) viikon alun mukaan. */
+export function weeklySteps(rows: { day: string; steps: number }[], n: number, thisWeekStart: string) {
+  const out: { day: string; steps: number }[] = [];
+  let w = thisWeekStart;
+  for (let i = 0; i < n; i++) {
+    out.unshift({ day: w, steps: 0 });
+    for (let k = 0; k < 7; k++) w = dayBefore(w);
+  }
+  for (const [day, steps] of byDay(rows)) {
+    for (let i = out.length - 1; i >= 0; i--) {
+      if (day >= out[i].day) { out[i].steps += steps; break; }
+    }
+  }
+  return out;
 }

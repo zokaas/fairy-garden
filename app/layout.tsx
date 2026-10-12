@@ -3,6 +3,7 @@ import { Figtree, Fraunces } from 'next/font/google';
 import { cookies } from 'next/headers';
 import './globals.css';
 import BottomNav from '@/components/BottomNav';
+import ResumeRefresh from '@/components/ResumeRefresh';
 
 const serif = Fraunces({ subsets: ['latin'], style: ['normal', 'italic'], variable: '--serif', display: 'swap' });
 const sans = Figtree({ subsets: ['latin'], variable: '--sans', display: 'swap' });
@@ -40,6 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </div>
         <main className={member ? 'withnav' : ''}>{children}</main>
         {member && <BottomNav />}
+        {member && <ResumeRefresh />}
       </body>
     </html>
   );
