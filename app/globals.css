@@ -86,3 +86,19 @@ ol.rank small { display: block; font-weight: 400; color: var(--muted); font-size
 .confetti { position: absolute; top: -40px; animation: fall 3.2s ease-in forwards; }
 @keyframes fall { to { transform: translateY(110vh) rotate(540deg); } }
 @media (prefers-reduced-motion: reduce) { .garden *, .setup, .confetti { animation: none !important; } }
+
+/* Avatar */
+.avatar { position: relative; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; overflow: visible; flex: none; line-height: 1; border: 2px solid #fff; box-shadow: 0 2px 8px #c9b6f255; }
+.avatar img { border-radius: 50%; object-fit: cover; display: block; }
+.avbadge { position: absolute; right: -4px; bottom: -4px; font-style: normal; background: #fff; border-radius: 50%; padding: 1px 2px; }
+.picker { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 14px; }
+.picker label { cursor: pointer; }
+.picker input { position: absolute; opacity: 0; pointer-events: none; }
+.picker span { display: flex; align-items: center; justify-content: center; aspect-ratio: 1; font-size: 1.6rem; border-radius: 14px; border: 2px solid transparent; background: #fff; }
+.picker.colors { grid-template-columns: repeat(8, 1fr); }
+.picker.colors span { border-radius: 50%; border-color: #fff; box-shadow: 0 0 0 1px #e6c9de; }
+.picker input:checked + span { border-color: var(--pink); box-shadow: 0 0 0 3px #f48fb155; transform: scale(1.08); }
+.garden .fairy.av { font-size: 0; top: 24%; }
+.garden .fairy.av .avatar { border-width: 3px; }
+ol.rank .nm { display: flex; align-items: center; gap: 10px; }
+.me-head { display: flex; align-items: center; gap: 12px; justify-content: center; margin-bottom: 6px; }

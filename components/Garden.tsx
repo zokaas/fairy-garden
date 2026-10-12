@@ -1,9 +1,10 @@
 import { STAGES } from '@/lib/garden';
+import Avatar, { type AvatarData } from './Avatar';
 
 const FLOWERS = ['🌸', '🌷', '🌼', '🌺', '🌻', '💮', '🪻'];
 
 /** Puutarha kasvaa pisteiden mukana: yksi kukka / piste (max 40). Sijainti on deterministinen. */
-export default function Garden({ pts, stageIdx, name }: { pts: number; stageIdx: number; name?: string }) {
+export default function Garden({ pts, stageIdx, name, avatar }: { pts: number; stageIdx: number; name?: string; avatar?: AvatarData }) {
   const n = Math.min(40, pts);
   const flowers = Array.from({ length: n }, (_, i) => {
     const r = (i * 9301 + 49297) % 233280;
@@ -25,7 +26,11 @@ export default function Garden({ pts, stageIdx, name }: { pts: number; stageIdx:
         </span>
       ))}
       {n === 0 && <span className="flower seed" style={{ left: '46%', bottom: '14%', fontSize: 30 }}>🌰</span>}
-      <div className="fairy">{STAGES[stageIdx].emoji}</div>
+      {avatar ? (
+        <div className="fairy av"><Avatar a={avatar} size={72} badge={STAGES[stageIdx].emoji} /></div>
+      ) : (
+        <div className="fairy">{STAGES[stageIdx].emoji}</div>
+      )}
       {name && <div className="gname">{name}</div>}
     </div>
   );

@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/lib/db';
 import { SPORTS, helsinkiDay, isDay } from '@/lib/garden';
+import { AVATAR_BGS, AVATAR_EMOJIS } from '@/lib/avatar';
 
 const COOKIE = 'fg_token';
 
@@ -15,7 +16,7 @@ export async function join(formData: FormData) {
   const { error } = await db().from('fairies').insert({ name, token });
   if (error) redirect('/?virhe=tallennus');
   cookies().set(COOKIE, token, { httpOnly: true, secure: true, sameSite: 'lax', maxAge: 60 * 60 * 24 * 365, path: '/' });
-  redirect('/');
+  redirect('/profiili?uusi=1');
 }
 
 export async function logSteps(formData: FormData) {
@@ -48,4 +49,54 @@ export async function logWorkout(formData: FormData) {
 export async function leave() {
   cookies().delete(COOKIE);
   redirect('/');
+}
+
+async function myFairy() {
+  const token = cookies().get(COOKIE)?.value;
+  if (!token) return null;
+  const { data } = await db().from('fairies').select('id, avatar_path').eq('token', token).maybeSingle();
+  return data;
+}
+
+export async function saveAvatar(formData: FormData) {
+  const fairy = await myFairy();
+  const emoji = String(formData.get('emoji') ?? '');
+  const bg = String(formData.get('bg') ?? '');
+  const name = String(formData.get('name') ?? '').trim().slice(0, 30);
+  if (!fairy || !AVATAR_EMOJIS.includes(emoji) || !AVATAR_BGS.includes(bg)) return;
+  const patch: Record<string, string> = { avatar_emoji: emoji, avatar_bg: bg };
+  if (name) patch.name = name;
+  await db().from('fairies').update(patch).eq('id', fairy.id);
+  revalidatePath('/', 'layout');
+  redirect(formData.get('uusi') ? '/' : '/profiili?ok=1');
+}
+
+export async function uploadPhoto(formData: FormData): Promise<{ ok: boolean }> {
+  const fairy = await myFairy();
+  const file = formData.get('photo');
+  if (!fairy || !(file instanceof File) || file.size === 0 || file.size > 400_000 || !file.type.startsWith('image/')) return { ok: false };
+  const supabase = db();
+  const path = `${fairy.id}-${Date.now()}.jpg`;
+  const body = Buffer.from(await file.arrayBuffer());
+  let { error } = await supabase.storage.from('avatars').upload(path, body, { contentType: 'image/jpeg', cacheControl: '31536000' });
+  if (error) {
+    // Ensimmäisellä kerralla bucket puuttuu: luodaan julkinen bucket ja yritetään uudelleen.
+    await supabase.storage.createBucket('avatars', { public: true, fileSizeLimit: 500_000, allowedMimeTypes: ['image/jpeg'] });
+    ({ error } = await supabase.storage.from('avatars').upload(path, body, { contentType: 'image/jpeg', cacheControl: '31536000' }));
+  }
+  if (error) return { ok: false };
+  await supabase.from('fairies').update({ avatar_path: path }).eq('id', fairy.id);
+  if (fairy.avatar_path) await supabase.storage.from('avatars').remove([fairy.avatar_path]);
+  revalidatePath('/', 'layout');
+  return { ok: true };
+}
+
+export async function removePhoto() {
+  const fairy = await myFairy();
+  if (!fairy) return;
+  const supabase = db();
+  await supabase.from('fairies').update({ avatar_path: null }).eq('id', fairy.id);
+  if (fairy.avatar_path) await supabase.storage.from('avatars').remove([fairy.avatar_path]);
+  revalidatePath('/', 'layout');
+  redirect('/profiili?ok=1');
 }

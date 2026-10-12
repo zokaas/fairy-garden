@@ -14,13 +14,17 @@ export type Fairy = {
   streak: number;
   hasSteps: boolean;
   lastSync: string | null;
+  avatarEmoji: string | null;
+  avatarBg: string | null;
+  avatarPath: string | null;
+  avatarVer: string | null;
 };
 
 export async function loadGarden() {
   const token = cookies().get('fg_token')?.value;
   const supabase = db();
   const [{ data: fairies }, { data: steps }, { data: workouts }] = await Promise.all([
-    supabase.from('fairies').select('id, name, token'),
+    supabase.from('fairies').select('id, name, token, avatar_emoji, avatar_bg, avatar_path, created_at'),
     supabase.from('steps').select('fairy_id, day, steps, updated_at'),
     supabase.from('workouts').select('fairy_id, minutes'),
   ]);
@@ -42,6 +46,10 @@ export async function loadGarden() {
         streak: streak(st, today),
         hasSteps: st.length > 0,
         lastSync: last,
+        avatarEmoji: f.avatar_emoji,
+        avatarBg: f.avatar_bg,
+        avatarPath: f.avatar_path,
+        avatarVer: f.avatar_path,
       };
     })
     .sort((a, b) => b.pts - a.pts);

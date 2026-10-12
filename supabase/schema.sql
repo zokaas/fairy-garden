@@ -3,6 +3,9 @@ create table if not exists public.fairies (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   token text not null unique,
+  avatar_emoji text,
+  avatar_bg text,
+  avatar_path text,
   created_at timestamptz not null default now()
 );
 

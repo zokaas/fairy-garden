@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { loadGarden } from '@/lib/data';
 import { stageFor } from '@/lib/garden';
+import Avatar from '@/components/Avatar';
 import { leave } from '../actions';
 
 export const dynamic = 'force-dynamic';
@@ -19,8 +20,8 @@ export default async function Karki() {
             {board.map((b, i) => (
               <li key={b.id} className={b.mine ? 'me' : ''}>
                 <span className="pos">{medal[i] ?? i + 1}</span>
-                <span className="nm">{stageFor(b.pts).stage.emoji} {b.name}
-                  <small>{b.totalSteps.toLocaleString('fi-FI')} askelta{b.streak > 1 ? ` · 🔥 ${b.streak}` : ''}</small>
+                <span className="nm"><Avatar a={b} size={38} badge={stageFor(b.pts).stage.emoji} />
+                  <span>{b.name}<small>{b.totalSteps.toLocaleString('fi-FI')} askelta{b.streak > 1 ? ` · 🔥 ${b.streak}` : ''}</small></span>
                 </span>
                 <span className="pt">{b.pts} p</span>
               </li>

@@ -44,7 +44,8 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
   return (
     <>
       <Celebrate stageIdx={stageIdx} stageName={stage.name} emoji={stage.emoji} />
-      <Garden pts={me.pts} stageIdx={stageIdx} name={`${me.name} · ${stage.name}`} />
+      <Garden pts={me.pts} stageIdx={stageIdx} name={`${me.name} · ${stage.name}`} avatar={me} />
+      <p className="muted" style={{ textAlign: 'center', marginTop: -6 }}><Link href="/profiili">✏️ Muokkaa avataria</Link></p>
       <Countdown />
 
       {!me.hasSteps ? (
