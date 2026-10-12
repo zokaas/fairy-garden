@@ -20,10 +20,10 @@ export default function Journey({ steps, avatar, stageIdx = 2 }: { steps: number
       <h2>Haltijan polku</h2>
       <div className="trail">
         <svg viewBox="0 0 300 110" preserveAspectRatio="none" aria-hidden="true">
-          <path d={d} fill="none" stroke="#e6d3a1" strokeWidth="7" strokeDasharray="1 9" strokeLinecap="round" strokeLinejoin="round" />
-          <path d={d} fill="none" stroke="url(#tg)" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - f} />
+          <path d={d} fill="none" stroke="var(--line-2)" strokeWidth="3" strokeDasharray="2 7" strokeLinecap="round" strokeLinejoin="round" />
+          <path d={d} fill="none" stroke="url(#tg)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - f} />
           <defs>
-            <linearGradient id="tg" x1="0" x2="1"><stop offset="0" stopColor="#2f7a5f" /><stop offset="1" stopColor="#d4527f" /></linearGradient>
+            <linearGradient id="tg" x1="0" x2="1"><stop offset="0" stopColor="#ff4d94" /><stop offset="1" stopColor="#38bdf8" /></linearGradient>
           </defs>
         </svg>
         {STOPS.map((s) => {
