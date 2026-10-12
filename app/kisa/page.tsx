@@ -75,6 +75,7 @@ export default async function Kisa({ searchParams }: { searchParams: { avaa?: st
         <h2>Säännöt</h2>
         <ol>
           <li><b>1 piste</b> jokaisesta 2 500 askeleesta.</li>
+          <li><b>Puutarha:</b> jokainen päivä, jolloin saavutat askeltavoitteen (10 000, tai 7 000 jos urheilet), kasvattaa yhden kukan.</li>
           <li><b>1 piste</b> jokaisesta 30 minuutista urheilua tai luovaa harrastusta (kävely ratkaisee eniten).</li>
           <li><b>Viikon tavoite:</b> askeltavoite (7 000 urheilupäivänä, 10 000 muulloin) vähintään 6 päivänä, 3 urheilupäivää ja 1 luova päivä. Täysi viikko tuo <b>+10 pistettä</b>.</li>
           <li>Eniten pisteitä kisan päättyessä voittaa.</li>

@@ -23,10 +23,10 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
   const { board, me: realMe, myRank, sentToday } = await loadGarden();
   // Ylläpitäjän esikatselu: ?taso=0..5, ?aika=night|dawn|day|dusk, ?juhla=1, ?tyhja=1 (uuden käyttäjän näkymä)
   const admin = !!realMe?.isAdmin;
-  let me: Fairy | null = admin && searchParams.tyhja ? { ...realMe!, hasSteps: false, today: 0, yesterday: 0, totalSteps: 0, pts: 0, stageIdx: 0, badges: [], streak: 0, workouts: 0, avatarEmoji: null } : realMe;
+  let me: Fairy | null = admin && searchParams.tyhja ? { ...realMe!, hasSteps: false, today: 0, yesterday: 0, totalSteps: 0, pts: 0, stageIdx: 0, badges: [], streak: 0, workouts: 0, flowers: 0, avatarEmoji: null } : realMe;
   if (me && admin && searchParams.taso !== undefined) {
     const idx = Math.max(0, Math.min(5, Number(searchParams.taso) || 0));
-    me = { ...me, stageIdx: idx, pts: STAGES[idx].pts, hasSteps: true };
+    me = { ...me, stageIdx: idx, pts: STAGES[idx].pts, flowers: [0, 6, 14, 24, 36, 50][idx], hasSteps: true };
   }
   const contest = await getContest();
   const phase: Phase = admin && ['night', 'dawn', 'day', 'dusk'].includes(searchParams.aika ?? '') ? (searchParams.aika as Phase) : phaseOf();
@@ -44,7 +44,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
   if (!me) {
     return (
       <>
-        <Garden pts={Math.min(12, board.length * 3)} stageIdx={4} phase={phase} lines={['Tervetuloa puutarhaan ✨', 'Istuta siemen niin kasvamme yhdessä 🌱', 'Kimalle! 🦋']} />
+        <Garden flowers={Math.min(14, board.length * 3)} stageIdx={4} phase={phase} lines={['Tervetuloa puutarhaan ✨', 'Istuta siemen niin kasvamme yhdessä 🌱', 'Kimalle! 🦋']} />
         <h1>Fairy Garden</h1>
         <p className="sub">Kävele kukkaan, kasva keijuksi ja ole reippain keiju!</p>
         <Countdown to={contest.end} />
@@ -109,7 +109,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
     <>
       <Celebrate stageIdx={stageIdx} stageName={stage.name} emoji={stage.emoji} force={admin && !!searchParams.juhla} />
       <Garden
-        pts={me.pts}
+        flowers={me.flowers}
         stageIdx={stageIdx}
         phase={phase}
         name={`${me.name} · ${stage.name}`}
@@ -117,12 +117,17 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         lines={[
           me.today < me.goal.todayTarget ? `Vielä ${(me.goal.todayTarget - me.today).toLocaleString('fi-FI')} askelta päivän tavoitteeseen! 👟` : 'Päivän tavoite täynnä, mahtavaa! ✨',
           next ? `${next.emoji} ${next.name} odottaa ${Math.max(1, next.pts - me.pts)} pisteen päässä` : 'Olet puutarhan kuningatar 👑',
-          'Kukat kasvavat askelista ja liikunnasta 🌷',
+          'Jokainen tavoitepäivä kasvattaa yhden kukan 🌷',
           'Muista juoda vettä, keiju 💧',
           `${me.name}, sinä loistat! 🌸`,
         ]}
       />
-      <p className="muted" style={{ textAlign: 'center', marginTop: -6 }}><Link href="/profiili">Muokkaa avataria</Link></p>
+      <p className="muted" style={{ textAlign: 'center', marginTop: -6 }}>
+        {me.hasSteps ? (
+          <>{me.flowers} {me.flowers === 1 ? 'kukka' : 'kukkaa'} · {me.today >= me.goal.todayTarget ? 'tämän päivän kukka on puhjennut ✓' : `tämän päivän kukkaan ${(me.goal.todayTarget - me.today).toLocaleString('fi-FI')} askelta`}</>
+        ) : 'Jokainen päivä, jolloin saavutat askeltavoitteen, kasvattaa puutarhaasi kukan.'}
+        <br /><Link href="/profiili">Muokkaa avataria</Link>
+      </p>
       <Countdown to={contest.end} />
 
       {!me.hasSteps ? (
@@ -145,6 +150,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
             <details className="how">
               <summary>Miten pisteet lasketaan?</summary>
               <ul>
+                <li><b>Kukka</b> jokaisesta päivästä, jolloin saavutat askeltavoitteen (10 000, tai 7 000 jos urheilet).</li>
                 <li><b>1 piste</b> jokaisesta 2 500 askeleesta.</li>
                 <li><b>1 piste</b> jokaisesta 30 minuutista urheilua tai luovaa harrastusta.</li>
                 <li><b>+{WEEK_BONUS} pistettä</b> jokaisesta viikosta, jolloin täytät koko viikon tavoitteen.</li>

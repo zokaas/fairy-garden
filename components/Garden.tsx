@@ -7,10 +7,10 @@ const COLORS = ['#d4527f', '#e8869f', '#9c7bd6', '#e9b44c', '#c2415f', '#7aa7e0'
 const TYPES = ['tulip', 'daisy', 'bell', 'rose'];
 
 /** Piirretty puutarhamaisema: kukkia kasvaa yksi pistettä kohti (max 40), taivas seuraa kellonaikaa, tasot tuovat mökin, sateenkaaren ja linnan. */
-export default function Garden({ pts, stageIdx, name, avatar, phase = 'day', lines = [] }: {
-  pts: number; stageIdx: number; name?: string; avatar?: AvatarData; phase?: Phase; lines?: string[];
+export default function Garden({ flowers: count, stageIdx, name, avatar, phase = 'day', lines = [] }: {
+  flowers: number; stageIdx: number; name?: string; avatar?: AvatarData; phase?: Phase; lines?: string[];
 }) {
-  const n = Math.min(40, pts);
+  const n = Math.min(60, count);
   const night = phase === 'night';
   const flowers = Array.from({ length: n }, (_, i) => {
     const r = ((i * 9301 + 49297) % 233280) / 233280;

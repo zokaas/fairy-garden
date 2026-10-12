@@ -183,6 +183,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
               ['Paras päivä', best ? fi(best[1]) : '–', best ? dm(best[0]) : undefined],
               ['Putki nyt', `${me.streak} pv`, `ennätys ${me.bestRun} pv`],
               ['Urheilu ja luova', `${fi(sum(myWork.map((w) => w.minutes)))} min`, `${myWork.length} kertaa`],
+              ['Kukkia puutarhassa', String(me.flowers), 'päivää, jolloin askeltavoite täyttyi'],
               ['Täysiä viikkoja', String(me.weeksDone), `+${me.bonusPts} p bonusta`],
             ]} />
           </section>

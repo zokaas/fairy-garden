@@ -2,7 +2,7 @@ import 'server-only';
 import { cookies } from 'next/headers';
 import { db } from '@/lib/db';
 import { DEMO, demoRows } from '@/lib/demo';
-import { WEEK_BONUS, weekGoal, weeksDone, type WeekGoal } from '@/lib/weekly';
+import { WEEK_BONUS, flowerDays, weekGoal, weeksDone, type WeekGoal } from '@/lib/weekly';
 import { ACTIVE_DAY, DAILY_GOAL, bestStreak, kindOf, dayBefore, helsinkiDay, points, sportPoints, stageFor, stepPoints, streak, weekStart } from '@/lib/garden';
 import { BADGES } from '@/lib/badges';
 
@@ -32,6 +32,7 @@ export type Fairy = {
   creativeToday: number;
   goal: WeekGoal;
   weeksDone: number;
+  flowers: number;
   lastWeek: { steps: number; mins: number };
   bonusPts: number;
   cheersToday: number;
@@ -129,6 +130,7 @@ export async function loadGarden() {
         creativeToday: ws.filter((w) => w.day === today && kindOf(w.sport) === 'luova').reduce((a, w) => a + w.minutes, 0),
         goal: weekGoal(st, ws, today),
         weeksDone: wDone,
+        flowers: flowerDays(st, ws),
         lastWeek: {
           steps: st.filter((x) => x.day >= lastWk && x.day <= lastSame).reduce((a, x) => a + x.steps, 0),
           mins: ws.filter((w) => w.day >= lastWk && w.day <= lastSame).reduce((a, w) => a + w.minutes, 0),
