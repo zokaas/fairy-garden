@@ -74,7 +74,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
           <ol>
             <li><b>Liity</b> nimellä, joka näkyy kärkilistalla.</li>
             <li><b>Yhdistä askeleet</b> iPhonen Terveydestä (5 min, kerran).</li>
-            <li><b>Kävele</b>: jokainen 1 000 askelta ja 10 min liikuntaa kasvattaa puutarhaasi.</li>
+            <li><b>Kävele</b>: jokainen 1 000 askelta kasvattaa puutarhaasi. Urheilu antaa pienen lisän.</li>
           </ol>
         </section>
       </>

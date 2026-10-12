@@ -21,6 +21,7 @@ export default function Kirjaa({ searchParams }: { searchParams: { ok?: string }
           </div>
           <button className="btn">Lisää liikunta</button>
         </form>
+        <p className="muted">Kävely on pääasia. Urheilu antaa pienen lisän: 1 piste / 30 min, enintään 15 % askelpisteistäsi.</p>
       </section>
     </>
   );

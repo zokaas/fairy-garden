@@ -10,9 +10,16 @@ export const STAGES = [
   { min: 500_000, name: 'Keijukuningatar', emoji: '👑' },
 ] as const;
 
-/** 1 piste / 1 000 askelta + 1 piste / 10 min liikuntaa. */
+/** Askelpisteet: 1 piste / 1 000 askelta. */
+export const stepPoints = (steps: number) => Math.floor(steps / 1000);
+
+/** Urheilubonus: 1 piste / 30 min, enintään 15 % askelpisteistä. Kävely on pääasia, urheilu vain pieni lisä. */
+export function sportBonus(steps: number, workoutMinutes: number): number {
+  return Math.min(Math.floor(workoutMinutes / 30), Math.floor(stepPoints(steps) * 0.15));
+}
+
 export function points(steps: number, workoutMinutes: number): number {
-  return Math.floor(steps / 1000) + Math.floor(workoutMinutes / 10);
+  return stepPoints(steps) + sportBonus(steps, workoutMinutes);
 }
 
 export function stageFor(points: number) {

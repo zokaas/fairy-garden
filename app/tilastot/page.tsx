@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { loadGarden, loadRaw } from '@/lib/data';
-import { ACTIVE_DAY, DAILY_GOAL, helsinkiDay, weekStart } from '@/lib/garden';
+import { ACTIVE_DAY, DAILY_GOAL, helsinkiDay, sportBonus, stepPoints, weekStart } from '@/lib/garden';
 import { TEAMS } from '@/lib/teams';
 import { byDay, route, routeText, daysBetween, km, series, sportStats, sum, trend, weekdayAvg, weeklyMinutes, weeklySteps } from '@/lib/stats';
 import BarChart from '@/components/BarChart';
@@ -169,7 +169,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
               ['Keskimäärin / kerta', `${fi(myWork.length ? myMins / myWork.length : 0)} min`],
               ['Keskimäärin / viikko', `${fi(myMins / weeksSpan)} min`],
               ['Lempilaji', mySports[0]?.sport ?? '–', mySports[0] ? `${mySports[0].minutes} min` : undefined],
-              ['Pisteet liikunnasta', String(Math.floor(myMins / 10)), `askelista ${Math.floor(myTotal / 1000)}`],
+              ['Urheilubonus', `${sportBonus(myTotal, myMins)} p`, `askelpisteet ${stepPoints(myTotal)} p (bonus 1 p / 30 min, max 15 %)`],
             ]} />
             {mySports.length > 0 && <BarChart items={mySports.slice(0, 6).map((s) => ({ label: s.sport, value: s.minutes }))} unit=" min" height={120} />}
             <h2 style={{ marginTop: 14 }}>Viikoittain (min), 8 viikkoa</h2>

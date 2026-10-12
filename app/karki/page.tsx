@@ -67,7 +67,7 @@ export default async function Karki({ searchParams }: { searchParams: { nayta?: 
             ))}
           </ol>
         )}
-        <p className="muted">Napauta ja lähetä keijulle kimalle (yksi / päivä / keiju). 1 piste / 1 000 askelta ja 1 piste / 10 min liikuntaa.</p>
+        <p className="muted">Napauta ja lähetä keijulle kimalle (yksi / päivä / keiju). Pisteet: 1 p / 1 000 askelta. Urheilu antaa pienen lisän (1 p / 30 min).</p>
       </section>
       <form action={leave}><button className="btn ghost">Poistu tältä laitteelta</button></form>
     </>
