@@ -108,7 +108,6 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
           <h2>Aloita tästä</h2>
           <p>Puutarha kasvaa vasta, kun askeleet tulevat mukaan.</p>
           <Link className="btn" href="/shortcut">Yhdistä askeleet (5 min)</Link>
-          <p className="muted" style={{ textAlign: 'center' }}>tai <Link href="/kirjaa">kirjaa ne käsin</Link></p>
         </section>
       ) : (
         <section className="card center">
@@ -125,7 +124,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
 
       {me.hasSteps && me.yesterday === 0 && (
         <section className="card nudge">
-          <p>🌙 Eilisen askeleet puuttuvat. Synkkaa ne tai <Link href="/kirjaa">kirjaa käsin</Link> (valitse eilinen päivä).</p>
+          <p>🌙 Eilisen askeleet puuttuvat. Paina Synkkaa askeleet nyt, niin ne tulevat mukaan.</p>
           <p className="muted">Viimeksi synkattu: {ago(me.lastSync)}</p>
         </section>
       )}

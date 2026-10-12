@@ -61,7 +61,7 @@ export default function ShortcutGuide() {
           <li>Komennot → <b>Automaatio</b> → <b>+</b> → <b>Vuorokaudenaika</b>, esim. 21:00, joka päivä.</li>
           <li>Valitse “Fairy Garden” ja <b>Suorita heti</b> (ei kysy joka kerta).</li>
         </ol>
-        <p className="muted">Jos automaatio ei aina laukea, avaa komento käsin kerran päivässä tai kirjaa askeleet etusivulla.</p>
+        <p className="muted">Jos automaatio ei aina laukea, paina etusivun Synkkaa askeleet nyt -nappia kerran päivässä.</p>
       </section>
 
       <section className="card">

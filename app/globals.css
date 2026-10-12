@@ -20,11 +20,10 @@ body {
     var(--paper);
 }
 main { max-width: 520px; margin: 0 auto; padding: 22px 16px 60px; position: relative; z-index: 1; }
-main.withnav { padding-bottom: 104px; }
+main.withnav { padding-bottom: 124px; }
 
 /* Tyypit */
 h1 { font: italic 600 2rem/1.15 var(--serif); margin: 6px 0 0; text-align: center; letter-spacing: -.01em; }
-h1::after { content: ''; display: block; width: 160px; height: 16px; margin: 8px auto 0; background: var(--vine) center/contain no-repeat; }
 h2 { font: 600 1.14rem/1.25 var(--serif); margin: 0 0 10px; }
 .sub { text-align: center; color: var(--ink-2); font: italic 400 1.02rem var(--serif); margin: 10px 0 14px; }
 .muted { color: var(--ink-2); font-size: .88rem; }
@@ -38,8 +37,6 @@ small { font-size: .78rem; }
 
 /* Kortti: kullattu kaksoiskehys */
 .card { position: relative; background: var(--card); border: 1px solid var(--gold-line); border-radius: 6px; padding: 20px 18px 18px; margin-bottom: 18px; box-shadow: 0 14px 26px -18px #4a2a5a66; }
-.card::before { content: ''; position: absolute; inset: 4px; border: 1px solid var(--gold-soft); border-radius: 3px; pointer-events: none; }
-.card::after { content: ''; position: absolute; top: -5px; left: 50%; width: 9px; height: 9px; transform: translateX(-50%) rotate(45deg); background: var(--gold); border: 2px solid var(--paper); }
 .card > * { position: relative; }
 
 /* Painikkeet ja kentät */
@@ -255,3 +252,98 @@ main > :nth-child(5) { animation-delay: .2s; } main > :nth-child(6) { animation-
 .card:active { transition: transform .15s; }
 .btn { transition: transform .15s, box-shadow .2s; }
 @media (prefers-reduced-motion: reduce) { main > *, .bar-col i { animation: none !important; } }
+
+/* ================= Ylellinen kerros: lasi, foilikulta, aurora ================= */
+:root {
+  --glass: color-mix(in srgb, var(--card) 66%, transparent);
+  --glass-strong: color-mix(in srgb, var(--card) 82%, transparent);
+  --hair: color-mix(in srgb, var(--gold) 42%, transparent);
+  --foil: linear-gradient(115deg, #f7e6ac 0%, #d9ae50 26%, #fff1bd 48%, #c99a3c 70%, #f1db8e 100%);
+  --r: 24px;
+  --ease: cubic-bezier(.22, 1, .36, 1);
+}
+body { background: var(--paper); }
+body::before { content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .55; mix-blend-mode: multiply;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .32 0 0 0 0 .2 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+.aurora { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.aurora i { position: absolute; width: 80vmax; height: 80vmax; border-radius: 50%; filter: blur(70px); opacity: .55; animation: drift 30s ease-in-out infinite alternate; }
+.aurora i:nth-child(1) { background: radial-gradient(circle, #f7bdd2, transparent 65%); top: -34vmax; left: -30vmax; }
+.aurora i:nth-child(2) { background: radial-gradient(circle, #cdb9f5, transparent 65%); top: 18%; right: -42vmax; animation-delay: -9s; }
+.aurora i:nth-child(3) { background: radial-gradient(circle, #bfe8d4, transparent 65%); bottom: -40vmax; left: -10vmax; animation-delay: -17s; }
+.aurora i:nth-child(4) { background: radial-gradient(circle, #f5e2b3, transparent 65%); bottom: 10%; right: -30vmax; opacity: .4; animation-delay: -5s; }
+@keyframes drift { to { transform: translate(8vmax, 6vmax) scale(1.12); } }
+
+/* Typografia: foilimainen otsikko ja luvut */
+h1 { font: italic 600 2.15rem/1.12 var(--serif); font-variation-settings: 'opsz' 120, 'SOFT' 70; letter-spacing: -.015em; padding: 4px 0;
+  background: linear-gradient(100deg, var(--ink) 15%, #8c58a8 55%, var(--gold) 95%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+h1::after { content: ''; display: block; width: 56px; height: 2px; margin: 12px auto 0; border-radius: 2px; background: var(--foil); -webkit-text-fill-color: initial; }
+h2 { font-variation-settings: 'opsz' 48, 'SOFT' 40; letter-spacing: -.005em; }
+.ring-txt b, .tiles b, ol.rank .pt { font-variant-numeric: tabular-nums lining-nums; }
+.ring-txt b { font-size: 2.45rem; background: linear-gradient(135deg, var(--ink) 35%, var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.tiles b { background: linear-gradient(135deg, var(--ink) 40%, var(--gold) 130%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.countdown { color: var(--gold); text-shadow: 0 0 18px color-mix(in srgb, var(--gold) 35%, transparent); }
+
+/* Kortit: lasi ja hiusraja */
+.card { border: 0; border-radius: var(--r); padding: 22px 20px 20px; background: var(--glass); -webkit-backdrop-filter: blur(22px) saturate(150%); backdrop-filter: blur(22px) saturate(150%);
+  box-shadow: 0 1px 0 #ffffffb0 inset, 0 26px 50px -28px #4a2a5a66, 0 2px 8px #4a2a5a12; transition: transform .35s var(--ease), box-shadow .35s var(--ease); }
+.card::before { content: ''; position: absolute; inset: 0; border: 0; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--gold) 75%, transparent), transparent 38%, transparent 62%, color-mix(in srgb, var(--gold) 38%, transparent));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); }
+.card.setup::before { background: linear-gradient(160deg, var(--rose), transparent 45%, var(--gold)); }
+
+/* Painikkeet */
+.btn { border: 0; border-radius: 16px; padding: 15px 18px; letter-spacing: .16em; transition: transform .25s var(--ease), box-shadow .25s var(--ease); }
+.btn:not(.ghost) { background: var(--foil); background-size: 220% 100%; color: #2b1538; animation: foil 7s ease-in-out infinite;
+  box-shadow: 0 1px 0 #fffa inset, 0 -1px 0 #a67a2a66 inset, 0 14px 24px -12px #b98a2ecc; }
+@keyframes foil { 50% { background-position: 100% 0; } }
+.btn.ghost { background: var(--glass); color: var(--ink); box-shadow: 0 0 0 1px var(--hair), 0 8px 18px -12px #4a2a5a55; }
+.btn:active { transform: scale(.975); }
+
+/* Kentät */
+input, select, textarea { background: color-mix(in srgb, var(--field) 78%, transparent); border: 1px solid var(--hair); border-radius: 14px; padding: 13px 15px; }
+.seg { background: var(--glass); border: 0; box-shadow: 0 0 0 1px var(--hair); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+.seg a.on { background: var(--foil); color: #2b1538; box-shadow: 0 6px 14px -8px #b98a2e; }
+.chip { background: var(--glass); border: 0; box-shadow: 0 0 0 1px var(--hair); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+.tiles > div { background: color-mix(in srgb, var(--field) 60%, transparent); border: 0; border-radius: 16px; box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 22%, transparent); }
+.tiles > div:first-child { grid-column: 1 / -1; padding: 16px 16px 14px; }
+.tiles > div:first-child b { font-size: 2.2rem; }
+ol.rank .pos { font-size: 1.25rem; background: var(--foil); -webkit-background-clip: text; background-clip: text; color: transparent; }
+ol.rank li.me { background: linear-gradient(90deg, color-mix(in srgb, var(--gold) 20%, transparent), transparent); border-radius: 14px; }
+.podium .block { background: var(--foil); border: 0; box-shadow: 0 -8px 20px -10px #d9ae50; }
+.bar-col.hl i { background: var(--foil); }
+.bar > i { background: var(--foil); }
+.badge span, .badges.small span, .quests .check { box-shadow: 0 0 0 1px var(--hair), 0 6px 14px -8px #b98a2e88; border: 0; }
+
+/* Kelluva valikko */
+.tabs { left: 14px; right: 14px; bottom: calc(12px + env(safe-area-inset-bottom)); max-width: 492px; margin: 0 auto; border: 0; border-radius: 28px; padding: 6px;
+  background: var(--glass-strong); -webkit-backdrop-filter: blur(26px) saturate(170%); backdrop-filter: blur(26px) saturate(170%);
+  box-shadow: 0 0 0 1px var(--hair), 0 24px 40px -14px #34183f66, 0 1px 0 #ffffffa0 inset; }
+.tabs a { border-radius: 22px; padding: 9px 0 7px; transition: background .3s var(--ease), color .3s; }
+.tabs a.on { color: var(--ink); background: linear-gradient(180deg, color-mix(in srgb, var(--gold) 26%, transparent), color-mix(in srgb, var(--gold) 10%, transparent)); box-shadow: 0 0 0 1px var(--hair) inset; }
+.tabs a.on::before { display: none; }
+.tabs a.on svg { color: var(--rose); filter: drop-shadow(0 0 8px color-mix(in srgb, var(--rose) 55%, transparent)); }
+
+/* Puutarha-sankari */
+.garden { height: 286px; border: 0; border-radius: 32px; box-shadow: 0 0 0 1px var(--hair), 0 34px 54px -30px #34183f99; }
+.garden::after { content: ''; position: absolute; inset: 0; z-index: 3; pointer-events: none; border-radius: inherit;
+  background: radial-gradient(120% 70% at 85% -10%, #fff7c850, transparent 60%), linear-gradient(transparent 55%, #34183f26); }
+.gname { background: color-mix(in srgb, var(--card) 70%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border: 0; box-shadow: 0 0 0 1px var(--hair), 0 10px 20px -10px #0007; border-radius: 99px; padding: 5px 20px; bottom: 14px; z-index: 4; }
+.fairy { z-index: 4; }
+.bubble { border: 0; border-radius: 18px; background: var(--glass-strong); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: 0 0 0 1px var(--hair), 0 14px 26px -12px #34183f88; }
+.celebrate-card { border: 0; border-radius: 28px; background: var(--glass-strong); -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); box-shadow: 0 0 0 1px var(--hair), 0 40px 70px -30px #34183faa; }
+
+@media (prefers-color-scheme: dark) {
+  .aurora i { opacity: .5; }
+  .aurora i:nth-child(1) { background: radial-gradient(circle, #8a2f66, transparent 65%); }
+  .aurora i:nth-child(2) { background: radial-gradient(circle, #4b2aa0, transparent 65%); }
+  .aurora i:nth-child(3) { background: radial-gradient(circle, #0f6b57, transparent 65%); opacity: .4; }
+  .aurora i:nth-child(4) { background: radial-gradient(circle, #8a661f, transparent 65%); opacity: .3; }
+  body::before { mix-blend-mode: screen; opacity: .35; }
+  .card { box-shadow: 0 1px 0 #ffffff14 inset, 0 28px 54px -28px #000c, 0 2px 8px #0005; }
+  h1 { background: linear-gradient(100deg, #fff4d6 10%, #f1db8e 50%, #f09ac0 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .ring-txt b, .tiles b { background: linear-gradient(135deg, #fff4d6 30%, #f1db8e); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .tabs { box-shadow: 0 0 0 1px var(--hair), 0 24px 40px -14px #000c, 0 1px 0 #ffffff14 inset; }
+  .btn:not(.ghost), .seg a.on { color: #2b1538; }
+  .tiles > div { background: color-mix(in srgb, var(--field) 55%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) { .aurora i, .btn:not(.ghost) { animation: none !important; } }

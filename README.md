@@ -8,7 +8,7 @@ Next.js-PWA, johon askeleet tulevat iPhonen Komennot-automaatiosta (ei App Store
 3. **Jaa osoite porukalle.** Jokainen: avaa sivu Safarilla → Jaa → *Lisää Koti-valikkoon* → anna nimi → seuraa `/shortcut`-ohjetta (noin 5 min, kerran).
 
 ## Miten askeleet kulkevat
-Komennot-automaatio (joka päivä klo 21) lukee Terveydestä päivän askelsumman ja tekee `POST /api/steps` `{ "token": "...", "steps": 8234 }`. Palvelin tallentaa päivän suurimman arvon, joten myöhäinen nollasynkka ei tyhjennä päivää. Käsinkirjaus etusivulla toimii varana.
+Komennot-automaatio (joka päivä klo 21) lukee Terveydestä päivän askelsumman ja tekee `POST /api/steps` `{ "token": "...", "steps": 8234 }`. Palvelin tallentaa päivän suurimman arvon, joten myöhäinen nollasynkka ei tyhjennä päivää.
 
 ## Päivitykset
 Kun saat virheitä tai uusia ominaisuuksia, aja `supabase/migrations/000_kaikki.sql` uudelleen. Tarkista tila osoitteesta `/api/health`.

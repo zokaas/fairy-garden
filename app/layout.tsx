@@ -5,7 +5,7 @@ import './globals.css';
 import BottomNav from '@/components/BottomNav';
 import ResumeRefresh from '@/components/ResumeRefresh';
 
-const serif = Fraunces({ subsets: ['latin'], style: ['normal', 'italic'], variable: '--serif', display: 'swap' });
+const serif = Fraunces({ subsets: ['latin'], style: ['normal', 'italic'], axes: ['opsz', 'SOFT'], variable: '--serif', display: 'swap' });
 const sans = Figtree({ subsets: ['latin'], variable: '--sans', display: 'swap' });
 
 export const metadata: Metadata = {
@@ -36,6 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fi" className={`${serif.variable} ${sans.variable}`}>
       <body>
+        <div className="aurora" aria-hidden="true"><i /><i /><i /><i /></div>
         <div className="dust" aria-hidden="true">
           {Array.from({ length: 9 }, (_, i) => <i key={i} style={{ left: `${(i * 37 + 8) % 96}%`, animationDelay: `${i * 1.7}s`, animationDuration: `${14 + (i % 4) * 4}s` }} />)}
         </div>

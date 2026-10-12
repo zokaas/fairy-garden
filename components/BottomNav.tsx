@@ -5,7 +5,7 @@ import { IconFlag, IconGarden, IconLog, IconStats, IconTrophy } from './Icons';
 
 const TABS = [
   { href: '/', Icon: IconGarden, label: 'Puutarha' },
-  { href: '/kirjaa', Icon: IconLog, label: 'Kirjaa' },
+  { href: '/kirjaa', Icon: IconLog, label: 'Liikunta' },
   { href: '/karki', Icon: IconTrophy, label: 'Kärki' },
   { href: '/tilastot', Icon: IconStats, label: 'Tilastot' },
   { href: '/kisa', Icon: IconFlag, label: 'Kisa' },

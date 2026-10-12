@@ -26,7 +26,7 @@
 10. **Automaatio:** Komennot → Automaatio → + → Vuorokaudenaika (esim. 21:00, päivittäin) → komento “Fairy Garden” → **Suorita heti**.
 
 ## C. Arki
-- Jos automaatio ei laukea, avaa komento käsin tai kirjaa askeleet etusivulla.
+- Jos automaatio ei laukea, paina etusivun Synkkaa askeleet nyt -nappia.
 - Liikunta kirjataan etusivulla (laji + minuutit).
 - Pisteet: 1 p / 1 000 askelta ja 1 p / 10 min liikuntaa.
 

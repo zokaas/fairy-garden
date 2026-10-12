@@ -23,6 +23,7 @@ export default function Ring({ value, goal }: { value: number; goal: number }) {
         <defs>
           <linearGradient id="rg" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0" stopColor="#2f7a5f" />
+            <stop offset="0.5" stopColor="#d9ae50" />
             <stop offset="1" stopColor="#c4406f" />
           </linearGradient>
         </defs>

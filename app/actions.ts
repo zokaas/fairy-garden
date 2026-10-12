@@ -62,20 +62,6 @@ export async function deleteAccount(formData: FormData) {
   redirect('/');
 }
 
-export async function logSteps(formData: FormData) {
-  const token = cookies().get(COOKIE)?.value;
-  const steps = Math.round(Number(formData.get('steps')));
-  const dayRaw = formData.get('day');
-  const day = isDay(dayRaw) ? dayRaw : helsinkiDay();
-  if (!token || !Number.isFinite(steps) || steps < 0 || steps > 200_000) return;
-  const supabase = db();
-  const { data: fairy } = await supabase.from('fairies').select('id').eq('token', token).maybeSingle();
-  if (!fairy) return;
-  await supabase.from('steps').upsert({ fairy_id: fairy.id, day, steps, updated_at: new Date().toISOString() });
-  revalidatePath('/', 'layout');
-  redirect('/kirjaa?ok=askeleet');
-}
-
 export async function logWorkout(formData: FormData) {
   const token = cookies().get(COOKIE)?.value;
   const sport = String(formData.get('sport') ?? '');
