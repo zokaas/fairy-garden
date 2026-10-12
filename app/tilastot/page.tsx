@@ -6,6 +6,7 @@ import { ACTIVE_DAY, DAILY_GOAL, helsinkiDay, weekStart } from '@/lib/garden';
 import { TEAMS } from '@/lib/teams';
 import { byDay, compare, daysBetween, kcal, km, series, sportStats, sum, trend, weekdayAvg, weeklyMinutes } from '@/lib/stats';
 import BarChart from '@/components/BarChart';
+import CountUp from '@/components/CountUp';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,7 +18,7 @@ function Tiles({ items }: { items: [string, string, string?][] }) {
   return (
     <div className="tiles">
       {items.map(([label, value, sub]) => (
-        <div key={label}><b>{value}</b><span>{label}</span>{sub && <small>{sub}</small>}</div>
+        <div key={label}><b><CountUp text={value} /></b><span>{label}</span>{sub && <small>{sub}</small>}</div>
       ))}
     </div>
   );

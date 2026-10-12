@@ -45,7 +45,7 @@ export default async function Kisa({ searchParams }: { searchParams: { avaa?: st
             {order.map((f, i) =>
               f ? (
                 <div key={f.id} className="step">
-                  <Avatar a={f} size={i === 1 ? 64 : 52} badge={['🥈', '🥇', '🥉'][i]} />
+                  <Avatar a={f} size={i === 1 ? 64 : 52} badge={['🥈', '🥇', '🥉'][i]} stage={f.stageIdx} />
                   <b>{f.name}</b>
                   <span>{f.pts} p</span>
                   <div className="block" style={{ height: heights[i] }} />
@@ -64,7 +64,7 @@ export default async function Kisa({ searchParams }: { searchParams: { avaa?: st
               <li key={p.title}>
                 <span className="pe">{p.emoji}</span>
                 <span><b>{p.title}</b><small>{p.winner.name} · {p.value}</small></span>
-                <Avatar a={p.winner} size={34} />
+                <Avatar a={p.winner} size={34} stage={p.winner.stageIdx} />
               </li>
             ))}
           </ul>

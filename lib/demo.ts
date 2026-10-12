@@ -5,7 +5,7 @@ import { dayBefore, helsinkiDay } from './garden';
 export const DEMO = process.env.FG_DEMO === '1';
 
 const NAMES = ['Kielo', 'Villiruusu', 'Kastepisara', 'Lumikello', 'Ruiskaunokki', 'Pääskynen', 'Orvokki', 'Mesikämmen', 'Sumuinen Sini'];
-const EMOJIS = ['🧚🏼‍♀️', '🦋', '🌸', '🧚🏽‍♀️', '🍄', '🐰', '🦄', '🧚🏻‍♀️', '🌙'];
+const EMOJIS = ['fig', '🦋', '🌸', '🧚🏽‍♀️', '🍄', '🐰', '🦄', '🧚🏻‍♀️', '🌙'];
 const BGS = ['#f8d7ec', '#d7f2e3', '#e4d9fb', '#fde8c4', '#d4ecfb', '#ffd9d2', '#f3f0b8', '#ffe0f4', '#d7f2e3'];
 const TEAMS = ['sienet', 'perhoset', 'kukat', 'tahdet', 'sienet', 'perhoset', 'kukat', 'tahdet', 'sienet'];
 

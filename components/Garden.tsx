@@ -1,6 +1,7 @@
 import { STAGES, type Phase } from '@/lib/garden';
 import Avatar, { type AvatarData } from './Avatar';
 import GardenFx from './GardenFx';
+import FairyFigure from './FairyFigure';
 
 const COLORS = ['#d4527f', '#e8869f', '#9c7bd6', '#e9b44c', '#c2415f', '#7aa7e0'];
 const TYPES = ['tulip', 'daisy', 'bell', 'rose'];
@@ -80,7 +81,7 @@ export default function Garden({ pts, stageIdx, name, avatar, phase = 'day', lin
       </svg>
 
       <span className="bfly b1" /><span className="bfly b2" />
-      {avatar ? <div className="fairy av"><Avatar a={avatar} size={76} badge={STAGES[stageIdx].emoji} /></div> : <div className="fairy">{STAGES[stageIdx].emoji}</div>}
+      {avatar ? <div className="fairy av"><Avatar a={avatar} size={76} badge={STAGES[stageIdx].emoji} stage={stageIdx} /></div> : <div className="fairy fig"><FairyFigure stage={stageIdx} size={84} /></div>}
       {name && <div className="gname">{name}</div>}
     </GardenFx>
   );

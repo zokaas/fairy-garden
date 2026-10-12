@@ -53,7 +53,7 @@ export default async function Karki({ searchParams }: { searchParams: { nayta?: 
             {board.map((b, i) => (
               <li key={b.id} className={b.mine ? 'me' : ''}>
                 <span className="pos">{medal[i] ?? i + 1}</span>
-                <span className="nm"><Avatar a={b} size={38} badge={stageFor(b.pts).stage.emoji} />
+                <span className="nm"><Avatar a={b} size={38} badge={stageFor(b.pts).stage.emoji} stage={b.stageIdx} />
                   <span>{b.name} {teamOf(b.team)?.emoji ?? ''}<small>{b.totalSteps.toLocaleString('fi-FI')} askelta{b.streak > 1 ? ` · 🔥 ${b.streak}` : ''} · synkattu {ago(b.lastSync)}</small></span>
                 </span>
                 <span className="pt">{score(b)} p</span>

@@ -10,7 +10,7 @@ function at(f: number): [number, number] {
 }
 
 /** Haltijan polku: kokonaisaskeleet kuljettavat keijun kohti Albertinkatua. */
-export default function Journey({ steps, avatar }: { steps: number; avatar: AvatarData }) {
+export default function Journey({ steps, avatar, stageIdx = 2 }: { steps: number; avatar: AvatarData; stageIdx?: number }) {
   const f = Math.min(1, steps / JOURNEY_GOAL);
   const [x, y] = at(f);
   const next = STOPS.find((s) => s.at > steps);
@@ -30,7 +30,7 @@ export default function Journey({ steps, avatar }: { steps: number; avatar: Avat
           const [sx, sy] = at(s.at / JOURNEY_GOAL);
           return <span key={s.name} className={`stop ${steps >= s.at ? 'on' : ''}`} style={{ left: `${(sx / 300) * 100}%`, top: `${(sy / 110) * 100}%` }} title={s.name}>{s.emoji}</span>;
         })}
-        <span className="walker" style={{ left: `${(x / 300) * 100}%`, top: `${(y / 110) * 100}%` }}><Avatar a={avatar} size={34} /></span>
+        <span className="walker" style={{ left: `${(x / 300) * 100}%`, top: `${(y / 110) * 100}%` }}><Avatar a={avatar} size={34} stage={stageIdx} /></span>
       </div>
       <p className="muted">
         {next ? <>Seuraava etappi: {next.emoji} <b>{next.name}</b>, vielä {(next.at - steps).toLocaleString('fi-FI')} askelta.</> : <>Perillä Albertinkadulla. Olet todellinen reippailija.</>}

@@ -1,4 +1,5 @@
-export const AVATAR_EMOJIS = ['🧚🏻‍♀️', '🧚🏼‍♀️', '🧚🏽‍♀️', '🧚🏾‍♀️', '🧚🏿‍♀️', '🧚🏼‍♂️', '🦋', '🐰', '🦄', '🍄', '🌸', '🦊', '🐸', '🐝', '🦉', '🐞', '🌙', '⭐'];
+/** 'fig' = piirretty keiju, jonka asu kehittyy tason mukana. */
+export const AVATAR_EMOJIS = ['fig', '🧚🏻‍♀️', '🧚🏼‍♀️', '🧚🏽‍♀️', '🧚🏾‍♀️', '🧚🏿‍♀️', '🧚🏼‍♂️', '🦋', '🐰', '🦄', '🍄', '🌸', '🦊', '🐸', '🐝', '🦉', '🐞', '🌙'];
 export const AVATAR_BGS = ['#f8d7ec', '#d7f2e3', '#e4d9fb', '#fde8c4', '#d4ecfb', '#ffd9d2', '#f3f0b8', '#ffe0f4'];
 
 export function avatarUrl(path: string | null | undefined): string | null {

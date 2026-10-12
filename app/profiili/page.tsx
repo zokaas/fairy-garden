@@ -3,6 +3,7 @@ import { loadGarden } from '@/lib/data';
 import { ACCESSORIES, AVATAR_BGS, AVATAR_EMOJIS } from '@/lib/avatar';
 import { STAGES } from '@/lib/garden';
 import Avatar from '@/components/Avatar';
+import FairyFigure from '@/components/FairyFigure';
 import PhotoPicker from '@/components/PhotoPicker';
 import { TEAMS } from '@/lib/teams';
 import PushToggle from '@/components/PushToggle';
@@ -21,7 +22,7 @@ export default async function Profiili({ searchParams }: { searchParams: { uusi?
       {searchParams.ok && <p className="toast">Tallennettu 🌸</p>}
 
       <div style={{ textAlign: 'center', margin: '30px 0 16px' }}>
-        <Avatar a={me} size={120} />
+        <Avatar a={me} size={120} stage={me.stageIdx} />
       </div>
 
       <section className="card">
@@ -41,7 +42,7 @@ export default async function Profiili({ searchParams }: { searchParams: { uusi?
           {AVATAR_EMOJIS.map((e) => (
             <label key={e}>
               <input type="radio" name="emoji" value={e} defaultChecked={(me.avatarEmoji ?? AVATAR_EMOJIS[1]) === e} required />
-              <span>{e}</span>
+              <span>{e === 'fig' ? <FairyFigure stage={me.stageIdx} size={38} /> : e}</span>
             </label>
           ))}
         </div>

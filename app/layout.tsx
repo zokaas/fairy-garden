@@ -24,7 +24,11 @@ export const metadata: Metadata = {
     ].map(([w, h, dw, dh]) => ({ url: `/splash-${w}x${h}.png`, media: `(device-width: ${dw}px) and (device-height: ${dh}px) and (-webkit-device-pixel-ratio: 3)` })),
   },
 };
-export const viewport: Viewport = { themeColor: '#f7efdd', width: 'device-width', initialScale: 1 };
+export const viewport: Viewport = {
+  themeColor: [{ media: '(prefers-color-scheme: light)', color: '#f7efdd' }, { media: '(prefers-color-scheme: dark)', color: '#1b1030' }],
+  width: 'device-width',
+  initialScale: 1,
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const member = !!cookies().get('fg_token');

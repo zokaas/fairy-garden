@@ -157,14 +157,14 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         </section>
       )}
 
-      {me.hasSteps && <Journey steps={me.totalSteps} avatar={me} />}
+      {me.hasSteps && <Journey steps={me.totalSteps} avatar={me} stageIdx={stageIdx} />}
 
       <section className="card">
         <h2>Merkit {me.badges.length}/{BADGES.length}</h2>
         <div className="badges small">
           {BADGES.filter((b) => me.badges.includes(b.id)).map((b) => <span key={b.id} title={b.name}>{b.emoji}</span>)}
-          {me.badges.length === 0 && <span className="muted">Ensimmäinen merkki tulee ensimmäisistä askelista.</span>}
         </div>
+        {me.badges.length === 0 && <p className="muted">Ensimmäinen merkki tulee ensimmäisistä askelista.</p>}
         <p className="muted"><Link href="/kisa">Kaikki merkit ja kisan tilanne →</Link></p>
       </section>
       {admin && <p className="muted" style={{ textAlign: 'center' }}><Link href="/yllapito">Ylläpito ja esikatselut</Link></p>}
