@@ -35,15 +35,16 @@ export default async function Karki({ searchParams }: { searchParams: { lista?: 
   }).filter((t) => t.members > 0).sort((a, b) => b.avg - a.avg) : [];
 
   const sub = (b: (typeof all)[number]) => {
-    if (key === 'kaikki') return `${b.stepPts} p askelista + ${b.sportPts} p urheilusta`;
+    if (key === 'kaikki') return `${b.stepPts} p askelista + ${b.sportPts} p urheilusta ja luovasta`;
     if (key === 'askeleet') return week ? `${b.week.activeDays} aktiivista päivää` : `ka. ${fi(b.avgSteps)} / pv · paras ${fi(b.bestDay)}`;
-    return week ? `${b.week.sessions} kertaa` : `${b.workouts} kertaa · ka. ${b.avgSession} min`;
+    if (key === 'luova') return `${b.goal.creativeDays} luovaa päivää tällä viikolla`;
+    return week ? `${b.goal.sportDays} urheilupäivää` : `${b.goal.sportDays} / ${3} urheilupäivää tällä viikolla`;
   };
 
   return (
     <>
       <h1>Kärki</h1>
-      <div className="seg three">
+      <div className="seg four">
         {(Object.keys(LISTS) as ListKey[]).map((k) => <Link key={k} href={href(k, week)} className={k === key ? 'on' : ''}>{LISTS[k].label}</Link>)}
       </div>
       <div className="seg">
@@ -100,7 +101,7 @@ export default async function Karki({ searchParams }: { searchParams: { lista?: 
             })}
           </ol>
         )}
-        <p className="muted">Pienet luvut oikealla: ero sinuun (+ = edellä sinua). Napauta ✨ ja lähetä kimalle. Pisteet: 1 p / 2 500 askelta ja 1 p / 30 min urheilua.</p>
+        <p className="muted">Pienet luvut oikealla: ero sinuun (+ = edellä sinua). Napauta ✨ ja lähetä kimalle. Pisteet: 1 p / 2 500 askelta, 1 p / 30 min urheilua ja 1 p / 30 min luovaa harrastusta.</p>
       </section>
       <form action={leave}><button className="btn ghost">Poistu tältä laitteelta</button></form>
     </>

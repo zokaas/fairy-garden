@@ -1,18 +1,19 @@
-import { helsinkiDay } from './garden';
+import { WEEK_GOAL } from './weekly';
 
-export type QuestCtx = { today: number; yesterday: number; minsToday: number; sentToday: number };
+export type QuestCtx = {
+  today: number; yesterday: number; sentToday: number;
+  sportToday: number; creativeToday: number; sportDays: number; creativeDays: number;
+};
 export type Quest = { id: string; emoji: string; text: string; done: boolean; progress: string };
 
-const STEP_GOALS = [6000, 8000, 10000, 7500, 9000, 12000, 5000];
-
-/** Päivän taika: kolme tehtävää, jotka valitaan päivämäärästä (ei tietokantaa tarvita). */
-export function dailyQuests(c: QuestCtx, day = helsinkiDay()): Quest[] {
-  const n = Math.floor(Date.parse(`${day}T12:00:00Z`) / 86_400_000);
-  const goal = STEP_GOALS[n % 7];
+/** Päivän taika: askeltavoite (7 000 treenipäivänä, muuten 10 000), viikkotavoitetta edistävä tehtävä ja kimalle. */
+export function dailyQuests(c: QuestCtx): Quest[] {
+  const target = c.sportToday > 0 ? WEEK_GOAL.stepsSportDay : WEEK_GOAL.stepsRestDay;
   const q: Quest[] = [
-    { id: 'steps', emoji: '👟', text: `Kävele ${goal.toLocaleString('fi-FI')} askelta`, done: c.today >= goal, progress: `${Math.min(c.today, goal).toLocaleString('fi-FI')} / ${goal.toLocaleString('fi-FI')}` },
+    { id: 'steps', emoji: '👟', text: `Kävele ${target.toLocaleString('fi-FI')} askelta${c.sportToday > 0 ? ' (urheilupäivä)' : ''}`, done: c.today >= target, progress: `${Math.min(c.today, target).toLocaleString('fi-FI')} / ${target.toLocaleString('fi-FI')}` },
   ];
-  if (n % 2 === 0) q.push({ id: 'sport', emoji: '💪', text: 'Kirjaa 20 min liikuntaa', done: c.minsToday >= 20, progress: `${Math.min(c.minsToday, 20)} / 20 min` });
+  if (c.sportDays < WEEK_GOAL.sportDays) q.push({ id: 'sport', emoji: '💪', text: 'Urheile tänään', done: c.sportToday > 0, progress: c.sportToday > 0 ? `${c.sportToday} min` : `Viikolla ${c.sportDays} / ${WEEK_GOAL.sportDays} päivää` });
+  else if (c.creativeDays < WEEK_GOAL.creativeDays) q.push({ id: 'creative', emoji: '🎨', text: 'Tee jotain luovaa', done: c.creativeToday > 0, progress: c.creativeToday > 0 ? `${c.creativeToday} min` : 'Piirrä, virkkaa, lue, soita…' });
   else q.push({ id: 'beat', emoji: '⚡', text: 'Ylitä eilisen askelmäärä', done: c.today > c.yesterday && c.today > 0, progress: `${c.today.toLocaleString('fi-FI')} / ${(c.yesterday + 1).toLocaleString('fi-FI')}` });
   q.push({ id: 'cheer', emoji: '✨', text: 'Lähetä kimalle toiselle keijulle', done: c.sentToday > 0, progress: c.sentToday > 0 ? 'Lähetetty' : 'Kärki-välilehdellä' });
   return q;

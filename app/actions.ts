@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/lib/db';
-import { SPORTS, helsinkiDay, isDay } from '@/lib/garden';
+import { CREATIVE, SPORTS, dayBefore, helsinkiDay, isDay } from '@/lib/garden';
 import { ACCESSORIES, AVATAR_BGS, AVATAR_EMOJIS } from '@/lib/avatar';
 import { loadGarden } from '@/lib/data';
 import { hashPin, verifyPin } from '@/lib/pin';
@@ -66,11 +66,13 @@ export async function logWorkout(formData: FormData) {
   const token = cookies().get(COOKIE)?.value;
   const sport = String(formData.get('sport') ?? '');
   const minutes = Math.round(Number(formData.get('minutes')));
-  if (!token || !(SPORTS as readonly string[]).includes(sport) || !(minutes > 0 && minutes <= 600)) return;
+  const known = [...SPORTS, ...CREATIVE] as readonly string[];
+  if (!token || !known.includes(sport) || !(minutes > 0 && minutes <= 600)) return;
+  const day = formData.get('when') === 'eilen' ? dayBefore(helsinkiDay()) : helsinkiDay();
   const supabase = db();
   const { data: fairy } = await supabase.from('fairies').select('id').eq('token', token).maybeSingle();
   if (!fairy) return;
-  await supabase.from('workouts').insert({ fairy_id: fairy.id, day: helsinkiDay(), sport, minutes });
+  await supabase.from('workouts').insert({ fairy_id: fairy.id, day, sport, minutes });
   revalidatePath('/', 'layout');
   redirect('/kirjaa?ok=liikunta');
 }

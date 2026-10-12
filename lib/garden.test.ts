@@ -26,8 +26,10 @@ assert.ok(fairyName(0, 0).length <= 30);
 assert.equal(weekStart('2026-10-14'), '2026-10-12');
 assert.equal(weekStart('2026-10-18'), '2026-10-12');
 assert.equal(weekStart('2026-10-12'), '2026-10-12');
-import { series, weekdayAvg, sportStats, trend, route, routeText, weeklyMinutes, daysBetween, weeklySteps } from './stats.ts';
+import { series, weekdayAvg, sportStats, trend, route, routeText, weeklyMinutes, daysBetween, weeklySteps, dayRange, cumulative, movingAvg, stepBuckets, weekdayVsWeekend, weeklyTotals, bestOf, heatCells, pointsOverTime } from './stats.ts';
 import { challengeFor, groupTarget } from './challenge.ts';
+import { weekGoal } from './weekly.ts';
+import { kindOf } from './garden.ts';
 const rows = [{ day: '2026-10-12', steps: 8000 }, { day: '2026-10-13', steps: 4000 }, { day: '2026-10-05', steps: 6000 }, { day: '2026-10-12', steps: 2000 }];
 assert.equal(series(rows, 3, '2026-10-14').map((x) => x.steps).join(), '10000,4000,0');
 assert.equal(weekdayAvg(rows)[0], 8000);
@@ -48,4 +50,23 @@ assert.equal(weeklySteps([{ day: '2026-10-13', steps: 5 }, { day: '2026-10-01', 
 assert.equal(challengeFor('2026-10-12').id, challengeFor('2026-10-18').id);
 assert.notEqual(challengeFor('2026-10-12').id, challengeFor('2026-10-19').id);
 assert.equal(groupTarget(1), 50000);
+assert.deepEqual(dayRange('2026-10-01', '2026-10-03'), ['2026-10-01', '2026-10-02', '2026-10-03']);
+assert.deepEqual(cumulative([1, 2, 3]), [1, 3, 6]);
+assert.deepEqual(movingAvg([2, 4, 6], 2), [2, 3, 5]);
+assert.deepEqual(stepBuckets([0, 3000, 5000, 12000, 20000]), [1, 1, 1, 1]);
+assert.deepEqual(weekdayVsWeekend([{ day: '2026-10-12', steps: 8000 }, { day: '2026-10-17', steps: 12000 }]), { weekday: 8000, weekend: 12000 });
+assert.equal(bestOf(weeklyTotals([{ day: '2026-10-12', steps: 5 }, { day: '2026-10-14', steps: 7 }, { day: '2026-10-20', steps: 9 }]))!.value, 12);
+const hc = heatCells([{ day: '2026-10-13', steps: 9 }], 2, '2026-10-14');
+assert.equal(hc.length, 2); assert.equal(hc[1][1]!.steps, 9); assert.equal(hc[1][3], null);
+assert.deepEqual(pointsOverTime([{ day: '2026-10-12', steps: 5000 }, { day: '2026-10-13', steps: 5000 }], [{ day: '2026-10-13', minutes: 30 }], ['2026-10-12', '2026-10-13']), [2, 5]);
+assert.equal(kindOf('Piirtäminen'), 'luova');
+assert.equal(kindOf('Sali'), 'urheilu');
+const wg = weekGoal(
+  [{ day: '2026-10-12', steps: 7500 }, { day: '2026-10-13', steps: 10500 }, { day: '2026-10-14', steps: 6000 }],
+  [{ day: '2026-10-12', sport: 'Sali' }, { day: '2026-10-14', sport: 'Jooga' }, { day: '2026-10-13', sport: 'Lukeminen' }],
+  '2026-10-14',
+);
+assert.equal(wg.sportDays, 2); assert.equal(wg.creativeDays, 1); assert.equal(wg.stepDaysOk, 2); assert.equal(wg.stepDaysElapsed, 3);
+assert.equal(wg.creativeDone, true); assert.equal(wg.sportDone, false); assert.equal(wg.done, false);
+assert.equal(wg.todayIsSport, true); assert.equal(wg.todayTarget, 7000);
 console.log('garden: ok');

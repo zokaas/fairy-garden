@@ -23,13 +23,13 @@ export function demoRows() {
   const today = helsinkiDay();
   const steps: { fairy_id: string; day: string; steps: number; updated_at: string }[] = [];
   const workouts: { fairy_id: string; day: string; sport: string; minutes: number }[] = [];
-  const sports = ['Juoksu', 'Sali', 'Jooga', 'Tanssi', 'Pyöräily', 'Kävely'];
+  const sports = ['Juoksu', 'Sali', 'Jooga', 'Tanssi', 'Pyöräily', 'Lenkkeily', 'Piirtäminen', 'Lukeminen'];
   fairies.forEach((f, i) => {
     let d = today;
     const days = 40 - i * 3;
     for (let k = 0; k < days; k++) {
       if (k > 0 || i !== 8) steps.push({ fairy_id: f.id, day: d, steps: rnd(4000, 15500) + (8 - i) * 400, updated_at: new Date(Date.now() - k * 3_600_000).toISOString() });
-      if (rnd(0, 3) === 0) workouts.push({ fairy_id: f.id, day: d, sport: sports[rnd(0, 5)], minutes: rnd(15, 80) });
+      if (rnd(0, 3) === 0) workouts.push({ fairy_id: f.id, day: d, sport: sports[rnd(0, 7)], minutes: rnd(15, 80) });
       d = dayBefore(d);
     }
   });

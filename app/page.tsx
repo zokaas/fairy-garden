@@ -1,12 +1,12 @@
 import Link from 'next/link';
 import { loadGarden } from '@/lib/data';
-import { DAILY_GOAL, STAGES, STEPS_PER_POINT, ago, phaseOf, stageFor, type Phase } from '@/lib/garden';
+import { STAGES, STEPS_PER_POINT, ago, phaseOf, stageFor, type Phase } from '@/lib/garden';
 import type { Fairy } from '@/lib/data';
 import { dailyQuests } from '@/lib/quests';
 import Journey from '@/components/Journey';
 import Ticker from '@/components/Ticker';
 import Avatar from '@/components/Avatar';
-import { challengeFor, groupTarget } from '@/lib/challenge';
+import { WEEK_GOAL } from '@/lib/weekly';
 import NameDice from '@/components/NameDice';
 import { BADGES } from '@/lib/badges';
 import { join, login } from './actions';
@@ -74,7 +74,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
           <ol>
             <li><b>Liity</b> nimellä, joka näkyy kärkilistalla.</li>
             <li><b>Yhdistä askeleet</b> iPhonen Terveydestä (5 min, kerran).</li>
-            <li><b>Kävele</b>: jokainen 2 500 askelta on 1 piste. Urheilu antaa pienen lisän (1 p / 30 min).</li>
+            <li><b>Kävele</b>: jokainen 2 500 askelta on 1 piste. Urheilu ja luova harrastus: 1 p / 30 min.</li>
           </ol>
         </section>
       </>
@@ -94,7 +94,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         name={`${me.name} · ${stage.name}`}
         avatar={me}
         lines={[
-          me.today < DAILY_GOAL ? `Vielä ${(DAILY_GOAL - me.today).toLocaleString('fi-FI')} askelta päivän tavoitteeseen! 👟` : 'Päivän tavoite täynnä, mahtavaa! ✨',
+          me.today < me.goal.todayTarget ? `Vielä ${(me.goal.todayTarget - me.today).toLocaleString('fi-FI')} askelta päivän tavoitteeseen! 👟` : 'Päivän tavoite täynnä, mahtavaa! ✨',
           next ? `${next.emoji} ${next.name} odottaa ${Math.max(1, next.pts - me.pts)} pisteen päässä` : 'Olet puutarhan kuningatar 👑',
           'Kukat kasvavat jokaisesta tuhannesta askeleesta 🌷',
           'Muista juoda vettä, keiju 💧',
@@ -107,8 +107,8 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         `Ryhmä tänään ${board.reduce((a, b) => a + b.today, 0).toLocaleString('fi-FI')} askelta`,
         board[0] ? `Johtaa ${board[0].name} ${board[0].pts} p` : '',
         board.some((b) => b.streak > 1) ? `Pisin putki ${Math.max(...board.map((b) => b.streak))} pv` : '',
-        `Viikon haaste: ${challengeFor().title}`,
-        `${board.filter((b) => b.today >= DAILY_GOAL).length} / ${board.length} on täyttänyt päivän tavoitteen`,
+        `Viikon tavoite: 3× urheilu, 1× luova`,
+        `${board.filter((b) => b.today >= b.goal.todayTarget).length} / ${board.length} on täyttänyt päivän tavoitteen`,
       ].filter(Boolean)} />
 
       {!me.hasSteps ? (
@@ -119,7 +119,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         </section>
       ) : (
         <section className="card center">
-          <Ring value={me.today} goal={DAILY_GOAL} />
+          <Ring value={me.today} goal={me.goal.todayTarget} />
           <div className="chips">
             <span className="chip">{me.streak} pv putki</span>
             <span className="chip">sija {myRank}/{board.length}</span>
@@ -143,7 +143,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         {next && <p className="muted">Vielä {Math.max(0, next.pts - me.pts)} pistettä seuraavaan tasoon.</p>}
       </section>
       {me.hasSteps && (() => {
-        const quests = dailyQuests({ today: me.today, yesterday: me.yesterday, minsToday: me.minsToday, sentToday: sentToday.length });
+        const quests = dailyQuests({ today: me.today, yesterday: me.yesterday, sentToday: sentToday.length, sportToday: me.sportToday, creativeToday: me.creativeToday, sportDays: me.goal.sportDays, creativeDays: me.goal.creativeDays });
         const all = quests.every((x) => x.done);
         return (
           <section className={`card quests ${all ? 'all' : ''}`}>
@@ -192,20 +192,32 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
       })()}
 
       {me.hasSteps && (() => {
-        const ch = challengeFor();
-        const val = ch.value(me.week);
-        const done = val >= ch.target;
-        const gt = groupTarget(board.length);
-        const gv = board.reduce((a, b) => a + b.week.steps, 0);
+        const g = me.goal;
+        const rows = [
+          { label: 'Askeltavoite', val: g.stepDaysOk, max: 7, note: `Tänään ${g.todayTarget.toLocaleString('fi-FI')} askelta (${g.todayIsSport ? 'urheilupäivä' : 'ilman urheilua'})`, ok: g.stepsDone },
+          { label: 'Urheilupäivät', val: g.sportDays, max: WEEK_GOAL.sportDays, note: 'sali, lenkkeily, laskettelu, hiihto, lentopallo, tribe, pilates, tennis…', ok: g.sportDone },
+          { label: 'Luova päivä', val: g.creativeDays, max: WEEK_GOAL.creativeDays, note: 'piirtäminen, virkkaaminen, lukeminen, soittaminen, ompelu…', ok: g.creativeDone },
+        ];
+        const n = board.length;
+        const nDone = board.filter((b) => b.goal.done).length;
+        const nSport = board.filter((b) => b.goal.sportDone).length;
+        const nCreative = board.filter((b) => b.goal.creativeDone).length;
+        const nSteps = board.filter((b) => b.goal.stepDaysOk >= b.goal.stepDaysElapsed).length;
         return (
-          <section className={`card ${done ? 'quests all' : ''}`}>
-            <h2>Viikon haaste: {ch.title}</h2>
-            <p className="muted" style={{ margin: '0 0 4px' }}>{ch.desc}</p>
-            <div className="bar"><i style={{ width: `${Math.min(100, (val / ch.target) * 100)}%` }} /></div>
-            <p className="muted">{done ? 'Haaste suoritettu!' : `${val.toLocaleString('fi-FI')} / ${ch.target.toLocaleString('fi-FI')} ${ch.unit}`}</p>
-            <h2 style={{ marginTop: 14 }}>Yhteinen tavoite</h2>
-            <div className="bar"><i style={{ width: `${Math.min(100, (gv / gt) * 100)}%` }} /></div>
-            <p className="muted">Ryhmä on kävellyt tällä viikolla {gv.toLocaleString('fi-FI')} / {gt.toLocaleString('fi-FI')} askelta.</p>
+          <section className={`card ${g.done ? 'quests all' : ''}`}>
+            <h2>Viikon tavoite</h2>
+            <p className="muted" style={{ margin: '0 0 10px' }}>7 000 askelta urheilupäivänä, 10 000 muulloin. 3 urheilupäivää ja 1 luova päivä viikossa.</p>
+            {rows.map((r) => (
+              <div key={r.label} className="goalrow">
+                <div className="goalhead"><b>{r.label}</b><span className={r.ok ? 'ok' : ''}>{r.val} / {r.max}{r.ok ? ' ✓' : ''}</span></div>
+                <div className="bar"><i style={{ width: `${Math.min(100, (r.val / r.max) * 100)}%` }} /></div>
+                <small className="muted">{r.note}</small>
+              </div>
+            ))}
+            {g.done && <p className="toast">Viikon tavoite täynnä!</p>}
+            <h2 style={{ marginTop: 16 }}>Ryhmä yhdessä</h2>
+            <div className="bar"><i style={{ width: `${n ? (nDone / n) * 100 : 0}%` }} /></div>
+            <p className="muted">{nDone} / {n} keijua on täyttänyt koko viikon tavoitteen. Urheilu {nSport}/{n} · luova {nCreative}/{n} · askeleet tahdissa {nSteps}/{n}.</p>
           </section>
         );
       })()}

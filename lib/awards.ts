@@ -11,7 +11,8 @@ export function awards(board: Fairy[]): Award[] {
     { emoji: '👟', title: 'Kävelyn kuningatar', pick: (f) => f.totalSteps, fmt: (v) => `${n(v)} askelta` },
     { emoji: '🚀', title: 'Yhden päivän ennätys', pick: (f) => f.bestDay, fmt: (v) => `${n(v)} askelta` },
     { emoji: '🔥', title: 'Putkien kuningatar', pick: (f) => f.bestRun, fmt: (v) => `${v} päivää putkeen` },
-    { emoji: '💪', title: 'Liikuntakeiju', pick: (f) => f.mins, fmt: (v) => `${n(v)} min` },
+    { emoji: '💪', title: 'Liikuntakeiju', pick: (f) => f.sportMins, fmt: (v) => `${n(v)} min` },
+    { emoji: '🎨', title: 'Luovuuden kuningatar', pick: (f) => f.creativeMins, fmt: (v) => `${n(v)} min` },
     { emoji: '💌', title: 'Kimalluksen keiju', pick: (f) => f.cheersTotal, fmt: (v) => `${v} kimallusta` },
   ];
   const out: Award[] = [];

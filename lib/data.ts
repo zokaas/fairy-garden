@@ -2,7 +2,8 @@ import 'server-only';
 import { cookies } from 'next/headers';
 import { db } from '@/lib/db';
 import { DEMO, demoRows } from '@/lib/demo';
-import { ACTIVE_DAY, DAILY_GOAL, bestStreak, dayBefore, helsinkiDay, points, sportPoints, stageFor, stepPoints, streak, weekStart } from '@/lib/garden';
+import { weekGoal, type WeekGoal } from '@/lib/weekly';
+import { ACTIVE_DAY, DAILY_GOAL, bestStreak, kindOf, dayBefore, helsinkiDay, points, sportPoints, stageFor, stepPoints, streak, weekStart } from '@/lib/garden';
 import { BADGES } from '@/lib/badges';
 
 export type Fairy = {
@@ -25,11 +26,16 @@ export type Fairy = {
   yesterday: number;
   badges: string[];
   minsToday: number;
+  sportMins: number;
+  creativeMins: number;
+  sportToday: number;
+  creativeToday: number;
+  goal: WeekGoal;
   cheersToday: number;
   isAdmin: boolean;
   team: string | null;
   weekPts: number;
-  week: { steps: number; activeDays: number; goalDays: number; mins: number; sessions: number };
+  week: { steps: number; activeDays: number; goalDays: number; mins: number; sessions: number; sportMins: number; creativeMins: number };
   bestDay: number;
   bestRun: number;
   workouts: number;
@@ -91,6 +97,8 @@ export async function loadGarden() {
           goalDays: st.filter((x) => x.day >= wk && x.steps >= DAILY_GOAL).length,
           mins: ws.filter((w) => w.day >= wk).reduce((a, w) => a + w.minutes, 0),
           sessions: ws.filter((w) => w.day >= wk).length,
+          sportMins: ws.filter((w) => w.day >= wk && kindOf(w.sport) === 'urheilu').reduce((a, w) => a + w.minutes, 0),
+          creativeMins: ws.filter((w) => w.day >= wk && kindOf(w.sport) === 'luova').reduce((a, w) => a + w.minutes, 0),
         },
         weekPts: points(
           st.filter((x) => x.day >= wk).reduce((a, x) => a + x.steps, 0),
@@ -108,6 +116,11 @@ export async function loadGarden() {
         stageIdx,
         yesterday: st.find((x) => x.day === dayBefore(today))?.steps ?? 0,
         minsToday: ws.filter((w) => w.day === today).reduce((a, w) => a + w.minutes, 0),
+        sportMins: ws.filter((w) => kindOf(w.sport) === 'urheilu').reduce((a, w) => a + w.minutes, 0),
+        creativeMins: ws.filter((w) => kindOf(w.sport) === 'luova').reduce((a, w) => a + w.minutes, 0),
+        sportToday: ws.filter((w) => w.day === today && kindOf(w.sport) === 'urheilu').reduce((a, w) => a + w.minutes, 0),
+        creativeToday: ws.filter((w) => w.day === today && kindOf(w.sport) === 'luova').reduce((a, w) => a + w.minutes, 0),
+        goal: weekGoal(st, ws, today),
         cheersToday: (cheers ?? []).filter((c) => c.to_id === f.id && c.day === today).length,
         badges: BADGES.filter((b) => b.test(stats)).map((b) => b.id),
       };
@@ -122,12 +135,13 @@ export async function loadGarden() {
 export async function loadRaw() {
   if (DEMO) {
     const r = demoRows();
-    return { steps: r.steps as import('./stats').StepRow[], workouts: r.workouts as import('./stats').WorkRow[] };
+    return { steps: r.steps as import('./stats').StepRow[], workouts: r.workouts as import('./stats').WorkRow[], cheers: r.cheers as { from_id: string; to_id: string; day: string }[] };
   }
   const supabase = db();
-  const [{ data: steps }, { data: workouts }] = await Promise.all([
+  const [{ data: steps }, { data: workouts }, { data: cheers }] = await Promise.all([
     supabase.from('steps').select('fairy_id, day, steps'),
     supabase.from('workouts').select('fairy_id, day, sport, minutes'),
+    supabase.from('cheers').select('from_id, to_id, day'),
   ]);
-  return { steps: (steps ?? []) as import('./stats').StepRow[], workouts: (workouts ?? []) as import('./stats').WorkRow[] };
+  return { steps: (steps ?? []) as import('./stats').StepRow[], workouts: (workouts ?? []) as import('./stats').WorkRow[], cheers: (cheers ?? []) as { from_id: string; to_id: string; day: string }[] };
 }
