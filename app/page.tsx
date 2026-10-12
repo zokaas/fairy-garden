@@ -1,8 +1,11 @@
 import Link from 'next/link';
 import { loadGarden } from '@/lib/data';
-import { DAILY_GOAL, ago, stageFor } from '@/lib/garden';
+import { DAILY_GOAL, ago, phaseOf, stageFor } from '@/lib/garden';
+import { dailyQuests } from '@/lib/quests';
+import Journey from '@/components/Journey';
+import NameDice from '@/components/NameDice';
 import { BADGES } from '@/lib/badges';
-import { join } from './actions';
+import { join, login } from './actions';
 import Countdown from '@/components/Countdown';
 import Garden from '@/components/Garden';
 import Ring from '@/components/Ring';
@@ -11,22 +14,48 @@ import SyncButton from '@/components/SyncButton';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Home({ searchParams }: { searchParams: { virhe?: string; synkattu?: string } }) {
-  const { board, me, myRank } = await loadGarden();
+export default async function Home({ searchParams }: { searchParams: { virhe?: string; synkattu?: string; kirjaudu?: string } }) {
+  const { board, me, myRank, sentToday } = await loadGarden();
+  const phase = phaseOf();
+  const errs: Record<string, string> = {
+    nimi: 'Kirjoita keijun nimi.',
+    salasana: 'Salasanassa pitää olla vähintään 4 merkkiä.',
+    olemassa: 'Tämä nimi on jo käytössä. Jos se on sinun, kirjaudu sisään alta.',
+    eiloydy: 'Tällä nimellä ei löytynyt keijua.',
+    vaara: 'Väärä salasana.',
+    tallennus: 'Jokin meni pieleen, yritä uudelleen.',
+  };
+  const errMsg = searchParams.virhe ? errs[searchParams.virhe] ?? errs.tallennus : null;
+  const showLogin = !!searchParams.kirjaudu || searchParams.virhe === 'olemassa';
 
   if (!me) {
     return (
       <>
-        <Garden pts={Math.min(12, board.length * 3)} stageIdx={4} />
+        <Garden pts={Math.min(12, board.length * 3)} stageIdx={4} phase={phase} lines={['Tervetuloa puutarhaan ✨', 'Istuta siemen niin kasvamme yhdessä 🌱', 'Kimalle! 🦋']} />
         <h1>Fairy Garden 🧚🏼‍♀️</h1>
         <p className="sub">Kävele kukkaan, kasva keijuksi ja tule gaalaan 28.11.</p>
         <Countdown />
-        <form action={join} className="card">
-          <h2>Liity puutarhaan ✨</h2>
-          <input name="name" placeholder="Keijun nimi" maxLength={30} required autoComplete="nickname" />
-          {searchParams.virhe && <p className="err">Jokin meni pieleen, yritä uudelleen.</p>}
-          <button className="btn">Istuta siemen 🌰</button>
-        </form>
+        {errMsg && <p className="err">{errMsg}</p>}
+        {!showLogin ? (
+          <form action={join} className="card">
+            <h2>Liity puutarhaan ✨</h2>
+            <input id="nm" name="name" placeholder="Keijun nimi" maxLength={30} required autoComplete="username" />
+            <NameDice inputId="nm" />
+            <input name="pin" type="password" placeholder="Salasana (väh. 4 merkkiä)" minLength={4} required autoComplete="new-password" />
+            <p className="muted">Salasanalla pääset sisään myös toiselta puhelimelta tai kotinäytön sovelluksesta.</p>
+            <button className="btn">Istuta siemen 🌰</button>
+            <p className="muted" style={{ textAlign: 'center' }}><Link href="/?kirjaudu=1">Minulla on jo keiju →</Link></p>
+          </form>
+        ) : (
+          <form action={login} className="card">
+            <h2>Kirjaudu sisään 🔑</h2>
+            <input name="name" placeholder="Keijun nimi" maxLength={30} required autoComplete="username" />
+            <input name="pin" type="password" placeholder="Salasana" minLength={4} required autoComplete="current-password" />
+            <p className="muted">Vanha tunnus ilman salasanaa? Kirjoita nimi ja keksi uusi salasana, niin se tallentuu.</p>
+            <button className="btn">Kirjaudu</button>
+            <p className="muted" style={{ textAlign: 'center' }}><Link href="/">Uusi keiju →</Link></p>
+          </form>
+        )}
         <section className="card how">
           <h2>Näin se toimii</h2>
           <ol>
@@ -45,7 +74,20 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
   return (
     <>
       <Celebrate stageIdx={stageIdx} stageName={stage.name} emoji={stage.emoji} />
-      <Garden pts={me.pts} stageIdx={stageIdx} name={`${me.name} · ${stage.name}`} avatar={me} />
+      <Garden
+        pts={me.pts}
+        stageIdx={stageIdx}
+        phase={phase}
+        name={`${me.name} · ${stage.name}`}
+        avatar={me}
+        lines={[
+          me.today < DAILY_GOAL ? `Vielä ${(DAILY_GOAL - me.today).toLocaleString('fi-FI')} askelta päivän tavoitteeseen! 👟` : 'Päivän tavoite täynnä, mahtavaa! ✨',
+          next ? `${next.emoji} ${next.name} odottaa ${Math.max(1, Math.ceil(next.min / 1000 - me.pts))} pisteen päässä` : 'Olet puutarhan kuningatar 👑',
+          'Kukat kasvavat jokaisesta tuhannesta askeleesta 🌷',
+          'Muista juoda vettä, keiju 💧',
+          `${me.name}, sinä loistat! 🌸`,
+        ]}
+      />
       <p className="muted" style={{ textAlign: 'center', marginTop: -6 }}><Link href="/profiili">✏️ Muokkaa avataria</Link></p>
       <Countdown />
 
@@ -81,6 +123,32 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         <div className="bar"><i style={{ width: `${pct}%` }} /></div>
         {next && <p className="muted">Vielä {Math.max(0, Math.ceil(next.min / 1000 - me.pts))} pistettä seuraavaan tasoon.</p>}
       </section>
+      {me.hasSteps && (() => {
+        const quests = dailyQuests({ today: me.today, yesterday: me.yesterday, minsToday: me.minsToday, sentToday: sentToday.length });
+        const all = quests.every((x) => x.done);
+        return (
+          <section className={`card quests ${all ? 'all' : ''}`}>
+            <h2>{all ? '🌟 Taikapäivä täynnä!' : '✨ Päivän taika'}</h2>
+            <ul className="plain">
+              {quests.map((x) => (
+                <li key={x.id} className={x.done ? 'done' : ''}>
+                  <span className="check">{x.done ? '✓' : x.emoji}</span>
+                  <span>{x.text}<small>{x.progress}</small></span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        );
+      })()}
+
+      {me.cheersToday > 0 && (
+        <section className="card cheers">
+          <p>💌 Sait tänään <b>{me.cheersToday}</b> {me.cheersToday === 1 ? 'kimallen' : 'kimallusta'} ✨</p>
+        </section>
+      )}
+
+      {me.hasSteps && <Journey steps={me.totalSteps} avatar={me} />}
+
       <section className="card">
         <h2>Merkit {me.badges.length}/{BADGES.length}</h2>
         <div className="badges small">

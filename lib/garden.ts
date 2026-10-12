@@ -79,3 +79,30 @@ export function ago(iso: string | null, now = Date.now()): string {
   if (m < 60 * 24) return `${Math.round(m / 60)} t sitten`;
   return `${Math.round(m / 1440)} pv sitten`;
 }
+
+export type Phase = 'night' | 'dawn' | 'day' | 'dusk';
+/** Vuorokaudenaika Helsingin ajassa: puutarhan taivas muuttuu sen mukaan. */
+export function phaseOf(d = new Date()): Phase {
+  const h = Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Helsinki', hour: '2-digit', hour12: false }).format(d)) % 24;
+  if (h >= 22 || h < 5) return 'night';
+  if (h < 9) return 'dawn';
+  if (h < 18) return 'day';
+  return 'dusk';
+}
+
+/** Haltijan polku: matka kotipuutarhasta Albertinkadulle askelilla mitattuna. */
+export const JOURNEY_GOAL = 200_000;
+export const STOPS = [
+  { at: 0, emoji: '🏡', name: 'Kotipuutarha' },
+  { at: 25_000, emoji: '🍄', name: 'Sienimetsä' },
+  { at: 60_000, emoji: '🌼', name: 'Kukkaniitty' },
+  { at: 100_000, emoji: '🌊', name: 'Kimalteleva joki' },
+  { at: 150_000, emoji: '🏰', name: 'Keijukuninkaan portti' },
+  { at: 200_000, emoji: '🥂', name: 'Albertinkatu' },
+] as const;
+
+const NAMES_A = ['Kimalteleva', 'Hulmuava', 'Unelias', 'Utuinen', 'Hurmaava', 'Pilvenhattara', 'Karamellinen', 'Sumuinen', 'Tähtipölyinen', 'Pyörremyrsky'];
+const NAMES_B = ['Kielo', 'Perhonen', 'Sienikuningatar', 'Orvokki', 'Kastepisara', 'Lumikello', 'Ruiskaunokki', 'Mesikämmen', 'Pääskynen', 'Villiruusu'];
+export function fairyName(r1 = Math.random(), r2 = Math.random()): string {
+  return `${NAMES_A[Math.floor(r1 * NAMES_A.length)]} ${NAMES_B[Math.floor(r2 * NAMES_B.length)]}`;
+}

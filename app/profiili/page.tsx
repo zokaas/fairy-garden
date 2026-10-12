@@ -4,11 +4,11 @@ import { ACCESSORIES, AVATAR_BGS, AVATAR_EMOJIS } from '@/lib/avatar';
 import { STAGES } from '@/lib/garden';
 import Avatar from '@/components/Avatar';
 import PhotoPicker from '@/components/PhotoPicker';
-import { removePhoto, saveAvatar } from '../actions';
+import { deleteAccount, removePhoto, saveAvatar } from '../actions';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Profiili({ searchParams }: { searchParams: { uusi?: string; ok?: string } }) {
+export default async function Profiili({ searchParams }: { searchParams: { uusi?: string; ok?: string; virhe?: string } }) {
   const { me } = await loadGarden();
   if (!me) redirect('/');
   const uusi = !!searchParams.uusi;
@@ -67,6 +67,17 @@ export default async function Profiili({ searchParams }: { searchParams: { uusi?
         <p className="muted">Asusteet aukeavat tasojen mukana: Itu 🌱, Silmu ✨, Kukka 🌸, Keiju 🪽, Keijukuningatar 👑.</p>
         <button className="btn">{uusi ? 'Valmis, puutarhaan 🌸' : 'Tallenna'}</button>
       </form>
+      {!uusi && (
+        <details className="card danger">
+          <summary>Poista tunnukseni</summary>
+          <p className="muted">Poistaa nimesi, askeleesi, liikuntasi ja avatarisi pysyvästi. Esim. jos sinulla on vahingossa kaksi tunnusta.</p>
+          {searchParams.virhe && <p className="err">Nimi ei täsmännyt, tunnusta ei poistettu.</p>}
+          <form action={deleteAccount}>
+            <input name="confirm" placeholder={`Kirjoita nimesi: ${me.name}`} required />
+            <button className="btn ghost">Poista pysyvästi</button>
+          </form>
+        </details>
+      )}
     </>
   );
 }

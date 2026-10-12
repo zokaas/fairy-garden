@@ -23,15 +23,18 @@ export type Fairy = {
   stageIdx: number;
   yesterday: number;
   badges: string[];
+  minsToday: number;
+  cheersToday: number;
 };
 
 export async function loadGarden() {
   const token = cookies().get('fg_token')?.value;
   const supabase = db();
-  const [{ data: fairies }, { data: steps }, { data: workouts }] = await Promise.all([
+  const [{ data: fairies }, { data: steps }, { data: workouts }, { data: cheers }] = await Promise.all([
     supabase.from('fairies').select('id, name, token, avatar_emoji, avatar_bg, avatar_path, avatar_acc'),
     supabase.from('steps').select('fairy_id, day, steps, updated_at'),
-    supabase.from('workouts').select('fairy_id, minutes'),
+    supabase.from('workouts').select('fairy_id, minutes, day'),
+    supabase.from('cheers').select('from_id, to_id, day'),
   ]);
   const today = helsinkiDay();
   const board: Fairy[] = (fairies ?? [])
@@ -62,9 +65,13 @@ export async function loadGarden() {
         avatarAcc: f.avatar_acc,
         stageIdx,
         yesterday: st.find((x) => x.day === dayBefore(today))?.steps ?? 0,
+        minsToday: ws.filter((w) => w.day === today).reduce((a, w) => a + w.minutes, 0),
+        cheersToday: (cheers ?? []).filter((c) => c.to_id === f.id && c.day === today).length,
         badges: BADGES.filter((b) => b.test(stats)).map((b) => b.id),
       };
     })
     .sort((a, b) => b.pts - a.pts);
-  return { board, me: board.find((b) => b.mine) ?? null, myRank: board.findIndex((b) => b.mine) + 1 };
+  const me = board.find((b) => b.mine) ?? null;
+  const sentToday = me ? (cheers ?? []).filter((c) => c.from_id === me.id && c.day === today).map((c) => c.to_id as string) : [];
+  return { board, me, myRank: board.findIndex((b) => b.mine) + 1, sentToday };
 }

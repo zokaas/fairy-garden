@@ -1,0 +1,40 @@
+import { JOURNEY_GOAL, STOPS } from '@/lib/garden';
+import Avatar, { type AvatarData } from './Avatar';
+
+const PTS: [number, number][] = [[8, 88], [60, 60], [120, 84], [180, 44], [240, 70], [292, 24]];
+
+function at(f: number): [number, number] {
+  const seg = Math.min(PTS.length - 2, Math.floor(f * (PTS.length - 1)));
+  const t = f * (PTS.length - 1) - seg;
+  return [PTS[seg][0] + (PTS[seg + 1][0] - PTS[seg][0]) * t, PTS[seg][1] + (PTS[seg + 1][1] - PTS[seg][1]) * t];
+}
+
+/** Haltijan polku: kokonaisaskeleet kuljettavat keijun kohti gaalaa. */
+export default function Journey({ steps, avatar }: { steps: number; avatar: AvatarData }) {
+  const f = Math.min(1, steps / JOURNEY_GOAL);
+  const [x, y] = at(f);
+  const next = STOPS.find((s) => s.at > steps);
+  const d = PTS.map((p, i) => `${i ? 'L' : 'M'}${p[0]},${p[1]}`).join(' ');
+  return (
+    <section className="card journey">
+      <h2>Haltijan polku 🗺️</h2>
+      <div className="trail">
+        <svg viewBox="0 0 300 110" preserveAspectRatio="none" aria-hidden="true">
+          <path d={d} fill="none" stroke="#f3cfe3" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
+          <path d={d} fill="none" stroke="url(#tg)" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - f} />
+          <defs>
+            <linearGradient id="tg" x1="0" x2="1"><stop offset="0" stopColor="#a8e6cf" /><stop offset="1" stopColor="#f48fb1" /></linearGradient>
+          </defs>
+        </svg>
+        {STOPS.map((s) => {
+          const [sx, sy] = at(s.at / JOURNEY_GOAL);
+          return <span key={s.name} className={`stop ${steps >= s.at ? 'on' : ''}`} style={{ left: `${(sx / 300) * 100}%`, top: `${(sy / 110) * 100}%` }} title={s.name}>{s.emoji}</span>;
+        })}
+        <span className="walker" style={{ left: `${(x / 300) * 100}%`, top: `${(y / 110) * 100}%` }}><Avatar a={avatar} size={34} /></span>
+      </div>
+      <p className="muted">
+        {next ? <>Seuraava etappi: {next.emoji} <b>{next.name}</b>, vielä {(next.at - steps).toLocaleString('fi-FI')} askelta.</> : <>Perillä Albertinkadulla! 🥂 Nähdään gaalassa.</>}
+      </p>
+    </section>
+  );
+}
