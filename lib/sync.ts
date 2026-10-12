@@ -14,16 +14,28 @@ const clean = (v: unknown): number => {
  * Muuntaa oikotien lähettämät päivät listaksi. Tukee kolmea muotoa:
  *  - { days: [{ day: "2026-10-09", steps: 8234 }, ...] }
  *  - { lines: "2026-10-09=8234\n2026-10-08=7120" } (rivit tai pilkuilla/puolipisteillä erotettuna)
+ *  - { values: "7120\n8234" } (vain summat, vanhin ensin, viimeinen = tänään; newest:"first" kääntää)
  *  - { steps: 8234, day?: "2026-10-09" } (vain tämä päivä)
  * Hylkää tulevat ja yli 14 päivää vanhat päivät sekä mahdottomat luvut. Samalle päivälle jää suurin arvo.
  */
-export function parseDays(body: { days?: unknown; lines?: unknown; steps?: unknown; day?: unknown }, today = helsinkiDay()): DayEntry[] {
+export function parseDays(body: { days?: unknown; lines?: unknown; values?: unknown; newest?: unknown; steps?: unknown; day?: unknown }, today = helsinkiDay()): DayEntry[] {
   const raw: { day: unknown; steps: unknown }[] = [];
   if (Array.isArray(body.days)) for (const d of body.days) raw.push({ day: (d as { day?: unknown })?.day, steps: (d as { steps?: unknown })?.steps });
   if (typeof body.lines === 'string') {
     for (const part of body.lines.split(/[\n;]+/)) {
       const m = /^\s*(\d{4}-\d{2}-\d{2})\s*[=:]\s*(.+?)\s*$/.exec(part);
       if (m) raw.push({ day: m[1], steps: m[2] });
+    }
+  }
+  if (typeof body.values === 'string') {
+    // Pelkät summat ilman päivämääriä, yksi per rivi, vierekkäisiltä päiviltä (Fill Missing).
+    // Oletus: vanhin ensin, viimeinen rivi = tänään. newest:"first" kääntää järjestyksen.
+    const vals = body.values.split(/[\n;]+/).map((v) => v.trim()).filter(Boolean);
+    if (body.newest === 'first') vals.reverse();
+    let d = today;
+    for (let i = vals.length - 1; i >= 0; i--) {
+      raw.push({ day: d, steps: vals[i] });
+      d = dayBefore(d);
     }
   }
   if (body.steps !== undefined) raw.push({ day: isDay(body.day) ? body.day : today, steps: body.steps });

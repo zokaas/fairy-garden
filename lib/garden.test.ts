@@ -81,6 +81,8 @@ assert.equal(weeksDone(fullSteps, fullWork.slice(0, 2), '2026-10-14'), 0);
 assert.equal(weeksDone([], [], '2026-10-14'), 0);
 assert.deepEqual(parseDays({ steps: 8234 }, '2026-10-14'), [{ day: '2026-10-14', steps: 8234 }]);
 assert.deepEqual(parseDays({ lines: '2026-10-14=8 234,0\n2026-10-13: 7120\nroskaa\n2026-10-14=100' }, '2026-10-14'), [{ day: '2026-10-13', steps: 7120 }, { day: '2026-10-14', steps: 8234 }]);
+assert.deepEqual(parseDays({ values: '7120\n8 234' }, '2026-10-14'), [{ day: '2026-10-13', steps: 7120 }, { day: '2026-10-14', steps: 8234 }]);
+assert.deepEqual(parseDays({ values: '8234\n7120', newest: 'first' }, '2026-10-14'), [{ day: '2026-10-13', steps: 7120 }, { day: '2026-10-14', steps: 8234 }]);
 assert.deepEqual(parseDays({ days: [{ day: '2026-10-12', steps: 5000 }, { day: '2026-10-15', steps: 1 }, { day: '2026-09-01', steps: 1 }, { day: '2026-10-11', steps: 999999 }] }, '2026-10-14'), [{ day: '2026-10-12', steps: 5000 }]);
 assert.deepEqual(parseDays({}, '2026-10-14'), []);
 assert.deepEqual(parseDays({ lines: '2026-10-14=8,234\n2026-10-13=12,345.6\n2026-10-12=8234,5' }, '2026-10-14').map((x) => x.steps), [8235, 12346, 8234]);
