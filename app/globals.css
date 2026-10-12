@@ -175,3 +175,7 @@ button.cheer.sent { opacity: .6; cursor: default; }
 @media (prefers-reduced-motion: reduce) { .star, .firefly, .walker, .spark, .bubble { animation: none !important; } }
 details.danger summary { cursor: pointer; font-weight: 600; }
 details.danger[open] summary { margin-bottom: 8px; }
+details.fairy-row { border-top: 1px dashed #f0d6e6; padding: 8px 0; }
+details.fairy-row summary { display: flex; align-items: center; gap: 10px; cursor: pointer; list-style: none; }
+details.fairy-row small { display: block; color: var(--muted); font-size: .75rem; }
+details.fairy-row form { margin-top: 6px; }

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { loadGarden } from '@/lib/data';
-import { DAILY_GOAL, ago, phaseOf, stageFor } from '@/lib/garden';
+import { DAILY_GOAL, STAGES, ago, phaseOf, stageFor, type Phase } from '@/lib/garden';
+import type { Fairy } from '@/lib/data';
 import { dailyQuests } from '@/lib/quests';
 import Journey from '@/components/Journey';
 import NameDice from '@/components/NameDice';
@@ -14,9 +15,16 @@ import SyncButton from '@/components/SyncButton';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Home({ searchParams }: { searchParams: { virhe?: string; synkattu?: string; kirjaudu?: string } }) {
-  const { board, me, myRank, sentToday } = await loadGarden();
-  const phase = phaseOf();
+export default async function Home({ searchParams }: { searchParams: { virhe?: string; synkattu?: string; kirjaudu?: string; taso?: string; aika?: string; juhla?: string; tyhja?: string } }) {
+  const { board, me: realMe, myRank, sentToday } = await loadGarden();
+  // Ylläpitäjän esikatselu: ?taso=0..5, ?aika=night|dawn|day|dusk, ?juhla=1, ?tyhja=1 (uuden käyttäjän näkymä)
+  const admin = !!realMe?.isAdmin;
+  let me: Fairy | null = admin && searchParams.tyhja ? { ...realMe!, hasSteps: false, today: 0, yesterday: 0, totalSteps: 0, pts: 0, stageIdx: 0, badges: [], streak: 0 } : realMe;
+  if (me && admin && searchParams.taso !== undefined) {
+    const idx = Math.max(0, Math.min(5, Number(searchParams.taso) || 0));
+    me = { ...me, stageIdx: idx, pts: STAGES[idx].min / 1000, hasSteps: true };
+  }
+  const phase: Phase = admin && ['night', 'dawn', 'day', 'dusk'].includes(searchParams.aika ?? '') ? (searchParams.aika as Phase) : phaseOf();
   const errs: Record<string, string> = {
     nimi: 'Kirjoita keijun nimi.',
     salasana: 'Salasanassa pitää olla vähintään 4 merkkiä.',
@@ -73,7 +81,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
 
   return (
     <>
-      <Celebrate stageIdx={stageIdx} stageName={stage.name} emoji={stage.emoji} />
+      <Celebrate stageIdx={stageIdx} stageName={stage.name} emoji={stage.emoji} force={admin && !!searchParams.juhla} />
       <Garden
         pts={me.pts}
         stageIdx={stageIdx}
@@ -157,6 +165,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         </div>
         <p className="muted"><Link href="/gaala">Kaikki merkit ja gaala →</Link></p>
       </section>
+      {admin && <p className="muted" style={{ textAlign: 'center' }}><Link href="/yllapito">🛠 Ylläpito ja esikatselut</Link></p>}
     </>
   );
 }

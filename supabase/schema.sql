@@ -45,3 +45,5 @@ alter table public.cheers enable row level security;
 
 alter table public.fairies add column if not exists pin_hash text;
 create unique index if not exists fairies_name_lower_key on public.fairies (lower(name));
+
+alter table public.fairies add column if not exists is_admin boolean not null default false;

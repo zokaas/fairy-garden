@@ -2,9 +2,14 @@
 import { useEffect, useState } from 'react';
 
 /** Juhlii, kun taso nousee (verrattuna edelliseen käyntiin tällä laitteella). */
-export default function Celebrate({ stageIdx, stageName, emoji }: { stageIdx: number; stageName: string; emoji: string }) {
+export default function Celebrate({ stageIdx, stageName, emoji, force }: { stageIdx: number; stageName: string; emoji: string; force?: boolean }) {
   const [show, setShow] = useState(false);
   useEffect(() => {
+    if (force) {
+      setShow(true);
+      setTimeout(() => setShow(false), 5000);
+      return;
+    }
     try {
       const prev = Number(localStorage.getItem('fg_stage') ?? '-1');
       localStorage.setItem('fg_stage', String(stageIdx));
@@ -13,7 +18,7 @@ export default function Celebrate({ stageIdx, stageName, emoji }: { stageIdx: nu
         setTimeout(() => setShow(false), 5000);
       }
     } catch {}
-  }, [stageIdx]);
+  }, [stageIdx, force]);
   if (!show) return null;
   const bits = ['🌸', '✨', '🦋', '🌷', '💖', '🌼'];
   return (

@@ -9,10 +9,10 @@ import SecretCountdown from '@/components/SecretCountdown';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Gaala() {
+export default async function Gaala({ searchParams }: { searchParams: { avaa?: string } }) {
   if (!cookies().get('fg_token')) redirect('/');
   const { board, me } = await loadGarden();
-  const unlocked = Date.now() >= Date.parse(SECRET_AT);
+  const unlocked = Date.now() >= Date.parse(SECRET_AT) || (!!me?.isAdmin && !!searchParams.avaa);
   const top = board.slice(0, 3);
   const order = [top[1], top[0], top[2]]; // palkintopalli: 2 – 1 – 3
   const heights = [96, 128, 78];
