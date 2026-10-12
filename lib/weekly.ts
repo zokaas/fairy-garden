@@ -1,10 +1,10 @@
 import { dayBefore, helsinkiDay, kindOf, weekStart } from './garden.ts';
 
-/** Viikon yhteinen tavoite: 7 000 askelta treenipäivänä, 10 000 muulloin, 3 urheilupäivää ja 1 luova päivä. */
-export const WEEK_GOAL = { sportDays: 3, creativeDays: 1, stepsSportDay: 7000, stepsRestDay: 10000 } as const;
+/** Viikon yhteinen tavoite: askeltavoite (7 000 treenipäivänä, 10 000 muulloin) vähintään 6 päivänä, 3 urheilupäivää ja 1 luova päivä. */
+export const WEEK_GOAL = { sportDays: 3, creativeDays: 1, stepsSportDay: 7000, stepsRestDay: 10000, stepDays: 6 } as const;
 
 /** Bonus jokaisesta kokonaan täytetystä viikosta. */
-export const WEEK_BONUS = 3;
+export const WEEK_BONUS = 10;
 
 export type WeekGoal = {
   sportDays: number; creativeDays: number; stepDaysOk: number; stepDaysElapsed: number;
@@ -33,7 +33,7 @@ export function weekGoal(steps: { day: string; steps: number }[], work: { day: s
   const creativeDays = days.filter((x) => creativeOn.has(x)).length;
   const sportDone = sportDays >= WEEK_GOAL.sportDays;
   const creativeDone = creativeDays >= WEEK_GOAL.creativeDays;
-  const stepsDone = ok >= 7;
+  const stepsDone = ok >= WEEK_GOAL.stepDays;
   const todayIsSport = sportOn.has(today);
   return { sportDays, creativeDays, stepDaysOk: ok, stepDaysElapsed: elapsed, sportDone, creativeDone, stepsDone, done: sportDone && creativeDone && stepsDone, todayIsSport, todayTarget: todayIsSport ? WEEK_GOAL.stepsSportDay : WEEK_GOAL.stepsRestDay };
 }
@@ -59,4 +59,21 @@ export function weeksDone(steps: { day: string; steps: number }[], work: { day: 
     w = dayAfter(end);
   }
   return n;
+}
+
+/** Viikkohistoria yhdelle keijulle: jokainen viikko ensimmäisestä kirjauksesta nykyiseen (vanhin ensin). */
+export function goalHistory(steps: { day: string; steps: number }[], work: { day: string; sport: string }[], today = helsinkiDay()): { week: string; end: string; g: WeekGoal }[] {
+  const all = [...steps.map((x) => x.day), ...work.map((x) => x.day)];
+  if (all.length === 0) return [];
+  let w = weekStart(all.sort()[0]);
+  const thisWeek = weekStart(today);
+  const out: { week: string; end: string; g: WeekGoal }[] = [];
+  for (let i = 0; i < 80 && w <= thisWeek; i++) {
+    let end = w;
+    for (let k = 0; k < 6; k++) end = dayAfter(end);
+    const upTo = end > today ? today : end;
+    out.push({ week: w, end: upTo, g: weekGoal(steps, work, upTo) });
+    w = dayAfter(end);
+  }
+  return out;
 }

@@ -1,6 +1,6 @@
 import type { Fairy } from './data';
 
-export type ListKey = 'kaikki' | 'askeleet' | 'urheilu' | 'luova';
+export type ListKey = 'kaikki' | 'askeleet' | 'urheilu' | 'luova' | 'nousu';
 const fi = (n: number) => n.toLocaleString('fi-FI');
 
 /** Kolme kärkilistaa: kaikki (pisteet), askeleet ja urheilu. Kullakin kausi- ja viikkoarvo. */
@@ -8,7 +8,8 @@ export const LISTS: Record<ListKey, { label: string; unit: string; total: (f: Fa
   kaikki: { label: 'Kaikki', unit: 'pistettä', total: (f) => f.pts, week: (f) => f.weekPts, fmt: (v) => `${fi(v)} p` },
   askeleet: { label: 'Askeleet', unit: 'askelta', total: (f) => f.totalSteps, week: (f) => f.week.steps, fmt: (v) => fi(v) },
   urheilu: { label: 'Urheilu', unit: 'minuuttia', total: (f) => f.sportMins, week: (f) => f.week.sportMins, fmt: (v) => `${fi(v)} min` },
+  nousu: { label: 'Nousu', unit: 'askelta', total: (f) => f.week.steps - f.lastWeek.steps, week: (f) => f.week.steps - f.lastWeek.steps, fmt: (v) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${fi(Math.abs(v))}` },
   luova: { label: 'Luova', unit: 'minuuttia', total: (f) => f.creativeMins, week: (f) => f.week.creativeMins, fmt: (v) => `${fi(v)} min` },
 };
 
-export const isList = (s: string | undefined): s is ListKey => s === 'kaikki' || s === 'askeleet' || s === 'urheilu' || s === 'luova';
+export const isList = (s: string | undefined): s is ListKey => s === 'kaikki' || s === 'askeleet' || s === 'urheilu' || s === 'luova' || s === 'nousu';

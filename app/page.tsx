@@ -101,7 +101,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         ))}
       </ol>
       {!me.hasSteps && <Link className="btn" href="/shortcut">Yhdistä askeleet nyt</Link>}
-      <p className="muted">Pisteet: 1 p / 2 500 askelta, 1 p / 30 min urheilua tai luovaa harrastusta, +3 p täydestä viikosta.</p>
+      <p className="muted">Pisteet: 1 p / 2 500 askelta, 1 p / 30 min urheilua tai luovaa harrastusta, +10 p täydestä viikosta.</p>
     </section>
   ) : null;
 
@@ -150,7 +150,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
       {me.hasSteps && (() => {
         const g = me.goal;
         const rows = [
-          { label: 'Askeleet', val: g.stepDaysOk, max: 7, hint: `päivää tavoitteessa. Tänään ${g.todayTarget.toLocaleString('fi-FI')} (${g.todayIsSport ? 'urheilupäivä' : 'ilman urheilua'})`, ok: g.stepsDone },
+          { label: 'Askeleet', val: Math.min(g.stepDaysOk, WEEK_GOAL.stepDays), max: WEEK_GOAL.stepDays, hint: `päivää tavoitteessa (yksi lepopäivä sallittu). Tänään ${g.todayTarget.toLocaleString('fi-FI')} (${g.todayIsSport ? 'urheilupäivä' : 'ilman urheilua'})`, ok: g.stepsDone },
           { label: 'Urheilu', val: g.sportDays, max: WEEK_GOAL.sportDays, hint: 'päivää. Sali, lenkki, laskettelu, hiihto, lentopallo, tribe, pilates, tennis…', ok: g.sportDone },
           { label: 'Luova', val: g.creativeDays, max: WEEK_GOAL.creativeDays, hint: 'päivä. Piirtäminen, virkkaaminen, lukeminen, soittaminen, ompelu…', ok: g.creativeDone },
         ];

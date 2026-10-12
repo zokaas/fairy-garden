@@ -29,7 +29,7 @@
 - Jos automaatio ei laukea, paina etusivun Synkkaa askeleet nyt -nappia.
 - Liikunta kirjataan etusivulla (laji + minuutit).
 - Pisteet: 1 p / 2 500 askelta, 1 p / 30 min urheilua ja 1 p / 30 min luovaa harrastusta.
-- Viikon tavoite: 7 000 askelta urheilupäivänä ja 10 000 muulloin, 3 urheilupäivää ja 1 luova päivä. Täysi viikko = +3 pistettä.
+- Viikon tavoite: askeltavoite (7 000 urheilupäivänä, 10 000 muulloin) vähintään 6 päivänä, 3 urheilupäivää ja 1 luova päivä. Täysi viikko = +10 pistettä.
 
 ## D. Jos jokin ei toimi
 - “Tuntematon token”: avain on kopioitu väärin, kopioi se `/shortcut`-sivulta uudelleen.

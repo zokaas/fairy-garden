@@ -12,6 +12,7 @@ export function awards(board: Fairy[]): Award[] {
     { emoji: '🚀', title: 'Yhden päivän ennätys', pick: (f) => f.bestDay, fmt: (v) => `${n(v)} askelta` },
     { emoji: '🔥', title: 'Putkien kuningatar', pick: (f) => f.bestRun, fmt: (v) => `${v} päivää putkeen` },
     { emoji: '💪', title: 'Liikuntakeiju', pick: (f) => f.sportMins, fmt: (v) => `${n(v)} min` },
+    { emoji: '📈', title: 'Nousija', pick: (f) => f.week.steps - f.lastWeek.steps, fmt: (v) => `+${n(v)} askelta viime viikon samaan aikaan` },
     { emoji: '🎨', title: 'Luovuuden kuningatar', pick: (f) => f.creativeMins, fmt: (v) => `${n(v)} min` },
     { emoji: '💌', title: 'Kimalluksen keiju', pick: (f) => f.cheersTotal, fmt: (v) => `${v} kimallusta` },
   ];

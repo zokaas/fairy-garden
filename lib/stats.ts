@@ -1,7 +1,7 @@
 import { dayBefore, helsinkiDay } from './garden.ts';
 
 export type StepRow = { fairy_id: string; day: string; steps: number };
-export type WorkRow = { fairy_id: string; day: string; sport: string; minutes: number };
+export type WorkRow = { fairy_id: string; day: string; sport: string; minutes: number; created_at?: string };
 
 export const sum = (a: number[]) => a.reduce((x, y) => x + y, 0);
 export const km = (steps: number) => steps * 0.00075;
@@ -224,4 +224,15 @@ export function pointsOverTime(steps: { day: string; steps: number }[], work: { 
     cm += w.get(d) ?? 0;
     return Math.floor(cs / 2500) + Math.floor(cm / 30);
   });
+}
+
+/** Kirjausajan jakauma vuorokaudenajoittain (Helsingin aika): [aamu 5–11, päivä 11–17, ilta 17–22, yö 22–5]. */
+export function timeOfDay(rows: { created_at?: string; minutes: number }[]): number[] {
+  const b = [0, 0, 0, 0];
+  for (const r of rows) {
+    if (!r.created_at) continue;
+    const h = Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Helsinki', hour: '2-digit', hour12: false }).format(new Date(r.created_at))) % 24;
+    b[h >= 5 && h < 11 ? 0 : h >= 11 && h < 17 ? 1 : h >= 17 && h < 22 ? 2 : 3] += r.minutes;
+  }
+  return b;
 }

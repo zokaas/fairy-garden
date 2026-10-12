@@ -17,7 +17,7 @@ export default async function Karki({ searchParams }: { searchParams: { lista?: 
   const key: ListKey = isList(searchParams.lista) ? searchParams.lista : 'kaikki';
   const week = searchParams.nayta === 'viikko';
   const L = LISTS[key];
-  const score = (b: (typeof all)[number]) => (week ? L.week(b) : L.total(b));
+  const score = (b: (typeof all)[number]) => (week || key === 'nousu' ? L.week(b) : L.total(b));
   const board = [...all].sort((a, b) => score(b) - score(a));
   const medal = ['🥇', '🥈', '🥉'];
   const href = (l: ListKey, w: boolean) => `/karki?lista=${l}${w ? '&nayta=viikko' : ''}`;
@@ -30,6 +30,7 @@ export default async function Karki({ searchParams }: { searchParams: { lista?: 
   const sub = (b: (typeof all)[number]) => {
     if (key === 'kaikki') return `${b.stepPts} p askelista · ${b.sportPts} p liikunnasta${b.bonusPts ? ` · ${b.bonusPts} p viikkotavoitteista` : ''}`;
     if (key === 'askeleet') return week ? `${b.week.activeDays} hyvää päivää` : `ka. ${fi(b.avgSteps)} / pv · paras ${fi(b.bestDay)}`;
+    if (key === 'nousu') return `tällä viikolla ${fi(b.week.steps)} · viime viikon samaan aikaan ${fi(b.lastWeek.steps)}${b.lastWeek.steps > 0 ? ` (${b.week.steps >= b.lastWeek.steps ? '+' : '−'}${Math.abs(Math.round(((b.week.steps - b.lastWeek.steps) / b.lastWeek.steps) * 100))} %)` : ''}`;
     if (key === 'luova') return `${b.goal.creativeDays} luovaa päivää tällä viikolla`;
     return week ? `${b.goal.sportDays} urheilupäivää` : `${b.goal.sportDays} / ${3} urheilupäivää tällä viikolla`;
   };
@@ -37,13 +38,16 @@ export default async function Karki({ searchParams }: { searchParams: { lista?: 
   return (
     <>
       <h1>Kärki</h1>
-      <div className="seg four">
+      <div className="seg five">
         {(Object.keys(LISTS) as ListKey[]).map((k) => <Link key={k} href={href(k, week)} className={k === key ? 'on' : ''}>{LISTS[k].label}</Link>)}
       </div>
-      <div className="seg">
-        <Link href={href(key, false)} className={!week ? 'on' : ''}>Koko kausi</Link>
-        <Link href={href(key, true)} className={week ? 'on' : ''}>Tämä viikko</Link>
-      </div>
+      {key !== 'nousu' && (
+        <div className="seg">
+          <Link href={href(key, false)} className={!week ? 'on' : ''}>Koko kausi</Link>
+          <Link href={href(key, true)} className={week ? 'on' : ''}>Tämä viikko</Link>
+        </div>
+      )}
+      {key === 'nousu' && <p className="muted" style={{ margin: '-6px 0 12px' }}>Kuka on kasvattanut askeleitaan eniten: tämä viikko verrattuna viime viikon samaan ajankohtaan. Tässä voi voittaa kuka tahansa.</p>}
 
       <section className="card">
         <h2>Vertailu</h2>
@@ -55,7 +59,7 @@ export default async function Karki({ searchParams }: { searchParams: { lista?: 
       </section>
 
       <section className="card">
-        <h2>{L.label}{week ? ' · viikko' : ' · kausi'}</h2>
+        <h2>{key === 'nousu' ? 'Nousu viime viikkoon verrattuna' : `${L.label}${week ? ' · viikko' : ' · kausi'}`}</h2>
         {board.length === 0 ? <p className="muted">Ei vielä keijuja.</p> : (
           <ol className="rank">
             {board.map((b, i) => {

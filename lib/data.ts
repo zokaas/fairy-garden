@@ -32,6 +32,7 @@ export type Fairy = {
   creativeToday: number;
   goal: WeekGoal;
   weeksDone: number;
+  lastWeek: { steps: number; mins: number };
   bonusPts: number;
   cheersToday: number;
   isAdmin: boolean;
@@ -64,6 +65,10 @@ export async function loadGarden() {
   const { fairies, steps, workouts, cheers } = DEMO ? demoRows() : await fetchRows();
   const today = helsinkiDay();
   const wk = weekStart(today);
+  let lastWk = wk;
+  for (let i = 0; i < 7; i++) lastWk = dayBefore(lastWk);
+  let lastSame = today; // sama viikonpäivä viime viikolla: verrataan kuluvaa viikkoa viime viikon samaan ajankohtaan
+  for (let i = 0; i < 7; i++) lastSame = dayBefore(lastSame);
   const board: Fairy[] = (fairies ?? [])
     .map((f) => {
       const st = (steps ?? []).filter((s) => s.fairy_id === f.id);
@@ -124,6 +129,10 @@ export async function loadGarden() {
         creativeToday: ws.filter((w) => w.day === today && kindOf(w.sport) === 'luova').reduce((a, w) => a + w.minutes, 0),
         goal: weekGoal(st, ws, today),
         weeksDone: wDone,
+        lastWeek: {
+          steps: st.filter((x) => x.day >= lastWk && x.day <= lastSame).reduce((a, x) => a + x.steps, 0),
+          mins: ws.filter((w) => w.day >= lastWk && w.day <= lastSame).reduce((a, w) => a + w.minutes, 0),
+        },
         bonusPts,
         cheersToday: (cheers ?? []).filter((c) => c.to_id === f.id && c.day === today).length,
         badges: BADGES.filter((b) => b.test(stats)).map((b) => b.id),
@@ -144,7 +153,7 @@ export async function loadRaw() {
   const supabase = db();
   const [{ data: steps }, { data: workouts }, { data: cheers }] = await Promise.all([
     supabase.from('steps').select('fairy_id, day, steps'),
-    supabase.from('workouts').select('fairy_id, day, sport, minutes'),
+    supabase.from('workouts').select('fairy_id, day, sport, minutes, created_at'),
     supabase.from('cheers').select('from_id, to_id, day'),
   ]);
   return { steps: (steps ?? []) as import('./stats').StepRow[], workouts: (workouts ?? []) as import('./stats').WorkRow[], cheers: (cheers ?? []) as { from_id: string; to_id: string; day: string }[] };

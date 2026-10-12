@@ -36,7 +36,7 @@ export async function sendWeeklySummary(onlyId?: string): Promise<{ targets: num
     if (i < 0) continue;
     const me = rows[i];
     const missing: string[] = [];
-    if (!me.g.stepsDone) missing.push(`askeleet ${me.g.stepDaysOk}/7`);
+    if (!me.g.stepsDone) missing.push(`askeleet ${Math.min(me.g.stepDaysOk, WEEK_GOAL.stepDays)}/${WEEK_GOAL.stepDays}`);
     if (!me.g.sportDone) missing.push(`urheilu ${me.g.sportDays}/${WEEK_GOAL.sportDays}`);
     if (!me.g.creativeDone) missing.push(`luova ${me.g.creativeDays}/${WEEK_GOAL.creativeDays}`);
     const leader = rows[0] && rows[0].id !== id ? ` Viikon paras: ${rows[0].name} (${rows[0].pts} p).` : ' Sinä olit viikon paras!';

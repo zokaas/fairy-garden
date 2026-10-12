@@ -3,6 +3,8 @@ import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { loadGarden, loadRaw } from '@/lib/data';
 import { ACTIVE_DAY, DAILY_GOAL, helsinkiDay, kindOf, sportPoints, stepPoints, weekStart } from '@/lib/garden';
+import { goalHistory, WEEK_GOAL } from '@/lib/weekly';
+import { timeOfDay } from '@/lib/stats';
 import { byDay, route, routeText, daysBetween, km, series, sportStats, sum, trend, weekdayAvg, weeklyMinutes, weeklySteps, bestOf, cumulative, heatCells, monthly, movingAvg, pointsOverTime, stepBuckets, weekdayVsWeekend, weeklyTotals } from '@/lib/stats';
 import BarChart from '@/components/BarChart';
 import CountUp from '@/components/CountUp';
@@ -27,10 +29,15 @@ function Tiles({ items }: { items: [string, string, string?, number?][] }) {
   );
 }
 
-export default async function Tilastot({ searchParams }: { searchParams: { nayta?: string; vs?: string } }) {
+export default async function Tilastot({ searchParams }: { searchParams: { nayta?: string; vs?: string; jakso?: string } }) {
   if (!cookies().get('fg_token')) redirect('/');
-  const [{ board, me }, raw] = await Promise.all([loadGarden(), loadRaw()]);
+  const [{ board, me }, rawFull] = await Promise.all([loadGarden(), loadRaw()]);
   if (!me) redirect('/');
+  // Aikajakso: 7 pv, 30 pv tai koko kausi (0). Rajaa kaikki laskettavat rivit; ennätykset ja vertailu käyttävät koko kautta.
+  const jakso = searchParams.jakso === '7' ? 7 : searchParams.jakso === '30' ? 30 : 0;
+  const cutoff = jakso ? series([], jakso, helsinkiDay())[0].day : '0000-00-00';
+  const raw = { steps: rawFull.steps.filter((r) => r.day >= cutoff), workouts: rawFull.workouts.filter((r) => r.day >= cutoff), cheers: rawFull.cheers.filter((r) => r.day >= cutoff) };
+  const J = jakso ? `&jakso=${jakso}` : '';
   const tab = ['mina', 'ryhma', 'urheilu', 'vertailu', 'ennatykset'].includes(searchParams.nayta ?? '') ? searchParams.nayta! : 'yhteenveto';
   const today = helsinkiDay();
   const wk = weekStart(today);
@@ -107,33 +114,75 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
   const topReceived = [...board].sort((a, b) => b.cheersTotal - a.cheersTotal)[0];
   const topSenderId = Object.entries(sentCount).sort((a, b) => b[1] - a[1])[0];
 
+  // ===== Viikkotavoitteen historia (koko kausi) =====
+  const forFairy = (id: string) => goalHistory(rawFull.steps.filter((r) => r.fairy_id === id), rawFull.workouts.filter((r) => r.fairy_id === id), today);
+  const histMe = forFairy(me.id);
+  const histAll = board.map((b) => forFairy(b.id));
+  const weekKeys = Array.from(new Set(histAll.flat().map((h) => h.week))).sort();
+  const groupRate = (week: string) => { const have = histAll.filter((h) => h.some((x) => x.week === week)); const ok = have.filter((h) => h.find((x) => x.week === week)!.g.done).length; return have.length ? Math.round((ok / have.length) * 100) : 0; };
+  const thisWeekKey = weekStart(today);
+  const histCard = (
+    <section className="card">
+      <h2>Viikkotavoite viikko viikolta</h2>
+      {histMe.length === 0 ? <p className="muted">Historia ilmestyy, kun ensimmäinen viikko on kirjattu.</p> : (
+        <ul className="hist">
+          {[...histMe].reverse().slice(0, 10).map((h) => (
+            <li key={h.week}>
+              <span className="hk">vko {Number(h.week.slice(8))}.{Number(h.week.slice(5, 7))}.{h.week === thisWeekKey ? <small>käynnissä</small> : null}</span>
+              <span className="pills">
+                <i className={h.g.stepsDone ? 'ok' : ''}>askel {Math.min(h.g.stepDaysOk, WEEK_GOAL.stepDays)}/{WEEK_GOAL.stepDays}</i>
+                <i className={h.g.sportDone ? 'ok' : ''}>urheilu {h.g.sportDays}/{WEEK_GOAL.sportDays}</i>
+                <i className={h.g.creativeDone ? 'ok' : ''}>luova {h.g.creativeDays}/{WEEK_GOAL.creativeDays}</i>
+              </span>
+              <b className={h.g.done ? 'ok' : ''}>{h.g.done ? '✓' : h.week === thisWeekKey ? '…' : '✗'}</b>
+              <small>ryhmä {groupRate(h.week)} %</small>
+            </li>
+          ))}
+        </ul>
+      )}
+      {weekKeys.length > 1 && (
+        <>
+          <h2 style={{ marginTop: 14 }}>Ryhmän täyttöprosentti viikoittain</h2>
+          <BarChart height={100} unit=" %" items={weekKeys.slice(-10).map((w) => ({ label: `${Number(w.slice(8))}.${Number(w.slice(5, 7))}.`, value: groupRate(w) }))} highlight={weekKeys.slice(-10).length - 1} />
+        </>
+      )}
+    </section>
+  );
+
   return (
     <>
       <h1>Tilastot</h1>
       <div className="seg">
-        <Link href="/tilastot" className={tab === 'yhteenveto' ? 'on' : ''}>Yhteenveto</Link>
-        <Link href="/tilastot?nayta=mina" className={tab !== 'yhteenveto' ? 'on' : ''}>Lisää tilastoja</Link>
+        <Link href={jakso ? `/tilastot?jakso=${jakso}` : '/tilastot'} className={tab === 'yhteenveto' ? 'on' : ''}>Yhteenveto</Link>
+        <Link href={`/tilastot?nayta=mina${J}`} className={tab !== 'yhteenveto' ? 'on' : ''}>Lisää tilastoja</Link>
       </div>
       {tab !== 'yhteenveto' && (
         <div className="seg five">
-          <Link href="/tilastot?nayta=mina" className={tab === 'mina' ? 'on' : ''}>Minä</Link>
-          <Link href="/tilastot?nayta=ryhma" className={tab === 'ryhma' ? 'on' : ''}>Ryhmä</Link>
-          <Link href="/tilastot?nayta=urheilu" className={tab === 'urheilu' ? 'on' : ''}>Urheilu</Link>
-          <Link href="/tilastot?nayta=vertailu" className={tab === 'vertailu' ? 'on' : ''}>Vertailu</Link>
-          <Link href="/tilastot?nayta=ennatykset" className={tab === 'ennatykset' ? 'on' : ''}>Ennätys</Link>
+          <Link href={`/tilastot?nayta=mina${J}`} className={tab === 'mina' ? 'on' : ''}>Minä</Link>
+          <Link href={`/tilastot?nayta=ryhma${J}`} className={tab === 'ryhma' ? 'on' : ''}>Ryhmä</Link>
+          <Link href={`/tilastot?nayta=urheilu${J}`} className={tab === 'urheilu' ? 'on' : ''}>Urheilu</Link>
+          <Link href={`/tilastot?nayta=vertailu${J}`} className={tab === 'vertailu' ? 'on' : ''}>Vertailu</Link>
+          <Link href={`/tilastot?nayta=ennatykset${J}`} className={tab === 'ennatykset' ? 'on' : ''}>Ennätys</Link>
         </div>
       )}
 
+      {['yhteenveto', 'mina', 'ryhma', 'urheilu'].includes(tab) && (
+        <div className="seg">
+          {([[7, '7 pv'], [30, '30 pv'], [0, 'Koko kausi']] as [number, string][]).map(([v, label]) => (
+            <Link key={v} href={`/tilastot?${tab !== 'yhteenveto' ? `nayta=${tab}&` : ''}${v ? `jakso=${v}` : ''}`.replace(/[?&]$/, '')} className={jakso === v ? 'on' : ''}>{label}</Link>
+          ))}
+        </div>
+      )}
       {tab === 'yhteenveto' && (
         <>
           <section className="card">
             <h2>Sinun kautesi</h2>
             <Tiles items={[
-              ['Pisteet', `${me.pts} p`, `sija ${board.findIndex((b) => b.mine) + 1} / ${board.length}`],
+              [jakso ? 'Pisteet (jakso)' : 'Pisteet', `${jakso ? stepPoints(myTotal) + sportPoints(sum(myWork.map((w) => w.minutes))) : me.pts} p`, `sija ${board.findIndex((b) => b.mine) + 1} / ${board.length}`],
               ['Askeleet yhteensä', fi(myTotal), `${fi(km(myTotal), 1)} km`],
               ['Paras päivä', best ? fi(best[1]) : '–', best ? dm(best[0]) : undefined],
               ['Putki nyt', `${me.streak} pv`, `ennätys ${me.bestRun} pv`],
-              ['Urheilu ja luova', `${fi(me.mins)} min`, `${me.workouts} kertaa`],
+              ['Urheilu ja luova', `${fi(sum(myWork.map((w) => w.minutes)))} min`, `${myWork.length} kertaa`],
               ['Täysiä viikkoja', String(me.weeksDone), `+${me.bonusPts} p bonusta`],
             ]} />
           </section>
@@ -142,13 +191,14 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
             <BarChart items={series(mySteps, 14, today).map((d) => ({ label: String(Number(d.day.slice(8))), value: d.steps }))} highlight={13} />
             <p className="muted">{trendTxt(tr) === '–' ? 'Kerää lisää dataa nähdäksesi trendin.' : `Viimeiset 7 päivää ${fi(tr.last)} askelta, ${tr.pct !== null && tr.pct >= 0 ? 'enemmän' : 'vähemmän'} kuin edelliset 7 päivää (${trendTxt(tr)}).`}</p>
           </section>
+          {histCard}
           <section className="card">
             <h2>Sinä ja ryhmä</h2>
             <Tiles items={[
               ['Sinun askelesi päivässä', fi(avgActive), 'kun kävelit'],
               ['Ryhmän keskiarvo', fi(perFairyDay), vsGroup === null ? undefined : `${vsGroup >= 0 ? '+' : '−'}${Math.abs(vsGroup)} % sinä verrattuna`],
             ]} />
-            <Link className="btn ghost" href="/tilastot?nayta=mina" style={{ marginTop: 12 }}>Lisää tilastoja</Link>
+            <Link className="btn ghost" href={`/tilastot?nayta=mina${J}`} style={{ marginTop: 12 }}>Lisää tilastoja</Link>
           </section>
         </>
       )}
@@ -215,6 +265,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
               </table>
             </section>
           )}
+          {histCard}
           <section className="card">
             <h2>Viikoittain, 8 viikkoa</h2>
             <BarChart items={weeklySteps(mySteps, 8, wk).map((w) => ({ label: dm(w.day), value: w.steps }))} highlight={7} />
@@ -348,6 +399,17 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
               </section>
             </>
           )}
+          <section className="card">
+            <h2>Omat lajisi</h2>
+            {myWork.length === 0 ? <p className="muted">Kirjaa ensimmäinen urheilu tai luova hetki, niin lajijakauma ilmestyy.</p> : (
+              <>
+                <Donut items={sportStats(myWork).slice(0, 6).map((x) => ({ label: x.sport, value: x.minutes }))} center={`${fi(sum(myWork.map((w) => w.minutes)))} min`} unit=" min" />
+                <h2 style={{ marginTop: 14 }}>Milloin kirjaat liikuntasi</h2>
+                <BarChart height={90} unit=" min" items={timeOfDay(myWork).map((v, i) => ({ label: ['Aamu', 'Päivä', 'Ilta', 'Yö'][i], value: v }))} />
+                <p className="muted">Kirjausajan mukaan (aamu 5–11, päivä 11–17, ilta 17–22, yö 22–5), ei varsinaisen treenin ajan.</p>
+              </>
+            )}
+          </section>
           <section className="card">
             <h2>Luovat harrastukset</h2>
             <Tiles items={[

@@ -28,7 +28,7 @@ assert.equal(weekStart('2026-10-18'), '2026-10-12');
 assert.equal(weekStart('2026-10-12'), '2026-10-12');
 import { series, weekdayAvg, sportStats, trend, route, routeText, weeklyMinutes, daysBetween, weeklySteps, dayRange, cumulative, movingAvg, stepBuckets, weekdayVsWeekend, weeklyTotals, bestOf, heatCells, pointsOverTime } from './stats.ts';
 import { challengeFor, groupTarget } from './challenge.ts';
-import { weekGoal, weeksDone } from './weekly.ts';
+import { weekGoal, weeksDone, goalHistory } from './weekly.ts';
 import { parseDays } from './sync.ts';
 import { syncWatch } from './watch.ts';
 import { kindOf } from './garden.ts';
@@ -75,6 +75,9 @@ assert.equal(wg.todayIsSport, true); assert.equal(wg.todayTarget, 7000);
 const fullSteps = ['2026-10-05', '2026-10-06', '2026-10-07', '2026-10-08', '2026-10-09', '2026-10-10', '2026-10-11'].map((day, i) => ({ day, steps: i < 3 ? 7000 : 10000 }));
 const fullWork = [{ day: '2026-10-05', sport: 'Sali' }, { day: '2026-10-06', sport: 'Tennis' }, { day: '2026-10-07', sport: 'Jooga' }, { day: '2026-10-08', sport: 'Piirtäminen' }];
 assert.equal(weeksDone(fullSteps, fullWork, '2026-10-14'), 1);
+// 6/7 päivää riittää: yksi askelpäivä voi jäädä alle
+assert.equal(weeksDone(fullSteps.map((x, i) => (i === 6 ? { ...x, steps: 100 } : x)), fullWork, '2026-10-14'), 1);
+assert.equal(weeksDone(fullSteps.map((x, i) => (i >= 5 ? { ...x, steps: 100 } : x)), fullWork, '2026-10-14'), 0);
 assert.equal(weeksDone(fullSteps, fullWork.slice(0, 2), '2026-10-14'), 0);
 assert.equal(weeksDone([], [], '2026-10-14'), 0);
 assert.deepEqual(parseDays({ steps: 8234 }, '2026-10-14'), [{ day: '2026-10-14', steps: 8234 }]);
@@ -93,4 +96,7 @@ const w = syncWatch(
 );
 assert.deepEqual(w.map((x) => `${x.fairy.id}:${x.level}:${x.missing.length}`), ['d:never:0', 'c:alert:3', 'b:warn:1', 'a:ok:0']);
 assert.deepEqual(w.find((x) => x.fairy.id === 'b')!.missing, ['2026-10-12']);
+assert.equal(goalHistory(fullSteps, fullWork, '2026-10-14').length, 2);
+assert.equal(goalHistory(fullSteps, fullWork, '2026-10-14')[0].g.done, true);
+assert.deepEqual(goalHistory([], [], '2026-10-14'), []);
 console.log('garden: ok');
