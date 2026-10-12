@@ -4,7 +4,6 @@ import { cookies } from 'next/headers';
 import { loadGarden } from '@/lib/data';
 import { ago, stageFor } from '@/lib/garden';
 import { LISTS, isList, type ListKey } from '@/lib/lists';
-import { TEAMS, teamOf } from '@/lib/teams';
 import Avatar from '@/components/Avatar';
 import { leave, sendCheer } from '../actions';
 
@@ -27,12 +26,6 @@ export default async function Karki({ searchParams }: { searchParams: { lista?: 
   const avg = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
   const best = Math.max(0, ...vals);
   const mine = me ? score(me) : 0;
-
-  const teams = key === 'kaikki' ? TEAMS.map((t) => {
-    const m = all.filter((f) => f.team === t.id);
-    const total = m.reduce((a, f) => a + score(f), 0);
-    return { ...t, members: m.length, total, avg: m.length ? total / m.length : 0 };
-  }).filter((t) => t.members > 0).sort((a, b) => b.avg - a.avg) : [];
 
   const sub = (b: (typeof all)[number]) => {
     if (key === 'kaikki') return `${b.stepPts} p askelista · ${b.sportPts} p liikunnasta${b.bonusPts ? ` · ${b.bonusPts} p viikkotavoitteista` : ''}`;
@@ -61,22 +54,6 @@ export default async function Karki({ searchParams }: { searchParams: { lista?: 
         </div>
       </section>
 
-      {teams.length > 0 && (
-        <section className="card">
-          <h2>Joukkueet{week ? ' (viikko)' : ''}</h2>
-          <ol className="rank">
-            {teams.map((t, i) => (
-              <li key={t.id}>
-                <span className="pos">{medal[i] ?? i + 1}</span>
-                <span className="nm"><span className="teamdot">{t.emoji}</span><span>{t.name}<small>{t.members} jäsentä · yhteensä {t.total} p</small></span></span>
-                <span className="pt">{t.avg.toFixed(1)} p/keiju</span>
-              </li>
-            ))}
-          </ol>
-          <p className="muted">Joukkueen pisteet ovat jäsenten keskiarvo. Valitse joukkue <Link href="/profiili">profiilissa</Link>.</p>
-        </section>
-      )}
-
       <section className="card">
         <h2>{L.label}{week ? ' · viikko' : ' · kausi'}</h2>
         {board.length === 0 ? <p className="muted">Ei vielä keijuja.</p> : (
@@ -87,7 +64,7 @@ export default async function Karki({ searchParams }: { searchParams: { lista?: 
                 <li key={b.id} className={b.mine ? 'me' : ''}>
                   <span className="pos">{medal[i] ?? i + 1}</span>
                   <span className="nm"><Avatar a={b} size={38} badge={stageFor(b.pts).stage.emoji} stage={b.stageIdx} />
-                    <span>{b.name} {teamOf(b.team)?.emoji ?? ''}<small>{sub(b)}</small>{key === 'askeleet' && <small>synkattu {ago(b.lastSync)}</small>}</span>
+                    <span>{b.name}<small>{sub(b)}</small>{key === 'askeleet' && <small>synkattu {ago(b.lastSync)}</small>}</span>
                   </span>
                   <span className="pt">{L.fmt(score(b))}{diff !== null && <small className={diff > 0 ? 'neg' : 'pos2'}>{diff > 0 ? '+' : diff < 0 ? '−' : ''}{fi(Math.abs(diff))}</small>}</span>
                   {me && !b.mine && (

@@ -35,7 +35,6 @@ export type Fairy = {
   bonusPts: number;
   cheersToday: number;
   isAdmin: boolean;
-  team: string | null;
   weekPts: number;
   week: { steps: number; activeDays: number; goalDays: number; mins: number; sessions: number; sportMins: number; creativeMins: number };
   bestDay: number;
@@ -52,7 +51,7 @@ export type Fairy = {
 async function fetchRows() {
   const supabase = db();
   const [{ data: fairies }, { data: steps }, { data: workouts }, { data: cheers }] = await Promise.all([
-    supabase.from('fairies').select('id, name, token, avatar_emoji, avatar_bg, avatar_path, avatar_acc, is_admin, team'),
+    supabase.from('fairies').select('id, name, token, avatar_emoji, avatar_bg, avatar_path, avatar_acc, is_admin'),
     supabase.from('steps').select('fairy_id, day, steps, updated_at'),
     supabase.from('workouts').select('fairy_id, minutes, day, sport'),
     supabase.from('cheers').select('from_id, to_id, day'),
@@ -94,7 +93,6 @@ export async function loadGarden() {
         avatarVer: f.avatar_path,
         avatarAcc: f.avatar_acc,
         isAdmin: !!f.is_admin,
-        team: f.team,
         week: {
           steps: st.filter((x) => x.day >= wk).reduce((a, x) => a + x.steps, 0),
           activeDays: st.filter((x) => x.day >= wk && x.steps >= ACTIVE_DAY).length,

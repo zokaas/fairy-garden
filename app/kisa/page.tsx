@@ -77,7 +77,7 @@ export default async function Kisa({ searchParams }: { searchParams: { avaa?: st
           <li><b>1 piste</b> jokaisesta 2 500 askeleesta.</li>
           <li><b>1 piste</b> jokaisesta 30 minuutista urheilua tai luovaa harrastusta (kävely ratkaisee eniten).</li>
           <li><b>Viikon tavoite:</b> 7 000 askelta urheilupäivänä ja 10 000 muulloin, 3 urheilupäivää ja 1 luova päivä. Täysi viikko tuo <b>+3 pistettä</b>.</li>
-          <li>Eniten pisteitä kisan päättyessä voittaa. Joukkueiden pisteet ovat jäsenten keskiarvo.</li>
+          <li>Eniten pisteitä kisan päättyessä voittaa.</li>
           <li>Reilu peli: kirjaa vain omat askeleesi ja oma liikuntasi.</li>
         </ol>
       </section>

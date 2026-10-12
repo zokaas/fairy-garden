@@ -23,7 +23,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
   const { board, me: realMe, myRank, sentToday } = await loadGarden();
   // Ylläpitäjän esikatselu: ?taso=0..5, ?aika=night|dawn|day|dusk, ?juhla=1, ?tyhja=1 (uuden käyttäjän näkymä)
   const admin = !!realMe?.isAdmin;
-  let me: Fairy | null = admin && searchParams.tyhja ? { ...realMe!, hasSteps: false, today: 0, yesterday: 0, totalSteps: 0, pts: 0, stageIdx: 0, badges: [], streak: 0, workouts: 0, team: null, avatarEmoji: null } : realMe;
+  let me: Fairy | null = admin && searchParams.tyhja ? { ...realMe!, hasSteps: false, today: 0, yesterday: 0, totalSteps: 0, pts: 0, stageIdx: 0, badges: [], streak: 0, workouts: 0, avatarEmoji: null } : realMe;
   if (me && admin && searchParams.taso !== undefined) {
     const idx = Math.max(0, Math.min(5, Number(searchParams.taso) || 0));
     me = { ...me, stageIdx: idx, pts: STAGES[idx].pts, hasSteps: true };
@@ -86,7 +86,6 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
   const todo = [
     { done: me.hasSteps, label: 'Yhdistä askeleet', hint: 'Kerran, noin 5 min. Sen jälkeen askeleet tulevat itsestään.', href: '/shortcut' },
     { done: !!me.avatarEmoji, label: 'Valitse oma keiju', hint: 'Hahmo, väri tai oma kuva.', href: '/profiili' },
-    { done: !!me.team, label: 'Liity joukkueeseen', hint: 'Sienet, Perhoset, Kukat tai Tähdet.', href: '/profiili' },
     { done: me.workouts > 0, label: 'Kirjaa ensimmäinen urheilu tai luova hetki', hint: '1 piste / 30 min.', href: '/kirjaa' },
   ];
   const doneCount = todo.filter((t) => t.done).length;

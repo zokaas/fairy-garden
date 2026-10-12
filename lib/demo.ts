@@ -7,7 +7,6 @@ export const DEMO = process.env.FG_DEMO === '1';
 const NAMES = ['Kielo', 'Villiruusu', 'Kastepisara', 'Lumikello', 'Ruiskaunokki', 'Pääskynen', 'Orvokki', 'Mesikämmen', 'Sumuinen Sini'];
 const EMOJIS = ['fig', '🦋', '🌸', '🧚🏽‍♀️', '🍄', '🐰', '🦄', '🧚🏻‍♀️', '🌙'];
 const BGS = ['#f8d7ec', '#d7f2e3', '#e4d9fb', '#fde8c4', '#d4ecfb', '#ffd9d2', '#f3f0b8', '#ffe0f4', '#d7f2e3'];
-const TEAMS = ['sienet', 'perhoset', 'kukat', 'tahdet', 'sienet', 'perhoset', 'kukat', 'tahdet', 'sienet'];
 
 export function demoRows() {
   let seed = 7;
@@ -18,7 +17,7 @@ export function demoRows() {
   const fairies = NAMES.map((name, i) => ({
     id: `f${i}`, name, token: i === 0 ? 'demo' : `t${i}`, avatar_emoji: EMOJIS[i], avatar_bg: BGS[i],
     avatar_path: null, avatar_acc: ['crown', 'wings', 'flowers', 'sparkle', 'sprout', 'none', 'none', 'none', 'none'][i],
-    is_admin: i === 0, team: TEAMS[i],
+    is_admin: i === 0,
   }));
   const today = helsinkiDay();
   const steps: { fairy_id: string; day: string; steps: number; updated_at: string }[] = [];

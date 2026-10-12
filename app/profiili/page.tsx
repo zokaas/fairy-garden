@@ -2,9 +2,8 @@ import { redirect } from 'next/navigation';
 import { loadGarden } from '@/lib/data';
 import { AVATAR_BGS } from '@/lib/avatar';
 import AvatarEditor from '@/components/AvatarEditor';
-import { TEAMS } from '@/lib/teams';
 import PushToggle from '@/components/PushToggle';
-import { deleteAccount, removePhoto, saveAvatar, saveTeam } from '../actions';
+import { deleteAccount, removePhoto, saveAvatar } from '../actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,18 +28,6 @@ export default async function Profiili({ searchParams }: { searchParams: { uusi?
       />
           {!uusi && (
         <>
-          <form action={saveTeam} className="card">
-            <h2>Joukkue</h2>
-            <div className="teams">
-              {TEAMS.map((t) => (
-                <label key={t.id}>
-                  <input type="radio" name="team" value={t.id} defaultChecked={me.team === t.id} required />
-                  <span>{t.emoji}<b>{t.name}</b><small>{board.filter((f) => f.team === t.id).length} jäsentä</small></span>
-                </label>
-              ))}
-            </div>
-            <button className="btn ghost">Liity joukkueeseen</button>
-          </form>
           <section className="card">
             <h2>Askelten synkka</h2>
             <p className="muted">Oikotie, jolla iPhone lähettää askeleesi automaattisesti.</p>

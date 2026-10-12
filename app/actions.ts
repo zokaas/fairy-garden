@@ -8,7 +8,6 @@ import { CREATIVE, SPORTS, dayBefore, helsinkiDay, isDay } from '@/lib/garden';
 import { ACCESSORIES, AVATAR_BGS, AVATAR_EMOJIS } from '@/lib/avatar';
 import { loadGarden } from '@/lib/data';
 import { hashPin, verifyPin } from '@/lib/pin';
-import { TEAMS } from '@/lib/teams';
 import { sendPush } from '@/lib/push';
 
 const COOKIE = 'fg_token';
@@ -144,11 +143,3 @@ export async function sendCheer(formData: FormData) {
   revalidatePath('/', 'layout');
 }
 
-export async function saveTeam(formData: FormData) {
-  const { me } = await loadGarden();
-  const team = String(formData.get('team') ?? '');
-  if (!me || !TEAMS.some((t) => t.id === team)) return;
-  await db().from('fairies').update({ team }).eq('id', me.id);
-  revalidatePath('/', 'layout');
-  redirect('/profiili?ok=1');
-}

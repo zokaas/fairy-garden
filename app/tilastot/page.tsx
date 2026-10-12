@@ -3,7 +3,6 @@ import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { loadGarden, loadRaw } from '@/lib/data';
 import { ACTIVE_DAY, DAILY_GOAL, helsinkiDay, kindOf, sportPoints, stepPoints, weekStart } from '@/lib/garden';
-import { TEAMS } from '@/lib/teams';
 import { byDay, route, routeText, daysBetween, km, series, sportStats, sum, trend, weekdayAvg, weeklyMinutes, weeklySteps, bestOf, cumulative, heatCells, monthly, movingAvg, pointsOverTime, stepBuckets, weekdayVsWeekend, weeklyTotals } from '@/lib/stats';
 import BarChart from '@/components/BarChart';
 import CountUp from '@/components/CountUp';
@@ -77,10 +76,6 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
   const vsGroup = perFairyDay > 0 && avgActive > 0 ? Math.round(((avgActive - perFairyDay) / perFairyDay) * 100) : null;
   const trendTxt = (t: { pct: number | null }) => (t.pct === null ? '–' : `${t.pct > 0 ? '▲' : t.pct < 0 ? '▼' : '='} ${Math.abs(t.pct)} %`);
 
-  const teamRows = TEAMS.map((t) => {
-    const ids = new Set(board.filter((f) => f.team === t.id).map((f) => f.id));
-    return { ...t, steps: sum(raw.steps.filter((r) => ids.has(r.fairy_id)).map((r) => r.steps)), n: ids.size };
-  }).filter((t) => t.n > 0).sort((a, b) => b.steps / b.n - a.steps / a.n);
 
   // ===== Laajemmat laskelmat =====
   const MONTHS = ['tammi', 'helmi', 'maalis', 'huhti', 'touko', 'kesä', 'heinä', 'elo', 'syys', 'loka', 'marras', 'joulu'];
@@ -296,13 +291,6 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
             <BarChart items={wdG.map((v, i) => ({ label: WD[i], value: v }))} highlight={wdG.indexOf(Math.max(...wdG))} />
             <p className="muted">Ryhmän paras päivä: <b>{bestWd(wdG)}</b>.</p>
           </section>
-          {teamRows.length > 0 && (
-            <section className="card">
-              <h2>Joukkueet</h2>
-              <Tiles items={teamRows.map((t) => [`${t.emoji} ${t.name}`, fi(t.steps / t.n), `${fi(t.steps)} yht. · ${t.n} jäsentä`])} />
-              <p className="muted">Luku = askelia / jäsen.</p>
-            </section>
-          )}
         </>
       )}
 
