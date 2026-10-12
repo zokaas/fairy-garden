@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { points, stageFor, helsinkiDay, isDay, streak, bestStreak, dayBefore, ago, phaseOf, fairyName } from './garden.ts';
+import { points, stageFor, helsinkiDay, isDay, streak, bestStreak, dayBefore, ago, phaseOf, fairyName, weekStart } from './garden.ts';
 
 assert.equal(points(12_345, 25), 14);
 assert.equal(stageFor(0).stage.name, 'Siemen');
@@ -20,4 +20,19 @@ assert.equal(ago('2026-10-09T10:00:00Z', Date.parse('2026-10-09T13:00:00Z')), '3
 assert.equal(phaseOf(new Date('2026-10-09T12:00:00Z')), 'day');
 assert.equal(phaseOf(new Date('2026-10-09T22:00:00Z')), 'night');
 assert.ok(fairyName(0, 0).length <= 30);
+assert.equal(weekStart('2026-10-14'), '2026-10-12');
+assert.equal(weekStart('2026-10-18'), '2026-10-12');
+assert.equal(weekStart('2026-10-12'), '2026-10-12');
+import { series, weekdayAvg, sportStats, trend, compare, weeklyMinutes, daysBetween } from './stats.ts';
+const rows = [{ day: '2026-10-12', steps: 8000 }, { day: '2026-10-13', steps: 4000 }, { day: '2026-10-05', steps: 6000 }, { day: '2026-10-12', steps: 2000 }];
+assert.equal(series(rows, 3, '2026-10-14').map((x) => x.steps).join(), '10000,4000,0');
+assert.equal(weekdayAvg(rows)[0], 8000);
+assert.equal(sportStats([{ sport: 'Juoksu', minutes: 30 }, { sport: 'Sali', minutes: 60 }, { sport: 'Juoksu', minutes: 45 }])[0].sport, 'Juoksu');
+assert.equal(trend(rows, '2026-10-14').pct, 133);
+assert.equal(trend([{ day: '2026-10-14', steps: 5 }], '2026-10-14').pct, null);
+assert.equal(trend([{ day: '2026-10-14', steps: 150 }, { day: '2026-10-05', steps: 100 }], '2026-10-14').pct, 50);
+assert.equal(compare(90), '50 % matkasta Helsinki–Tampere');
+assert.equal(compare(1660), '2,0 × Helsinki–Rovaniemi');
+assert.equal(weeklyMinutes([{ day: '2026-10-13', minutes: 30 }, { day: '2026-10-01', minutes: 20 }], 3, '2026-10-12').map((x) => x.minutes).join(), '20,0,30');
+assert.equal(daysBetween('2026-10-01', '2026-10-03'), 3);
 console.log('garden: ok');

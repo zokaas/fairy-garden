@@ -6,8 +6,8 @@ const TABS = [
   { href: '/', icon: '🌸', label: 'Puutarha' },
   { href: '/kirjaa', icon: '👟', label: 'Kirjaa' },
   { href: '/karki', icon: '🏆', label: 'Kärki' },
-  { href: '/shortcut', icon: '📲', label: 'Synkka' },
-  { href: '/gaala', icon: '🌙', label: 'Gaala' },
+  { href: '/tilastot', icon: '📊', label: 'Tilastot' },
+  { href: '/kisa', icon: '🏁', label: 'Kisa' },
 ];
 
 export default function BottomNav() {
@@ -15,7 +15,7 @@ export default function BottomNav() {
   return (
     <nav className="tabs">
       {TABS.map((t) => (
-        <Link key={t.href} href={t.href} className={path === t.href ? 'on' : ''}>
+        <Link key={t.href} href={t.href} className={path === t.href || (t.href !== '/' && path.startsWith(t.href)) ? 'on' : ''}>
           <span>{t.icon}</span>
           {t.label}
         </Link>

@@ -1,5 +1,4 @@
 export const EVENT_DATE = '2026-11-28T16:00:00+02:00';
-export const SECRET_AT = '2026-11-28T20:00:00+02:00';
 export const SPORTS = ['Kävely', 'Juoksu', 'Pyöräily', 'Sali', 'Jooga', 'Tanssi', 'Uinti', 'Muu'] as const;
 
 export const STAGES = [
@@ -106,3 +105,12 @@ const NAMES_B = ['Kielo', 'Perhonen', 'Sienikuningatar', 'Orvokki', 'Kastepisara
 export function fairyName(r1 = Math.random(), r2 = Math.random()): string {
   return `${NAMES_A[Math.floor(r1 * NAMES_A.length)]} ${NAMES_B[Math.floor(r2 * NAMES_B.length)]}`;
 }
+
+/** Viikon maanantai (Helsingin aikaa) annetulle päivälle. */
+export function weekStart(day = helsinkiDay()): string {
+  const d = new Date(`${day}T12:00:00Z`);
+  const wd = (d.getUTCDay() + 6) % 7;
+  d.setUTCDate(d.getUTCDate() - wd);
+  return d.toISOString().slice(0, 10);
+}
+

@@ -8,6 +8,8 @@ import { SPORTS, helsinkiDay, isDay } from '@/lib/garden';
 import { ACCESSORIES, AVATAR_BGS, AVATAR_EMOJIS } from '@/lib/avatar';
 import { loadGarden } from '@/lib/data';
 import { hashPin, verifyPin } from '@/lib/pin';
+import { TEAMS } from '@/lib/teams';
+import { sendPush } from '@/lib/push';
 
 const COOKIE = 'fg_token';
 
@@ -26,7 +28,7 @@ export async function join(formData: FormData) {
   if ((all ?? []).some((f) => f.name.toLowerCase() === name.toLowerCase())) redirect('/?virhe=olemassa');
   const token = randomBytes(18).toString('base64url');
   const { error } = await supabase.from('fairies').insert({ name, token, pin_hash: hashPin(pin) });
-  if (error) redirect('/?virhe=tallennus');
+  if (error) redirect(`/?virhe=tallennus&d=${encodeURIComponent(error.message.slice(0, 120))}`);
   setSession(token);
   redirect('/profiili?uusi=1');
 }
@@ -149,6 +151,16 @@ export async function sendCheer(formData: FormData) {
   const toId = String(formData.get('to') ?? '');
   const { me } = await loadGarden();
   if (!me || !toId || toId === me.id) return;
-  await db().from('cheers').upsert({ from_id: me.id, to_id: toId, day: helsinkiDay() }, { onConflict: 'from_id,to_id,day', ignoreDuplicates: true });
+  const { data: inserted } = await db().from('cheers').upsert({ from_id: me.id, to_id: toId, day: helsinkiDay() }, { onConflict: 'from_id,to_id,day', ignoreDuplicates: true }).select('id');
+  if (inserted && inserted.length > 0) await sendPush({ title: 'Kimalle! ✨', body: `${me.name} lähetti sinulle kimallen 💌`, url: '/' }, [toId]);
   revalidatePath('/', 'layout');
+}
+
+export async function saveTeam(formData: FormData) {
+  const { me } = await loadGarden();
+  const team = String(formData.get('team') ?? '');
+  if (!me || !TEAMS.some((t) => t.id === team)) return;
+  await db().from('fairies').update({ team }).eq('id', me.id);
+  revalidatePath('/', 'layout');
+  redirect('/profiili?ok=1');
 }

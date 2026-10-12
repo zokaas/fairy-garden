@@ -1,15 +1,14 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { EVENT_DATE } from '@/lib/garden';
 
-export default function Countdown() {
-  const [days, setDays] = useState<number | null>(null);
+/** Päivälaskuri: "N päivää jäljellä". to = ISO-aika. */
+export default function Countdown({ to, label = 'päivää kisaa jäljellä', doneText = 'Kisa on päättynyt 🏁' }: { to: string; label?: string; doneText?: string }) {
+  const [text, setText] = useState<string | null>(null);
   useEffect(() => {
-    setDays(Math.max(0, Math.ceil((Date.parse(EVENT_DATE) - Date.now()) / 86_400_000)));
-  }, []);
-  return (
-    <p className="countdown">
-      {days === null ? '✨' : days === 0 ? '🌸 Tänään on Fairy Garden! 🌸' : <>✨ <b>{days}</b> yötä Fairy Gardeniin ✨</>}
-    </p>
-  );
+    const ms = Date.parse(to) - Date.now();
+    if (ms <= 0) return setText(doneText);
+    const d = Math.floor(ms / 86_400_000);
+    setText(d === 0 ? `Kisa päättyy tänään! ${Math.max(1, Math.ceil(ms / 3_600_000))} t jäljellä` : `${d} ${label}`);
+  }, [to, label, doneText]);
+  return <p className="countdown">✨ {text ?? ''} ✨</p>;
 }

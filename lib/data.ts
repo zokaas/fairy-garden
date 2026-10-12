@@ -1,7 +1,7 @@
 import 'server-only';
 import { cookies } from 'next/headers';
 import { db } from '@/lib/db';
-import { bestStreak, dayBefore, helsinkiDay, points, stageFor, streak } from '@/lib/garden';
+import { bestStreak, dayBefore, helsinkiDay, points, stageFor, streak, weekStart } from '@/lib/garden';
 import { BADGES } from '@/lib/badges';
 
 export type Fairy = {
@@ -26,18 +26,25 @@ export type Fairy = {
   minsToday: number;
   cheersToday: number;
   isAdmin: boolean;
+  team: string | null;
+  weekPts: number;
+  bestDay: number;
+  bestRun: number;
+  workouts: number;
+  cheersTotal: number;
 };
 
 export async function loadGarden() {
   const token = cookies().get('fg_token')?.value;
   const supabase = db();
   const [{ data: fairies }, { data: steps }, { data: workouts }, { data: cheers }] = await Promise.all([
-    supabase.from('fairies').select('id, name, token, avatar_emoji, avatar_bg, avatar_path, avatar_acc, is_admin'),
+    supabase.from('fairies').select('id, name, token, avatar_emoji, avatar_bg, avatar_path, avatar_acc, is_admin, team'),
     supabase.from('steps').select('fairy_id, day, steps, updated_at'),
     supabase.from('workouts').select('fairy_id, minutes, day'),
     supabase.from('cheers').select('from_id, to_id, day'),
   ]);
   const today = helsinkiDay();
+  const wk = weekStart(today);
   const board: Fairy[] = (fairies ?? [])
     .map((f) => {
       const st = (steps ?? []).filter((s) => s.fairy_id === f.id);
@@ -65,6 +72,15 @@ export async function loadGarden() {
         avatarVer: f.avatar_path,
         avatarAcc: f.avatar_acc,
         isAdmin: !!f.is_admin,
+        team: f.team,
+        weekPts: points(
+          st.filter((x) => x.day >= wk).reduce((a, x) => a + x.steps, 0),
+          ws.filter((w) => w.day >= wk).reduce((a, w) => a + w.minutes, 0),
+        ),
+        bestDay: stats.bestDay,
+        bestRun: stats.bestStreak,
+        workouts: ws.length,
+        cheersTotal: (cheers ?? []).filter((c) => c.to_id === f.id).length,
         stageIdx,
         yesterday: st.find((x) => x.day === dayBefore(today))?.steps ?? 0,
         minsToday: ws.filter((w) => w.day === today).reduce((a, w) => a + w.minutes, 0),
@@ -76,4 +92,14 @@ export async function loadGarden() {
   const me = board.find((b) => b.mine) ?? null;
   const sentToday = me ? (cheers ?? []).filter((c) => c.from_id === me.id && c.day === today).map((c) => c.to_id as string) : [];
   return { board, me, myRank: board.findIndex((b) => b.mine) + 1, sentToday };
+}
+
+/** Raakadata tilastoja varten: kaikkien askeleet ja liikunnat. */
+export async function loadRaw() {
+  const supabase = db();
+  const [{ data: steps }, { data: workouts }] = await Promise.all([
+    supabase.from('steps').select('fairy_id, day, steps'),
+    supabase.from('workouts').select('fairy_id, day, sport, minutes'),
+  ]);
+  return { steps: (steps ?? []) as import('./stats').StepRow[], workouts: (workouts ?? []) as import('./stats').WorkRow[] };
 }

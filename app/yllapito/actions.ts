@@ -79,3 +79,26 @@ export async function clearTest() {
   await db().from('fairies').delete().like('name', `${TEST}%`);
   done('Testikeijut poistettu');
 }
+
+export async function saveContest(formData: FormData) {
+  await requireAdmin();
+  const end = String(formData.get('end') ?? '');
+  const prize = String(formData.get('prize') ?? '').trim().slice(0, 200);
+  const rows: { key: string; value: string }[] = [{ key: 'contest_prize', value: prize }];
+  // datetime-local antaa muodon YYYY-MM-DDTHH:mm Helsingin aikaa
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(end)) {
+    const probe = new Date(`${end}:00Z`);
+    const offset = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Helsinki', timeZoneName: 'shortOffset' }).formatToParts(probe).find((x) => x.type === 'timeZoneName')?.value ?? 'GMT+2';
+    const h = Number(offset.replace('GMT', '').replace('+', '')) || 2;
+    rows.push({ key: 'contest_end', value: `${end}:00+${String(h).padStart(2, '0')}:00` });
+  }
+  await db().from('settings').upsert(rows);
+  done('Kisan asetukset tallennettu');
+}
+
+export async function testPush() {
+  const me = await requireAdmin();
+  const { sendPush } = await import('@/lib/push');
+  const n = await sendPush({ title: 'Testi ✨', body: 'Ilmoitukset toimivat, keiju!', url: '/' }, [me.id]);
+  done(n > 0 ? 'Testi-ilmoitus lähetetty' : 'Ei tilausta tai VAPID-avaimia, ilmoitusta ei lähetetty');
+}

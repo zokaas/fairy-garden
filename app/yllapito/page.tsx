@@ -3,13 +3,16 @@ import { redirect } from 'next/navigation';
 import { loadGarden } from '@/lib/data';
 import { STAGES, ago, helsinkiDay } from '@/lib/garden';
 import Avatar from '@/components/Avatar';
-import { adminDelete, adminResetPassword, adminSetSteps, clearTest, seedTest } from './actions';
+import { getContest } from '@/lib/contest';
+import { adminDelete, adminResetPassword, adminSetSteps, clearTest, saveContest, seedTest, testPush } from './actions';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Yllapito({ searchParams }: { searchParams: { ok?: string } }) {
   const { board, me } = await loadGarden();
   if (!me?.isAdmin) redirect('/');
+  const contest = await getContest();
+  const endLocal = new Date(contest.end).toLocaleString('sv-SE', { timeZone: 'Europe/Helsinki' }).slice(0, 16).replace(' ', 'T');
   const synced = board.filter((b) => b.today > 0).length;
   const stale = board.filter((b) => b.hasSteps && b.yesterday === 0 && !b.mine).length;
 
@@ -41,11 +44,27 @@ export default async function Yllapito({ searchParams }: { searchParams: { ok?: 
         <div className="chips" style={{ justifyContent: 'flex-start' }}>
           <Link className="chip" href="/?juhla=1&taso=2">🎉 Tasonnousujuhla</Link>
           <Link className="chip" href="/?tyhja=1">🌰 Uuden käyttäjän aloitus</Link>
-          <Link className="chip" href="/gaala">🔒 Gaala (lukittu)</Link>
-          <Link className="chip" href="/gaala?avaa=1">🥂 Gaala (avattu)</Link>
+          <Link className="chip" href="/kisa">🏁 Kisa (käynnissä)</Link>
+          <Link className="chip" href="/kisa?avaa=1">🏆 Kisa (päättynyt)</Link>
           <Link className="chip" href="/profiili?uusi=1">🧚 Avatarin valinta</Link>
           <Link className="chip" href="/shortcut">📲 Synkka-ohje</Link>
         </div>
+      </section>
+
+      <section className="card">
+        <h2>Kisan asetukset 🏁</h2>
+        <p className="muted">Kisan päättymisaika (Suomen aikaa) ja palkinto. Tulokset näkyvät Kisa-sivulla; esikatsele: <Link href="/kisa?avaa=1">kisa päättynyt</Link>.</p>
+        <form action={saveContest}>
+          <input name="end" type="datetime-local" defaultValue={endLocal} required />
+          <input name="prize" defaultValue={contest.prize} placeholder="Palkinto, esim. Reippaan keijun kruunu 👑" maxLength={200} />
+          <button className="btn">Tallenna</button>
+        </form>
+      </section>
+
+      <section className="card">
+        <h2>Ilmoitukset 🔔</h2>
+        <p className="muted">Laita ensin ilmoitukset päälle omassa profiilissasi, ja lähetä sitten testi.</p>
+        <form action={testPush}><button className="btn ghost">Lähetä testi-ilmoitus itselle</button></form>
       </section>
 
       <section className="card">

@@ -6,7 +6,19 @@ import BottomNav from '@/components/BottomNav';
 export const metadata: Metadata = {
   title: 'Fairy Garden Askeleet',
   description: 'Kävele kukkaan, keijuksi ja Fairy Gardeniin 28.11.2026',
-  appleWebApp: { capable: true, title: 'Fairy Garden', statusBarStyle: 'default' },
+  icons: { icon: '/icon-192.png', apple: '/icon-180.png' },
+  appleWebApp: {
+    capable: true,
+    title: 'Fairy Garden',
+    statusBarStyle: 'default',
+    startupImage: [
+      [1125, 2436, 375, 812],
+      [1170, 2532, 390, 844],
+      [1179, 2556, 393, 852],
+      [1284, 2778, 428, 926],
+      [1290, 2796, 430, 932],
+    ].map(([w, h, dw, dh]) => ({ url: `/splash-${w}x${h}.png`, media: `(device-width: ${dw}px) and (device-height: ${dh}px) and (-webkit-device-pixel-ratio: 3)` })),
+  },
 };
 export const viewport: Viewport = { themeColor: '#f8d7ec', width: 'device-width', initialScale: 1 };
 

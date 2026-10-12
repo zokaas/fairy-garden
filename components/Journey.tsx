@@ -9,7 +9,7 @@ function at(f: number): [number, number] {
   return [PTS[seg][0] + (PTS[seg + 1][0] - PTS[seg][0]) * t, PTS[seg][1] + (PTS[seg + 1][1] - PTS[seg][1]) * t];
 }
 
-/** Haltijan polku: kokonaisaskeleet kuljettavat keijun kohti gaalaa. */
+/** Haltijan polku: kokonaisaskeleet kuljettavat keijun kohti Albertinkatua. */
 export default function Journey({ steps, avatar }: { steps: number; avatar: AvatarData }) {
   const f = Math.min(1, steps / JOURNEY_GOAL);
   const [x, y] = at(f);
@@ -33,7 +33,7 @@ export default function Journey({ steps, avatar }: { steps: number; avatar: Avat
         <span className="walker" style={{ left: `${(x / 300) * 100}%`, top: `${(y / 110) * 100}%` }}><Avatar a={avatar} size={34} /></span>
       </div>
       <p className="muted">
-        {next ? <>Seuraava etappi: {next.emoji} <b>{next.name}</b>, vielä {(next.at - steps).toLocaleString('fi-FI')} askelta.</> : <>Perillä Albertinkadulla! 🥂 Nähdään gaalassa.</>}
+        {next ? <>Seuraava etappi: {next.emoji} <b>{next.name}</b>, vielä {(next.at - steps).toLocaleString('fi-FI')} askelta.</> : <>Perillä Albertinkadulla! 🥂 Olet todellinen reippailija.</>}
       </p>
     </section>
   );

@@ -103,7 +103,7 @@ ol.rank small { display: block; font-weight: 400; color: var(--muted); font-size
 ol.rank .nm { display: flex; align-items: center; gap: 10px; }
 .me-head { display: flex; align-items: center; gap: 12px; justify-content: center; margin-bottom: 6px; }
 
-/* Asusteet, merkit, gaala */
+/* Asusteet, merkit, kisa */
 .avacc { position: absolute; top: -34%; left: 50%; transform: translateX(-50%); font-style: normal; line-height: 1; filter: drop-shadow(0 1px 2px #0002); pointer-events: none; }
 .picker label.locked { opacity: .5; cursor: not-allowed; }
 .picker span { position: relative; }
@@ -179,3 +179,38 @@ details.fairy-row { border-top: 1px dashed #f0d6e6; padding: 8px 0; }
 details.fairy-row summary { display: flex; align-items: center; gap: 10px; cursor: pointer; list-style: none; }
 details.fairy-row small { display: block; color: var(--muted); font-size: .75rem; }
 details.fairy-row form { margin-top: 6px; }
+
+/* Joukkueet, viikko, albumi, palkinnot */
+.seg { display: flex; background: #f3e6f5; border-radius: 99px; padding: 4px; margin-bottom: 14px; }
+.seg a { flex: 1; text-align: center; padding: 8px; border-radius: 99px; text-decoration: none; color: var(--muted); font-weight: 600; }
+.seg a.on { background: #fff; color: #b0489a; box-shadow: 0 2px 8px #f48fb133; }
+.teamdot { font-size: 1.6rem; width: 38px; text-align: center; }
+.teams { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 10px; }
+.teams label { cursor: pointer; } .teams input { position: absolute; opacity: 0; pointer-events: none; }
+.teams span { display: block; text-align: center; padding: 10px; background: #fff; border: 2px solid transparent; border-radius: 16px; font-size: 1.6rem; }
+.teams span b { display: block; font-size: .9rem; } .teams span small { display: block; font-size: .7rem; color: var(--muted); }
+.teams input:checked + span { border-color: var(--pink); box-shadow: 0 0 0 3px #f48fb155; }
+textarea { width: 100%; padding: 12px; border-radius: 14px; border: 1.5px solid #e6c9de; font: inherit; background: #fff; color: var(--ink); margin-bottom: 8px; resize: vertical; }
+.prizes li { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px dashed #f0d6e6; }
+.prizes li:last-child { border: 0; } .prizes .pe { font-size: 1.6rem; width: 34px; text-align: center; }
+.prizes li > span:nth-child(2) { flex: 1; } .prizes small { display: block; color: var(--muted); font-size: .78rem; }
+.album { column-count: 2; column-gap: 10px; }
+.album figure { margin: 0 0 10px; break-inside: avoid; background: #fff; border-radius: 16px; overflow: hidden; border: 1.5px solid #f3cfe3; }
+.album img { width: 100%; display: block; }
+.album figcaption { display: flex; align-items: center; gap: 6px; padding: 6px 8px; font-size: .78rem; }
+.album figcaption span { flex: 1; } .album .x { border: 0; background: none; cursor: pointer; color: var(--muted); }
+
+/* Tilastot */
+.seg.three a { font-size: .9rem; }
+.tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.tiles > div { background: #fff; border: 1.5px solid #f3cfe3; border-radius: 16px; padding: 10px 12px; }
+.tiles b { display: block; font-size: 1.25rem; line-height: 1.2; }
+.tiles span { display: block; color: var(--muted); font-size: .76rem; }
+.tiles small { display: block; color: #b0489a; font-size: .72rem; margin-top: 2px; }
+.bars { display: flex; align-items: flex-end; gap: 3px; margin-top: 10px; padding-top: 16px; }
+.bar-col { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; position: relative; min-width: 0; }
+.bar-col i { display: block; width: 100%; min-height: 2px; border-radius: 6px 6px 0 0; background: linear-gradient(#c9b6f2, #f8c3df); transition: height .8s cubic-bezier(.2,.8,.2,1); }
+.bar-col.hl i { background: linear-gradient(#f48fb1, #a8e6cf); }
+.bar-val { font-size: .58rem; color: var(--muted); position: absolute; top: -14px; white-space: nowrap; }
+.bar-lbl { font-size: .62rem; color: var(--muted); margin-top: 3px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.tabs a { font-size: .62rem; }

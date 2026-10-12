@@ -8,6 +8,7 @@ import NameDice from '@/components/NameDice';
 import { BADGES } from '@/lib/badges';
 import { join, login } from './actions';
 import Countdown from '@/components/Countdown';
+import { getContest } from '@/lib/contest';
 import Garden from '@/components/Garden';
 import Ring from '@/components/Ring';
 import Celebrate from '@/components/Celebrate';
@@ -15,7 +16,7 @@ import SyncButton from '@/components/SyncButton';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Home({ searchParams }: { searchParams: { virhe?: string; synkattu?: string; kirjaudu?: string; taso?: string; aika?: string; juhla?: string; tyhja?: string } }) {
+export default async function Home({ searchParams }: { searchParams: { virhe?: string; synkattu?: string; kirjaudu?: string; d?: string; taso?: string; aika?: string; juhla?: string; tyhja?: string } }) {
   const { board, me: realMe, myRank, sentToday } = await loadGarden();
   // Ylläpitäjän esikatselu: ?taso=0..5, ?aika=night|dawn|day|dusk, ?juhla=1, ?tyhja=1 (uuden käyttäjän näkymä)
   const admin = !!realMe?.isAdmin;
@@ -24,6 +25,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
     const idx = Math.max(0, Math.min(5, Number(searchParams.taso) || 0));
     me = { ...me, stageIdx: idx, pts: STAGES[idx].min / 1000, hasSteps: true };
   }
+  const contest = await getContest();
   const phase: Phase = admin && ['night', 'dawn', 'day', 'dusk'].includes(searchParams.aika ?? '') ? (searchParams.aika as Phase) : phaseOf();
   const errs: Record<string, string> = {
     nimi: 'Kirjoita keijun nimi.',
@@ -41,9 +43,9 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
       <>
         <Garden pts={Math.min(12, board.length * 3)} stageIdx={4} phase={phase} lines={['Tervetuloa puutarhaan ✨', 'Istuta siemen niin kasvamme yhdessä 🌱', 'Kimalle! 🦋']} />
         <h1>Fairy Garden 🧚🏼‍♀️</h1>
-        <p className="sub">Kävele kukkaan, kasva keijuksi ja tule gaalaan 28.11.</p>
-        <Countdown />
-        {errMsg && <p className="err">{errMsg}</p>}
+        <p className="sub">Kävele kukkaan, kasva keijuksi ja ole reippain keiju!</p>
+        <Countdown to={contest.end} />
+        {errMsg && <p className="err">{errMsg}{searchParams.d && <><br /><small>{searchParams.d}</small></>}</p>}
         {!showLogin ? (
           <form action={join} className="card">
             <h2>Liity puutarhaan ✨</h2>
@@ -97,7 +99,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         ]}
       />
       <p className="muted" style={{ textAlign: 'center', marginTop: -6 }}><Link href="/profiili">✏️ Muokkaa avataria</Link></p>
-      <Countdown />
+      <Countdown to={contest.end} />
 
       {!me.hasSteps ? (
         <section className="card setup">
@@ -163,7 +165,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
           {BADGES.filter((b) => me.badges.includes(b.id)).map((b) => <span key={b.id} title={b.name}>{b.emoji}</span>)}
           {me.badges.length === 0 && <span className="muted">Ensimmäinen merkki tulee ensimmäisistä askelista.</span>}
         </div>
-        <p className="muted"><Link href="/gaala">Kaikki merkit ja gaala →</Link></p>
+        <p className="muted"><Link href="/kisa">Kaikki merkit ja kisan tilanne →</Link></p>
       </section>
       {admin && <p className="muted" style={{ textAlign: 'center' }}><Link href="/yllapito">🛠 Ylläpito ja esikatselut</Link></p>}
     </>
