@@ -28,29 +28,19 @@ export default async function KomentoOhje() {
         <p className="muted">Komennot-sovellus (Shortcuts) iPhonessa. Toiminnot suomeksi, englanti suluissa. Tämä on versio, joka lähettää viimeiset 7 päivää, joten ohi mennyt päivä korjautuu itsestään.</p>
         <ol className="steps-list">
           <li>Komennot → <b>+</b> → nimeksi <b>Fairy Garden</b>.</li>
-          <li><b>Lista</b> (List): seitsemän riviä <code>0 1 2 3 4 5 6</code>.</li>
-          <li><b>Toista jokaiselle</b> (Repeat with Each) tälle listalle. Toiston sisään, tässä järjestyksessä:
-            <ol>
-              <li><b>Säädä päivämäärää</b> (Adjust Date): <i>Nykyinen päivämäärä</i>, vähennä <i>Toiston kohde</i> päivää. Nimeä <b>Päivä</b>.</li>
-              <li><b>Säädä päivämäärää</b>: <b>Päivä</b>, <i>Hae päivän alku</i> (Get Start of Day). Nimeä <b>Alku</b>.</li>
-              <li><b>Säädä päivämäärää</b>: <b>Alku</b>, lisää 1 päivä. Nimeä <b>Loppu</b>.</li>
-              <li><b>Muotoile päivämäärä</b> (Format Date): <b>Päivä</b>, muoto <i>Mukautettu</i> <code>yyyy-MM-dd</code>. Nimeä <b>Päivämerkki</b>.</li>
-              <li><b>Etsi terveysnäytteitä</b> (Find Health Samples): Tyyppi <i>Askelmäärä</i> (Step Count), Alkamispäivä <i>on välillä</i> (is between) <b>Alku</b> ja <b>Loppu</b>.</li>
-              <li><b>Laske tilastot</b> (Calculate Statistics): <i>Summa</i> (Sum).</li>
-              <li><b>Teksti</b> (Text): <code>[Päivämerkki]=[Tilasto]</code> (valitse muuttujat), sitten <b>Lisää muuttujaan</b> (Add to Variable) nimellä <b>Rivit</b>.</li>
-            </ol>
-          </li>
-          <li>Toiston jälkeen: <b>Yhdistä tekstit</b> (Combine Text): <b>Rivit</b>, erotin <i>Uusi rivi</i> (New Lines).</li>
+          <li><b>Etsi terveysnäytteitä</b> (Find Health Samples): Tyyppi <i>Askelmäärä</i> (Steps), Alkamispäivä <i>on viimeisen</i> (is in the last) <b>7 päivää</b>. Alla: Yksikkö <i>count</i>, <b>Ryhmittele: Päivä</b> (Group by Day), <b>Täytä puuttuvat</b> (Fill Missing) päälle.</li>
+          <li><b>Toista jokaiselle</b> (Repeat with Each) näytteelle. Sisään: <b>Laske tilastot</b> (Calculate Statistics), <i>Summa</i> (Sum) kohteesta <i>Toiston kohde</i>, sitten <b>Lisää muuttujaan</b> (Add to Variable): <b>Summa</b> muuttujaan <b>values</b>.</li>
+          <li>Toiston jälkeen: <b>Yhdistä tekstit</b> (Combine Text): <b>values</b>, erotin <i>Uusi rivi</i> (New Lines).</li>
           <li><b>Hae URL-osoitteen sisältö</b> (Get Contents of URL):
             <ul>
               <li>URL <code>{url}</code> <CopyButton text={url} label="Kopioi osoite" /></li>
               <li>Tapa <b>POST</b>, Pyynnön runko <b>JSON</b>, lisää kaksi tekstikenttää:</li>
               <li><code>token</code> = <i>(kirjoita tähän väliaikaisesti oma avaimesi, ks. kohta 2)</i></li>
-              <li><code>lines</code> = <b>Yhdistetty teksti</b></li>
+              <li><code>values</code> = <b>Yhdistetty teksti</b></li>
             </ul>
           </li>
         </ol>
-        <p className="muted">Jos “on välillä” -suodatinta ei löydy, valitse <i>Alkamispäivä</i> → <i>on jälkeen</i> “Alku” ja lisää toinen ehto <i>on ennen</i> “Loppu”. Aja komento kerran ja tarkista, että viimeiset päivät näkyvät Tilastoissa.</p>
+        <p className="muted">Palvelin laskee päivämäärät itse: viimeinen luku on tämä päivä, edelliset taaksepäin. Jos uusin päivä on listassa ensin, lisää kenttä <code>newest</code> = <code>first</code>. Aja komento kerran ja tarkista, että päivät näkyvät Tilastoissa.</p>
       </section>
 
       <section className="card">

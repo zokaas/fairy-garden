@@ -24,7 +24,7 @@ Molemmat vaativat `CRON_SECRET`- ja VAPID-ympäristömuuttujat (ks. `.env.exampl
 Tee askelten synkka-komento kerran omalla iPhonellasi (ohje: ylläpito → Jaettava komento), jaa se iCloud-linkkinä ja lisää linkki Verceliin muuttujaan `NEXT_PUBLIC_SHORTCUT_INSTALL_URL`. Uudet käyttäjät näkevät silloin ohjesivulla yhden napin "Asenna oikotie". Komento kysyy asentaessa jokaisen oman avaimen.
 
 ## Askelten lähetys
-`POST /api/steps` hyväksyy `{ token, steps }` (tämä päivä) tai takautuvasti `{ token, lines: "2026-10-09=8234\n2026-10-08=7120" }` (enintään 14 pv vanhat). Päivälle jää aina suurin arvo.
+`POST /api/steps` hyväksyy `{ token, steps }` (tämä päivä) tai takautuvasti `{ token, values: "7120\n8234" }` (vain summat, vanhin ensin, viimeinen = tänään) tai `{ token, lines: "2026-10-09=8234" }` (enintään 14 pv vanhat). Päivälle jää aina suurin arvo.
 
 ## Testit
 `npm test`

@@ -16,7 +16,7 @@ export default async function ShortcutGuide() {
   const url = `${site}/api/steps`;
   const install = process.env.NEXT_PUBLIC_SHORTCUT_INSTALL_URL;
   const body = JSON.stringify({ token, steps: '<Askeleet>' });
-  const bodyDays = JSON.stringify({ token, lines: '<Rivit>' });
+  const bodyDays = JSON.stringify({ token, values: '<values>' });
   const working = !!me?.hasSteps;
 
   return (
@@ -85,20 +85,10 @@ export default async function ShortcutGuide() {
           <h2 style={{ marginTop: 14 }}>Takautuva versio (viimeiset 7 päivää)</h2>
           <p className="muted">Korjaa ohi menneet päivät itsestään. Pidempi, mutta suositeltava.</p>
           <ol className="steps-list">
-            <li>Lisää <b>Lista</b> rivit <code>0 1 2 3 4 5 6</code> (yksi numero per rivi).</li>
-            <li>Lisää <b>Toista jokaiselle</b> tälle listalle. Toiston sisään:
-              <ol>
-                <li><b>Säädä päivämäärää</b>: nykyinen päivämäärä, vähennä <i>Toiston kohde</i> päivää. Nimeä “Päivä”.</li>
-                <li><b>Säädä päivämäärää</b>: “Päivä”, <i>Hae päivän alku</i>. Nimeä “Alku”.</li>
-                <li><b>Säädä päivämäärää</b>: “Alku”, lisää 1 päivä. Nimeä “Loppu”.</li>
-                <li><b>Muotoile päivämäärä</b>: “Päivä”, mukautettu <code>yyyy-MM-dd</code>. Nimeä “Päivämerkki”.</li>
-                <li><b>Etsi terveysnäytteitä</b>: Tyyppi <i>Askelmäärä</i>, Alkamispäivä <i>on välillä</i> “Alku” ja “Loppu”.</li>
-                <li><b>Laske tilastot</b>: <i>Summa</i>.</li>
-                <li><b>Teksti</b>: <code>[Päivämerkki]=[Tilasto]</code>, sitten <b>Lisää muuttujaan</b> “Rivit”.</li>
-              </ol>
-            </li>
-            <li>Toiston jälkeen: <b>Yhdistä tekstit</b> (Rivit), erottimena <i>Uusi rivi</i>.</li>
-            <li><b>Hae URL-osoitteen sisältö</b>: osoite <code>{url}</code>, <b>POST</b>, <b>JSON</b>, kentät <code>token</code> ja <code>lines</code> (= yhdistetty teksti).
+            <li><b>Etsi terveysnäytteitä</b>: Askelmäärä, Alkamispäivä <i>on viimeisen</i> 7 päivää, Yksikkö <i>count</i>, <b>Ryhmittele: Päivä</b>, <b>Täytä puuttuvat</b> päälle.</li>
+            <li><b>Toista jokaiselle</b> näytteelle: <b>Laske tilastot</b> (Summa, Toiston kohde), sitten <b>Lisää muuttujaan</b> “values”.</li>
+            <li>Toiston jälkeen: <b>Yhdistä tekstit</b> (values), erottimena <i>Uusi rivi</i>.</li>
+            <li><b>Hae URL-osoitteen sisältö</b>: osoite <code>{url}</code>, <b>POST</b>, <b>JSON</b>, kentät <code>token</code> ja <code>values</code> (= yhdistetty teksti).
               <CopyButton text={bodyDays} label="Kopioi JSON-malli" />
             </li>
           </ol>
