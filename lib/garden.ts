@@ -51,7 +51,7 @@ export function isDay(s: unknown): s is string {
 export const DAILY_GOAL = 10_000;
 export const ACTIVE_DAY = 5_000;
 
-/** Peräkkäisten aktiivisten päivien määrä. Tämä päivä ei katkaise putkea, vaikka se olisi vielä kesken. */
+/** Peräkkäisten hyvien päivien määrä. Tämä päivä ei katkaise putkea, vaikka se olisi vielä kesken. */
 export function streak(days: { day: string; steps: number }[], today = helsinkiDay()): number {
   const active = new Set(days.filter((d) => d.steps >= ACTIVE_DAY).map((d) => d.day));
   let n = 0;
@@ -70,7 +70,7 @@ export function dayBefore(day: string): string {
   return d.toISOString().slice(0, 10);
 }
 
-/** Pisin aktiivisten päivien putki koko ajalta. */
+/** Pisin hyvien päivien putki koko ajalta. */
 export function bestStreak(days: { day: string; steps: number }[]): number {
   const act = days.filter((d) => d.steps >= ACTIVE_DAY).map((d) => d.day).sort();
   let best = 0, cur = 0, prev = '';

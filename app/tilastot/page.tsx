@@ -32,7 +32,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
   if (!cookies().get('fg_token')) redirect('/');
   const [{ board, me }, raw] = await Promise.all([loadGarden(), loadRaw()]);
   if (!me) redirect('/');
-  const tab = ['ryhma', 'urheilu', 'vertailu', 'ennatykset'].includes(searchParams.nayta ?? '') ? searchParams.nayta! : 'mina';
+  const tab = ['mina', 'ryhma', 'urheilu', 'vertailu', 'ennatykset'].includes(searchParams.nayta ?? '') ? searchParams.nayta! : 'yhteenveto';
   const today = helsinkiDay();
   const wk = weekStart(today);
 
@@ -115,13 +115,48 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
   return (
     <>
       <h1>Tilastot</h1>
-      <div className="seg five">
-        <Link href="/tilastot" className={tab === 'mina' ? 'on' : ''}>Minä</Link>
-        <Link href="/tilastot?nayta=ryhma" className={tab === 'ryhma' ? 'on' : ''}>Ryhmä</Link>
-        <Link href="/tilastot?nayta=urheilu" className={tab === 'urheilu' ? 'on' : ''}>Urheilu</Link>
-        <Link href="/tilastot?nayta=vertailu" className={tab === 'vertailu' ? 'on' : ''}>Vertailu</Link>
-        <Link href="/tilastot?nayta=ennatykset" className={tab === 'ennatykset' ? 'on' : ''}>Ennätys</Link>
+      <div className="seg">
+        <Link href="/tilastot" className={tab === 'yhteenveto' ? 'on' : ''}>Yhteenveto</Link>
+        <Link href="/tilastot?nayta=mina" className={tab !== 'yhteenveto' ? 'on' : ''}>Lisää tilastoja</Link>
       </div>
+      {tab !== 'yhteenveto' && (
+        <div className="seg five">
+          <Link href="/tilastot?nayta=mina" className={tab === 'mina' ? 'on' : ''}>Minä</Link>
+          <Link href="/tilastot?nayta=ryhma" className={tab === 'ryhma' ? 'on' : ''}>Ryhmä</Link>
+          <Link href="/tilastot?nayta=urheilu" className={tab === 'urheilu' ? 'on' : ''}>Urheilu</Link>
+          <Link href="/tilastot?nayta=vertailu" className={tab === 'vertailu' ? 'on' : ''}>Vertailu</Link>
+          <Link href="/tilastot?nayta=ennatykset" className={tab === 'ennatykset' ? 'on' : ''}>Ennätys</Link>
+        </div>
+      )}
+
+      {tab === 'yhteenveto' && (
+        <>
+          <section className="card">
+            <h2>Sinun kautesi</h2>
+            <Tiles items={[
+              ['Pisteet', `${me.pts} p`, `sija ${board.findIndex((b) => b.mine) + 1} / ${board.length}`],
+              ['Askeleet yhteensä', fi(myTotal), `${fi(km(myTotal), 1)} km`],
+              ['Paras päivä', best ? fi(best[1]) : '–', best ? dm(best[0]) : undefined],
+              ['Putki nyt', `${me.streak} pv`, `ennätys ${me.bestRun} pv`],
+              ['Urheilu ja luova', `${fi(me.mins)} min`, `${me.workouts} kertaa`],
+              ['Täysiä viikkoja', String(me.weeksDone), `+${me.bonusPts} p bonusta`],
+            ]} />
+          </section>
+          <section className="card">
+            <h2>Viimeiset 14 päivää</h2>
+            <BarChart items={series(mySteps, 14, today).map((d) => ({ label: String(Number(d.day.slice(8))), value: d.steps }))} highlight={13} />
+            <p className="muted">{trendTxt(tr) === '–' ? 'Kerää lisää dataa nähdäksesi trendin.' : `Viimeiset 7 päivää ${fi(tr.last)} askelta, ${tr.pct !== null && tr.pct >= 0 ? 'enemmän' : 'vähemmän'} kuin edelliset 7 päivää (${trendTxt(tr)}).`}</p>
+          </section>
+          <section className="card">
+            <h2>Sinä ja ryhmä</h2>
+            <Tiles items={[
+              ['Sinun askelesi päivässä', fi(avgActive), 'kun kävelit'],
+              ['Ryhmän keskiarvo', fi(perFairyDay), vsGroup === null ? undefined : `${vsGroup >= 0 ? '+' : '−'}${Math.abs(vsGroup)} % sinä verrattuna`],
+            ]} />
+            <Link className="btn ghost" href="/tilastot?nayta=mina" style={{ marginTop: 12 }}>Lisää tilastoja</Link>
+          </section>
+        </>
+      )}
 
       {tab === 'mina' && (
         <>
@@ -129,11 +164,11 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
             <h2>Askeleesi</h2>
             <Tiles items={[
               ['Yhteensä', fi(myTotal)],
-              ['Keskiarvo / aktiivinen päivä', fi(avgActive), `${activeDays.length} päivää`],
+              ['Keskiarvo kävelypäivältä', fi(avgActive), `${activeDays.length} päivää`],
               ['Keskiarvo / päivä alusta', fi(spanDays ? myTotal / spanDays : 0), `${spanDays} pv`],
               ['Paras päivä', best ? fi(best[1]) : '–', best ? dm(best[0]) : undefined],
               [`Tavoitepäivät (${fi(DAILY_GOAL)}+)`, String(goalDays), activeDays.length ? `${Math.round((goalDays / activeDays.length) * 100)} % päivistä` : undefined],
-              ['Putki nyt / ennätys', `${me.streak} / ${me.bestRun}`, `aktiivinen = ${fi(ACTIVE_DAY)}+`],
+              ['Putki nyt / ennätys', `${me.streak} / ${me.bestRun}`, `hyvä päivä = ${fi(ACTIVE_DAY)}+`],
               ['Matka Helsingistä', `${fi(km(myTotal), 1)} km`, routeText(km(myTotal)), route(km(myTotal)).pct],
             ]} />
           </section>
@@ -154,12 +189,12 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
             />
           </section>
           <section className="card">
-            <h2>Liukuva 7 pv keskiarvo</h2>
+            <h2>Viikon keskiarvo (liukuva)</h2>
             <LineChart first={dm2(days45[0])} last={dm2(days45[days45.length - 1])} series={[{ name: 'Askelia / pv', values: movingAvg(daily(mySteps, days45), 7).map(Math.round), color: '#38bdf8' }]} />
             <p className="muted">Tasoittaa päivittäiset vaihtelut, joten näet onko suunta nouseva.</p>
           </section>
           <section className="card">
-            <h2>Aktiivisuuskartta (12 viikkoa)</h2>
+            <h2>Päiväkartta (12 viikkoa)</h2>
             <Heatmap cols={heatCells(mySteps, 12, today)} />
           </section>
           <section className="card">
@@ -174,7 +209,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
           </section>
           <section className="card">
             <h2>Pisteiden jakauma</h2>
-            <Donut items={[{ label: 'Askeleet', value: stepPoints(myTotal) }, { label: 'Urheilu', value: sportPoints(myMins) }, { label: 'Luova', value: sportPoints(myCreMins) }]} center={`${me.pts} p`} unit=" p" />
+            <Donut items={[{ label: 'Askeleet', value: stepPoints(myTotal) }, { label: 'Urheilu', value: sportPoints(myMins) }, { label: 'Luova', value: sportPoints(myCreMins) }, { label: 'Viikkotavoite', value: me.bonusPts }]} center={`${me.pts} p`} unit=" p" />
           </section>
           {myMonths.length > 0 && (
             <section className="card">
@@ -193,7 +228,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
           <section className="card">
             <h2>Viikonpäivät: keskiarvosi</h2>
             <BarChart items={wdMe.map((v, i) => ({ label: WD[i], value: v }))} highlight={wdMe.indexOf(Math.max(...wdMe))} />
-            <p className="muted">Aktiivisin päiväsi: <b>{bestWd(wdMe)}</b>.</p>
+            <p className="muted">Paras päiväsi: <b>{bestWd(wdMe)}</b>.</p>
           </section>
           <section className="card">
             <h2>Sinä vs ryhmä</h2>
@@ -216,11 +251,11 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
               ['Ryhmän matka Helsingistä', `${fi(km(groupTotal))} km`, routeText(km(groupTotal)), route(km(groupTotal)).pct],
               ['Keskiarvo / keiju-pv', fi(perFairyDay)],
               ['Keskiarvo / keiju yhteensä', fi(board.length ? groupTotal / board.length : 0)],
-              ['Mediaani / keiju yhteensä', fi((() => { const v = board.map((b) => b.totalSteps).sort((a, b) => a - b); return v.length ? (v[Math.floor((v.length - 1) / 2)] + v[Math.ceil((v.length - 1) / 2)]) / 2 : 0; })())],
+              ['Tyypillinen / keiju yhteensä', fi((() => { const v = board.map((b) => b.totalSteps).sort((a, b) => a - b); return v.length ? (v[Math.floor((v.length - 1) / 2)] + v[Math.ceil((v.length - 1) / 2)]) / 2 : 0; })())],
               ['Paras keiju (askeleet)', fi(Math.max(0, ...board.map((b) => b.totalSteps)))],
               ['Ennätyspäivä (ryhmä)', gBest ? fi(gBest[1]) : '–', gBest ? dm(gBest[0]) : undefined],
               ['Tänään yhteensä', fi(allDays.get(today) ?? 0)],
-              ['Aktiivisia tänään', `${board.filter((b) => b.today >= ACTIVE_DAY).length} / ${board.length}`],
+              [`${fi(ACTIVE_DAY)}+ askelta tänään`, `${board.filter((b) => b.today >= ACTIVE_DAY).length} / ${board.length}`],
               [`${fi(DAILY_GOAL)}+ päivät`, String(raw.steps.filter((r) => r.steps >= DAILY_GOAL).length)],
               ['Putkien keskiarvo', fi(board.length ? sum(board.map((b) => b.streak)) / board.length : 0, 1)],
               ['Päiviä alusta', String(gSpan)],
@@ -239,7 +274,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
             <p className="muted">Kertyvät pisteet päivä päivältä: näet kuka on noussut ja kuka laskenut.</p>
           </section>
           <section className="card">
-            <h2>Ryhmän aktiivisuuskartta (ka. / keiju)</h2>
+            <h2>Ryhmän päiväkartta (ka. / keiju)</h2>
             <Heatmap cols={heatCells([...allDays.entries()].map(([day, v]) => ({ day, steps: v / Math.max(1, board.length) })), 12, today)} />
           </section>
           <section className="card">
@@ -259,7 +294,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
           <section className="card">
             <h2>Viikonpäivät: ryhmän keskiarvo</h2>
             <BarChart items={wdG.map((v, i) => ({ label: WD[i], value: v }))} highlight={wdG.indexOf(Math.max(...wdG))} />
-            <p className="muted">Ryhmän aktiivisin päivä: <b>{bestWd(wdG)}</b>.</p>
+            <p className="muted">Ryhmän paras päivä: <b>{bestWd(wdG)}</b>.</p>
           </section>
           {teamRows.length > 0 && (
             <section className="card">
@@ -356,9 +391,9 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
           { label: 'Askelpisteet', get: (f) => f.stepPts },
           { label: 'Urheilu- ja luovuuspisteet', get: (f) => f.sportPts },
           { label: 'Askeleet yhteensä', get: (f) => f.totalSteps },
-          { label: 'Askelia / aktiivinen pv', get: (f) => f.avgSteps },
+          { label: 'Askelia kävelypäivänä', get: (f) => f.avgSteps },
           { label: 'Paras päivä', get: (f) => f.bestDay },
-          { label: 'Aktiivisia päiviä', get: (f) => f.activeDays },
+          { label: 'Kävelypäiviä', get: (f) => f.activeDays },
           { label: 'Putki nyt', get: (f) => f.streak },
           { label: 'Ennätysputki', get: (f) => f.bestRun },
           { label: 'Viikon askeleet', get: (f) => f.week.steps },
@@ -414,9 +449,9 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
           bestDayRow ? { label: 'Paras päivä (askeleet)', who: board.find((b) => b.id === bestDayRow.fairy_id), value: fi(bestDayRow.steps), sub: dm2(bestDayRow.day) } : null,
           weekBest ? { label: 'Paras viikko (askeleet)', who: board.find((b) => b.id === weekBest.id), value: fi(weekBest.v), sub: `vko ${dm2(weekBest.week)}` } : null,
           gBest ? { label: 'Ryhmän paras päivä', value: fi(gBest[1]), sub: dm2(gBest[0]) } : null,
-          maxBy((f) => f.bestRun)?.bestRun ? { label: 'Pisin putki', who: maxBy((f) => f.bestRun), value: `${maxBy((f) => f.bestRun).bestRun} pv`, sub: `aktiivinen = ${fi(ACTIVE_DAY)}+` } : null,
-          maxBy((f) => f.activeDays)?.activeDays ? { label: 'Eniten aktiivisia päiviä', who: maxBy((f) => f.activeDays), value: String(maxBy((f) => f.activeDays).activeDays) } : null,
-          maxBy((f) => f.avgSteps)?.avgSteps ? { label: 'Paras keskiarvo / aktiivinen pv', who: maxBy((f) => f.avgSteps), value: fi(maxBy((f) => f.avgSteps).avgSteps) } : null,
+          maxBy((f) => f.bestRun)?.bestRun ? { label: 'Pisin putki', who: maxBy((f) => f.bestRun), value: `${maxBy((f) => f.bestRun).bestRun} pv`, sub: `hyvä päivä = ${fi(ACTIVE_DAY)}+` } : null,
+          maxBy((f) => f.activeDays)?.activeDays ? { label: 'Eniten hyviä päiviä', who: maxBy((f) => f.activeDays), value: String(maxBy((f) => f.activeDays).activeDays) } : null,
+          maxBy((f) => f.avgSteps)?.avgSteps ? { label: 'Paras keskiarvo kävelypäivältä', who: maxBy((f) => f.avgSteps), value: fi(maxBy((f) => f.avgSteps).avgSteps) } : null,
           sportDay ? { label: 'Eniten urheilua yhtenä päivänä', who: board.find((b) => b.id === sportDay.id), value: `${fi(sportDay.v)} min`, sub: dm2(sportDay.day) } : null,
           longest ? { label: 'Pisin urheilukerta', who: board.find((b) => b.id === longest.fairy_id), value: `${longest.minutes} min`, sub: `${longest.sport} · ${dm2(longest.day)}` } : null,
           maxBy((f) => f.workouts)?.workouts ? { label: 'Eniten urheilukertoja', who: maxBy((f) => f.workouts), value: String(maxBy((f) => f.workouts).workouts) } : null,

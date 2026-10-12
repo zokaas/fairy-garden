@@ -2,7 +2,7 @@ import 'server-only';
 import { cookies } from 'next/headers';
 import { db } from '@/lib/db';
 import { DEMO, demoRows } from '@/lib/demo';
-import { weekGoal, type WeekGoal } from '@/lib/weekly';
+import { WEEK_BONUS, weekGoal, weeksDone, type WeekGoal } from '@/lib/weekly';
 import { ACTIVE_DAY, DAILY_GOAL, bestStreak, kindOf, dayBefore, helsinkiDay, points, sportPoints, stageFor, stepPoints, streak, weekStart } from '@/lib/garden';
 import { BADGES } from '@/lib/badges';
 
@@ -31,6 +31,8 @@ export type Fairy = {
   sportToday: number;
   creativeToday: number;
   goal: WeekGoal;
+  weeksDone: number;
+  bonusPts: number;
   cheersToday: number;
   isAdmin: boolean;
   team: string | null;
@@ -70,9 +72,11 @@ export async function loadGarden() {
       const ws = (workouts ?? []).filter((w) => w.fairy_id === f.id);
       const mins = ws.reduce((a, w) => a + w.minutes, 0);
       const last = st.reduce<string | null>((a, s) => (!a || s.updated_at > a ? s.updated_at : a), null);
-      const pts = points(totalSteps, mins);
+      const wDone = weeksDone(st, ws, today);
+      const bonusPts = wDone * WEEK_BONUS;
+      const pts = points(totalSteps, mins) + bonusPts;
       const stageIdx = stageFor(pts).idx;
-      const stats = { totalSteps, bestDay: Math.max(0, ...st.map((x) => x.steps)), bestStreak: bestStreak(st), workouts: ws.length, mins, hasSteps: st.length > 0, stageIdx };
+      const stats = { totalSteps, bestDay: Math.max(0, ...st.map((x) => x.steps)), bestStreak: bestStreak(st), workouts: ws.length, mins, hasSteps: st.length > 0, stageIdx, weeksDone: wDone };
       return {
         id: f.id,
         name: f.name,
@@ -103,7 +107,7 @@ export async function loadGarden() {
         weekPts: points(
           st.filter((x) => x.day >= wk).reduce((a, x) => a + x.steps, 0),
           ws.filter((w) => w.day >= wk).reduce((a, w) => a + w.minutes, 0),
-        ),
+        ) + (weekGoal(st, ws, today).done ? WEEK_BONUS : 0),
         bestDay: stats.bestDay,
         bestRun: stats.bestStreak,
         workouts: ws.length,
@@ -121,6 +125,8 @@ export async function loadGarden() {
         sportToday: ws.filter((w) => w.day === today && kindOf(w.sport) === 'urheilu').reduce((a, w) => a + w.minutes, 0),
         creativeToday: ws.filter((w) => w.day === today && kindOf(w.sport) === 'luova').reduce((a, w) => a + w.minutes, 0),
         goal: weekGoal(st, ws, today),
+        weeksDone: wDone,
+        bonusPts,
         cheersToday: (cheers ?? []).filter((c) => c.to_id === f.id && c.day === today).length,
         badges: BADGES.filter((b) => b.test(stats)).map((b) => b.id),
       };

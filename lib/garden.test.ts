@@ -28,7 +28,7 @@ assert.equal(weekStart('2026-10-18'), '2026-10-12');
 assert.equal(weekStart('2026-10-12'), '2026-10-12');
 import { series, weekdayAvg, sportStats, trend, route, routeText, weeklyMinutes, daysBetween, weeklySteps, dayRange, cumulative, movingAvg, stepBuckets, weekdayVsWeekend, weeklyTotals, bestOf, heatCells, pointsOverTime } from './stats.ts';
 import { challengeFor, groupTarget } from './challenge.ts';
-import { weekGoal } from './weekly.ts';
+import { weekGoal, weeksDone } from './weekly.ts';
 import { kindOf } from './garden.ts';
 const rows = [{ day: '2026-10-12', steps: 8000 }, { day: '2026-10-13', steps: 4000 }, { day: '2026-10-05', steps: 6000 }, { day: '2026-10-12', steps: 2000 }];
 assert.equal(series(rows, 3, '2026-10-14').map((x) => x.steps).join(), '10000,4000,0');
@@ -69,4 +69,10 @@ const wg = weekGoal(
 assert.equal(wg.sportDays, 2); assert.equal(wg.creativeDays, 1); assert.equal(wg.stepDaysOk, 2); assert.equal(wg.stepDaysElapsed, 3);
 assert.equal(wg.creativeDone, true); assert.equal(wg.sportDone, false); assert.equal(wg.done, false);
 assert.equal(wg.todayIsSport, true); assert.equal(wg.todayTarget, 7000);
+// kokonainen täysi viikko: ma 5.10.–su 11.10.
+const fullSteps = ['2026-10-05', '2026-10-06', '2026-10-07', '2026-10-08', '2026-10-09', '2026-10-10', '2026-10-11'].map((day, i) => ({ day, steps: i < 3 ? 7000 : 10000 }));
+const fullWork = [{ day: '2026-10-05', sport: 'Sali' }, { day: '2026-10-06', sport: 'Tennis' }, { day: '2026-10-07', sport: 'Jooga' }, { day: '2026-10-08', sport: 'Piirtäminen' }];
+assert.equal(weeksDone(fullSteps, fullWork, '2026-10-14'), 1);
+assert.equal(weeksDone(fullSteps, fullWork.slice(0, 2), '2026-10-14'), 0);
+assert.equal(weeksDone([], [], '2026-10-14'), 0);
 console.log('garden: ok');

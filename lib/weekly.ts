@@ -3,6 +3,9 @@ import { dayBefore, helsinkiDay, kindOf, weekStart } from './garden.ts';
 /** Viikon yhteinen tavoite: 7 000 askelta treenipäivänä, 10 000 muulloin, 3 urheilupäivää ja 1 luova päivä. */
 export const WEEK_GOAL = { sportDays: 3, creativeDays: 1, stepsSportDay: 7000, stepsRestDay: 10000 } as const;
 
+/** Bonus jokaisesta kokonaan täytetystä viikosta. */
+export const WEEK_BONUS = 3;
+
 export type WeekGoal = {
   sportDays: number; creativeDays: number; stepDaysOk: number; stepDaysElapsed: number;
   done: boolean; sportDone: boolean; creativeDone: boolean; stepsDone: boolean;
@@ -41,3 +44,19 @@ function dayAfter(day: string): string {
   return d.toISOString().slice(0, 10);
 }
 export { dayBefore };
+
+/** Montako viikkoa keiju on täyttänyt koko tavoitteen (viikko arvioidaan sunnuntaihin tai tähän päivään asti). */
+export function weeksDone(steps: { day: string; steps: number }[], work: { day: string; sport: string }[], today = helsinkiDay()): number {
+  const all = [...steps.map((x) => x.day), ...work.map((x) => x.day)];
+  if (all.length === 0) return 0;
+  let w = weekStart(all.sort()[0]);
+  const thisWeek = weekStart(today);
+  let n = 0;
+  for (let i = 0; i < 80 && w <= thisWeek; i++) {
+    let end = w;
+    for (let k = 0; k < 6; k++) end = dayAfter(end);
+    if (weekGoal(steps, work, end > today ? today : end).done) n++;
+    w = dayAfter(end);
+  }
+  return n;
+}

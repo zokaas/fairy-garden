@@ -1,7 +1,7 @@
 const WD = ['Ma', '', 'Ke', '', 'Pe', '', 'Su'];
 const level = (v: number) => (v <= 0 ? 0 : v < 5000 ? 1 : v < 10000 ? 2 : v < 15000 ? 3 : 4);
 
-/** Aktiivisuuskartta: sarakkeet viikkoja (vanhin vasemmalla), rivit ma–su. */
+/** Päiväkartta: sarakkeet viikkoja (vanhin vasemmalla), rivit ma–su. */
 export default function Heatmap({ cols }: { cols: ({ day: string; steps: number } | null)[][] }) {
   return (
     <div className="heatwrap">

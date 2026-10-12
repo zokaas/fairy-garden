@@ -191,7 +191,7 @@ export function monthly(steps: { day: string; steps: number }[], work: { day: st
   return [...m.values()].sort((a, b) => a.month.localeCompare(b.month));
 }
 
-/** Aktiivisuuskartta: sarakkeet = viikot (vanhin ensin), rivit ma–su. Tulevat päivät null. */
+/** Päiväkartta: sarakkeet = viikot (vanhin ensin), rivit ma–su. Tulevat päivät null. */
 export function heatCells(rows: { day: string; steps: number }[], weeks: number, today = helsinkiDay()) {
   const m = byDay(rows);
   const d = new Date(`${today}T12:00:00Z`);
