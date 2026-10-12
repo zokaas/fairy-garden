@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { loadGarden } from '@/lib/data';
-import { ago, stageFor } from '@/lib/garden';
+import { ago } from '@/lib/garden';
 import { LISTS, isList, type ListKey } from '@/lib/lists';
 import Avatar from '@/components/Avatar';
 import { leave, sendCheer } from '../actions';
@@ -67,7 +67,7 @@ export default async function Karki({ searchParams }: { searchParams: { lista?: 
               return (
                 <li key={b.id} className={b.mine ? 'me' : ''}>
                   <span className="pos">{medal[i] ?? i + 1}</span>
-                  <span className="nm"><Avatar a={b} size={38} badge={stageFor(b.pts).stage.emoji} stage={b.stageIdx} />
+                  <span className="nm"><Avatar a={b} size={38} stage={b.stageIdx} />
                     <span>{b.name}<small>{sub(b)}</small>{key === 'askeleet' && <small>synkattu {ago(b.lastSync)}</small>}</span>
                   </span>
                   <span className="pt">{L.fmt(score(b))}{diff !== null && <small className={diff > 0 ? 'neg' : 'pos2'}>{diff > 0 ? '+' : diff < 0 ? '−' : ''}{fi(Math.abs(diff))}</small>}</span>

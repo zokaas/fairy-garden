@@ -5,15 +5,20 @@ export type Kind = 'urheilu' | 'luova';
 /** Laji kuuluu luoviin harrastuksiin tai (oletuksena) urheiluun. */
 export const kindOf = (sport: string): Kind => ((CREATIVE as readonly string[]).includes(sport) ? 'luova' : 'urheilu');
 
-/** Tasot pisteinä (1 p = 2 500 askelta tai 30 min urheilua). */
-export const STAGES = [
-  { pts: 0, name: 'Siemen', emoji: '🌰' },
-  { pts: 5, name: 'Itu', emoji: '🌱' },
-  { pts: 25, name: 'Silmu', emoji: '🌷' },
-  { pts: 60, name: 'Kukka', emoji: '🌸' },
-  { pts: 110, name: 'Keiju', emoji: '🧚🏼‍♀️' },
-  { pts: 170, name: 'Keijukuningatar', emoji: '👑' },
+/** Puutarhan palkinnot aukeavat kukkamäärän mukaan (ei erillisiä tasoja). Indeksi 0..5 kertoo montako porrasta on avattu. */
+export const GROWTH = [0, 3, 10, 20, 32, 42] as const;
+export const UNLOCKS = [
+  { at: 3, text: 'Taimi-asuste 🌱' },
+  { at: 10, text: 'Kimallus-asuste ✨ ja sienet 🍄' },
+  { at: 20, text: 'Kukkaseppele 🌸 ja mökki 🏡' },
+  { at: 32, text: 'Siivet 🪽 ja sateenkaari 🌈' },
+  { at: 42, text: 'Kruunu 👑 ja linna 🏰' },
 ] as const;
+export function growthIdx(flowers: number): number {
+  let idx = 0;
+  GROWTH.forEach((g, i) => { if (flowers >= g) idx = i; });
+  return idx;
+}
 
 export const STEPS_PER_POINT = 2500;
 export const MINUTES_PER_POINT = 30;
@@ -28,16 +33,6 @@ export function points(steps: number, workoutMinutes: number): number {
   return stepPoints(steps) + sportPoints(workoutMinutes);
 }
 
-export function stageFor(points: number) {
-  let idx = 0;
-  STAGES.forEach((s, i) => {
-    if (points >= s.pts) idx = i;
-  });
-  const cur = STAGES[idx];
-  const next = STAGES[idx + 1] ?? null;
-  const pct = next ? Math.min(100, ((points - cur.pts) / (next.pts - cur.pts)) * 100) : 100;
-  return { stage: cur, next, pct, idx };
-}
 
 /** Päivämäärä Helsingin ajassa muodossa YYYY-MM-DD. */
 export function helsinkiDay(d = new Date()): string {

@@ -4,7 +4,7 @@ import { loadGarden, loadRaw } from '@/lib/data';
 import { syncWatch } from '@/lib/watch';
 import { DEMO } from '@/lib/demo';
 import { db } from '@/lib/db';
-import { STAGES, ago, helsinkiDay } from '@/lib/garden';
+import { GROWTH, ago, helsinkiDay } from '@/lib/garden';
 import Avatar from '@/components/Avatar';
 import { getContest } from '@/lib/contest';
 import { adminDelete, adminResetPassword, adminSetSteps, clearTest, remindAll, remindFairy, saveContest, seedTest, testPush, testWeekly } from './actions';
@@ -67,9 +67,9 @@ export default async function Yllapito({ searchParams }: { searchParams: { ok?: 
 
       <section className="card">
         <h2>Esikatsele näkymiä</h2>
-        <p className="muted">Tasot (etusivu):</p>
+        <p className="muted">Puutarhan kasvu (kukkia):</p>
         <div className="chips" style={{ justifyContent: 'flex-start' }}>
-          {STAGES.map((s, i) => <Link key={s.name} className="chip" href={`/?taso=${i}`}>{s.emoji} {s.name}</Link>)}
+          {GROWTH.map((g, i) => <Link key={g} className="chip" href={`/?taso=${i}`}>{g} kukkaa</Link>)}
         </div>
         <p className="muted">Vuorokaudenaika:</p>
         <div className="chips" style={{ justifyContent: 'flex-start' }}>
@@ -77,7 +77,7 @@ export default async function Yllapito({ searchParams }: { searchParams: { ok?: 
         </div>
         <p className="muted">Muut:</p>
         <div className="chips" style={{ justifyContent: 'flex-start' }}>
-          <Link className="chip" href="/?juhla=1&taso=2">🎉 Tasonnousujuhla</Link>
+          <Link className="chip" href="/?juhla=1&taso=2">🎉 Uuden kukan juhla</Link>
           <Link className="chip" href="/?tyhja=1"> Uuden käyttäjän aloitus</Link>
           <Link className="chip" href="/kisa">🏁 Kisa (käynnissä)</Link>
           <Link className="chip" href="/kisa?avaa=1">🏆 Kisa (päättynyt)</Link>

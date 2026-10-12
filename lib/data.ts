@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import { db } from '@/lib/db';
 import { DEMO, demoRows } from '@/lib/demo';
 import { WEEK_BONUS, flowerDays, weekGoal, weeksDone, type WeekGoal } from '@/lib/weekly';
-import { ACTIVE_DAY, DAILY_GOAL, bestStreak, kindOf, dayBefore, helsinkiDay, points, sportPoints, stageFor, stepPoints, streak, weekStart } from '@/lib/garden';
+import { ACTIVE_DAY, DAILY_GOAL, bestStreak, kindOf, dayBefore, helsinkiDay, points, sportPoints, growthIdx, stepPoints, streak, weekStart } from '@/lib/garden';
 import { BADGES } from '@/lib/badges';
 
 export type Fairy = {
@@ -80,7 +80,7 @@ export async function loadGarden() {
       const wDone = weeksDone(st, ws, today);
       const bonusPts = wDone * WEEK_BONUS;
       const pts = points(totalSteps, mins) + bonusPts;
-      const stageIdx = stageFor(pts).idx;
+      const stageIdx = growthIdx(flowerDays(st, ws));
       const stats = { totalSteps, bestDay: Math.max(0, ...st.map((x) => x.steps)), bestStreak: bestStreak(st), workouts: ws.length, mins, hasSteps: st.length > 0, stageIdx, weeksDone: wDone };
       return {
         id: f.id,

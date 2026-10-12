@@ -4,8 +4,8 @@ import Avatar from './Avatar';
 import FairyFigure from './FairyFigure';
 import PhotoPicker from './PhotoPicker';
 import { ACCESSORIES, AVATAR_BGS, AVATAR_EMOJIS } from '@/lib/avatar';
+import { GROWTH } from '@/lib/garden';
 
-const STAGE_NAMES = ['Siemen', 'Itu', 'Silmu', 'Kukka', 'Keiju', 'Keijukuningatar'];
 type Tab = 'hahmo' | 'vari' | 'asuste' | 'kuva';
 const TABS: [Tab, string][] = [['hahmo', 'Hahmo'], ['vari', 'Väri'], ['asuste', 'Asuste'], ['kuva', 'Kuva']];
 
@@ -85,13 +85,13 @@ export default function AvatarEditor({ initial, stage, photoPath, photoVer, isNe
             {ACCESSORIES.map((a) => {
               const open = stage >= a.stage;
               return (
-                <button type="button" key={a.id} role="radio" aria-checked={acc === a.id} disabled={!open} className={`pick ${acc === a.id ? 'sel' : ''} ${open ? '' : 'locked'}`} onClick={() => setAcc(a.id)} title={open ? a.name : `Aukeaa tasolla ${STAGE_NAMES[a.stage]}`}>
+                <button type="button" key={a.id} role="radio" aria-checked={acc === a.id} disabled={!open} className={`pick ${acc === a.id ? 'sel' : ''} ${open ? '' : 'locked'}`} onClick={() => setAcc(a.id)} title={open ? a.name : `Aukeaa ${GROWTH[a.stage]} kukalla`}>
                   {a.emoji || '∅'}{!open && <small className="lock">🔒</small>}
                 </button>
               );
             })}
           </div>
-          <p className="muted">Asusteet aukeavat tasojen mukana. Seuraava aukeaa tasolla {STAGE_NAMES[Math.min(5, stage + 1)]}.</p>
+          <p className="muted">Asusteet aukeavat kukkien mukana (jokainen tavoitepäivä on yksi kukka).{stage < 5 ? ` Seuraava aukeaa ${GROWTH[stage + 1]} kukalla.` : ''}</p>
         </>
       )}
 

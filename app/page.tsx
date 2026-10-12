@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { loadGarden } from '@/lib/data';
-import { MINUTES_PER_POINT, STAGES, STEPS_PER_POINT, sportPoints, stepPoints, ago, phaseOf, stageFor, type Phase } from '@/lib/garden';
+import { GROWTH, MINUTES_PER_POINT, STEPS_PER_POINT, UNLOCKS, sportPoints, stepPoints, ago, phaseOf, type Phase } from '@/lib/garden';
 import type { Fairy } from '@/lib/data';
 import { dailyQuests } from '@/lib/quests';
 import Journey from '@/components/Journey';
@@ -26,7 +26,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
   let me: Fairy | null = admin && searchParams.tyhja ? { ...realMe!, hasSteps: false, today: 0, yesterday: 0, totalSteps: 0, pts: 0, stageIdx: 0, badges: [], streak: 0, workouts: 0, flowers: 0, avatarEmoji: null } : realMe;
   if (me && admin && searchParams.taso !== undefined) {
     const idx = Math.max(0, Math.min(5, Number(searchParams.taso) || 0));
-    me = { ...me, stageIdx: idx, pts: STAGES[idx].pts, flowers: [0, 6, 14, 24, 36, 50][idx], hasSteps: true };
+    me = { ...me, stageIdx: idx, flowers: GROWTH[idx] + (idx > 0 ? 2 : 0), hasSteps: true };
   }
   const contest = await getContest();
   const phase: Phase = admin && ['night', 'dawn', 'day', 'dusk'].includes(searchParams.aika ?? '') ? (searchParams.aika as Phase) : phaseOf();
@@ -81,7 +81,6 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
     );
   }
 
-  const { stage, next, pct } = stageFor(me.pts);
   const stageIdx = me.stageIdx;
   const todo = [
     { done: me.hasSteps, label: 'Yhdistä askeleet', hint: 'Kerran, noin 5 min. Sen jälkeen askeleet tulevat itsestään.', href: '/shortcut' },
@@ -107,16 +106,15 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
 
   return (
     <>
-      <Celebrate stageIdx={stageIdx} stageName={stage.name} emoji={stage.emoji} force={admin && !!searchParams.juhla} />
+      <Celebrate flowers={me.flowers} force={admin && !!searchParams.juhla} />
       <Garden
         flowers={me.flowers}
         stageIdx={stageIdx}
         phase={phase}
-        name={`${me.name} · ${stage.name}`}
+        name={me.name}
         avatar={me}
         lines={[
           me.today < me.goal.todayTarget ? `Vielä ${(me.goal.todayTarget - me.today).toLocaleString('fi-FI')} askelta päivän tavoitteeseen! 👟` : 'Päivän tavoite täynnä, mahtavaa! ✨',
-          next ? `${next.emoji} ${next.name} odottaa ${Math.max(1, next.pts - me.pts)} pisteen päässä` : 'Olet puutarhan kuningatar 👑',
           'Jokainen tavoitepäivä kasvattaa yhden kukan 🌷',
           'Muista juoda vettä, keiju 💧',
           `${me.name}, sinä loistat! 🌸`,
@@ -201,11 +199,6 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         );
       })()}
 
-      <section className="card">
-        <h2>{next ? `Matkalla: ${next.emoji} ${next.name}` : 'Olet huipulla'}</h2>
-        <div className="bar"><i style={{ width: `${pct}%` }} /></div>
-        {next && <p className="muted">Vielä {Math.max(0, next.pts - me.pts)} pistettä seuraavaan tasoon.</p>}
-      </section>
 
       {me.hasSteps && (
         <details className="more">
@@ -259,6 +252,18 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
       )}
 
 
+      <section className="card">
+        <h2>Puutarhan palkinnot</h2>
+        <ul className="plain unlocks">
+          {UNLOCKS.map((u) => (
+            <li key={u.at} className={me.flowers >= u.at ? 'done' : ''}>
+              <span className="ob-check">{me.flowers >= u.at ? '✓' : ''}</span>
+              <span><b>{u.at} kukkaa</b><small>{u.text}</small></span>
+            </li>
+          ))}
+        </ul>
+        <p className="muted">Jokainen päivä, jolloin saavutat askeltavoitteen, on yksi kukka. Sinulla on nyt {me.flowers}.</p>
+      </section>
       {me.hasSteps && <Journey steps={me.totalSteps} avatar={me} stageIdx={stageIdx} />}
 
       <section className="card">
