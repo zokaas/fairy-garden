@@ -15,5 +15,13 @@ Kun saat virheitä tai uusia ominaisuuksia, aja `supabase/migrations/000_kaikki.
 
 Sovellus on vain gaalaa edeltävään reippauskisaan (askeleet ja liikunta). Kisan päättymisaika ja palkinto asetetaan ylläpidossa.
 
+## Ajastukset (Vercel Cron)
+- `/api/cron/aamu`: klo 9 muistutus puuttuvista eilisen askelista.
+- `/api/cron/maanantai`: maanantaisin klo 9 viime viikon yhteenveto (pisteet, sija, tavoite).
+Molemmat vaativat `CRON_SECRET`- ja VAPID-ympäristömuuttujat (ks. `.env.example`).
+
+## Askelten lähetys
+`POST /api/steps` hyväksyy `{ token, steps }` (tämä päivä) tai takautuvasti `{ token, lines: "2026-10-09=8234\n2026-10-08=7120" }` (enintään 14 pv vanhat). Päivälle jää aina suurin arvo.
+
 ## Testit
 `npm test`

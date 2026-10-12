@@ -102,3 +102,10 @@ export async function testPush() {
   const n = await sendPush({ title: 'Testi ✨', body: 'Ilmoitukset toimivat, keiju!', url: '/' }, [me.id]);
   done(n > 0 ? 'Testi-ilmoitus lähetetty' : 'Ei tilausta tai VAPID-avaimia, ilmoitusta ei lähetetty');
 }
+
+export async function testWeekly() {
+  const me = await requireAdmin();
+  const { sendWeeklySummary } = await import('@/lib/summary');
+  const r = await sendWeeklySummary(me.id);
+  done(r.sent > 0 ? 'Viikkoyhteenveto lähetetty itsellesi' : 'Ei tilausta tai VAPID-avaimia, ei lähetetty');
+}

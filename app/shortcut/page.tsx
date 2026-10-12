@@ -13,6 +13,7 @@ export default function ShortcutGuide() {
   const url = `${site}/api/steps`;
   const install = process.env.NEXT_PUBLIC_SHORTCUT_INSTALL_URL;
   const body = JSON.stringify({ token, steps: '<Askeleet>' });
+  const bodyDays = JSON.stringify({ token, lines: '<Rivit>' });
 
   return (
     <>
@@ -39,7 +40,7 @@ export default function ShortcutGuide() {
       )}
 
       <section className="card">
-        <h2>{install ? '2. Tai tee oikotie käsin' : '1. Oikotien teko (Komennot-sovellus)'}</h2>
+        <h2>{install ? 'Tai tee oikotie käsin: yksinkertainen versio' : 'Oikotie: yksinkertainen versio (vain tämä päivä)'}</h2>
         <ol className="steps-list">
           <li>Avaa <b>Komennot</b> → <b>+</b> → uusi komento, nimeksi “Fairy Garden”.</li>
           <li>Lisää <b>Etsi terveysnäytteitä</b>: Tyyppi on <i>Askelmäärä</i>, Alkamispäivä on <i>tänään</i>.</li>
@@ -56,7 +57,30 @@ export default function ShortcutGuide() {
       </section>
 
       <section className="card">
-        <h2>{install ? '3. Automaatio' : '2. Automaatio'}</h2>
+        <h2>Suositus: takautuva versio (viimeiset 7 päivää)</h2>
+        <p className="muted">Jos automaatio jää yhtenä iltana pois, tämä versio korjaa puuttuvat päivät itsestään seuraavalla kerralla. Se on vähän pidempi tehdä, mutta kannattaa.</p>
+        <ol className="steps-list">
+          <li>Tee uusi komento “Fairy Garden” (tai muokkaa vanhaa).</li>
+          <li>Lisää <b>Lista</b>, jossa on rivit <code>0 1 2 3 4 5 6</code> (yksi numero per rivi).</li>
+          <li>Lisää <b>Toista jokaiselle</b> tälle listalle. Toiston sisään:
+            <ol>
+              <li><b>Säädä päivämäärää</b>: nykyinen päivämäärä, vähennä <i>Toiston kohde</i> päivää.</li>
+              <li><b>Muotoile päivämäärä</b>: mukautettu muoto <code>yyyy-MM-dd</code>.</li>
+              <li><b>Etsi terveysnäytteitä</b>: Tyyppi <i>Askelmäärä</i>, Alkamispäivä on <i>säädetty päivämäärä</i>.</li>
+              <li><b>Laske tilastot</b>: <i>Summa</i>.</li>
+              <li><b>Teksti</b>: <code>[muotoiltu päivämäärä]=[tilasto]</code> ja <b>Lisää muuttujaan</b> “Rivit”.</li>
+            </ol>
+          </li>
+          <li>Toiston jälkeen: <b>Yhdistä tekstit</b> (Rivit), erottimena <i>Uusi rivi</i>.</li>
+          <li><b>Hae URL-osoitteen sisältö</b>: osoite <code>{url}</code>, tapa <b>POST</b>, runko <b>JSON</b>, kentät <code>token</code> ja <code>lines</code> (= yhdistetty teksti).
+            <CopyButton text={bodyDays} label="Kopioi JSON-malli" />
+          </li>
+        </ol>
+        <p className="muted">Palvelin tallentaa jokaiselle päivälle suuremman arvon vanhasta ja uudesta, joten uudelleen lähetys ei haittaa. Ennen kuin luotat tähän, aja komento kerran ja tarkista, että viimeiset päivät näkyvät Tilastoissa. Jos jokin kohta ei toimi, käytä yksinkertaista versiota yllä.</p>
+      </section>
+
+      <section className="card">
+        <h2>Automaatio (kaikille versioille)</h2>
         <ol className="steps-list">
           <li>Komennot → <b>Automaatio</b> → <b>+</b> → <b>Vuorokaudenaika</b>, esim. 21:00, joka päivä.</li>
           <li>Valitse “Fairy Garden” ja <b>Suorita heti</b> (ei kysy joka kerta).</li>

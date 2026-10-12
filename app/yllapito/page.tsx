@@ -4,7 +4,7 @@ import { loadGarden } from '@/lib/data';
 import { STAGES, ago, helsinkiDay } from '@/lib/garden';
 import Avatar from '@/components/Avatar';
 import { getContest } from '@/lib/contest';
-import { adminDelete, adminResetPassword, adminSetSteps, clearTest, saveContest, seedTest, testPush } from './actions';
+import { adminDelete, adminResetPassword, adminSetSteps, clearTest, saveContest, seedTest, testPush, testWeekly } from './actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -65,6 +65,8 @@ export default async function Yllapito({ searchParams }: { searchParams: { ok?: 
         <h2>Ilmoitukset</h2>
         <p className="muted">Laita ensin ilmoitukset päälle omassa profiilissasi, ja lähetä sitten testi.</p>
         <form action={testPush}><button className="btn ghost">Lähetä testi-ilmoitus itselle</button></form>
+        <form action={testWeekly}><button className="btn ghost" style={{ marginTop: 8 }}>Lähetä viikkoyhteenveto itselle (testi)</button></form>
+        <p className="muted">Maanantaisin klo 9 kaikille tilaajille lähtee automaattisesti viime viikon yhteenveto.</p>
       </section>
 
       <section className="card">

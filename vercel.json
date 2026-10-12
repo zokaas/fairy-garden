@@ -1,6 +1,8 @@
 {
   "crons": [
     { "path": "/api/cron/aamu", "schedule": "0 6 * * *" },
-    { "path": "/api/cron/aamu", "schedule": "0 7 * * *" }
+    { "path": "/api/cron/aamu", "schedule": "0 7 * * *" },
+    { "path": "/api/cron/maanantai", "schedule": "0 6 * * 1" },
+    { "path": "/api/cron/maanantai", "schedule": "0 7 * * 1" }
   ]
 }
