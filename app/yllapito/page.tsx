@@ -66,6 +66,12 @@ export default async function Yllapito({ searchParams }: { searchParams: { ok?: 
       </section>
 
       <section className="card">
+        <h2>Jaettava komento</h2>
+        <p className="muted">{process.env.NEXT_PUBLIC_SHORTCUT_INSTALL_URL ? 'Asennuslinkki on asetettu.' : 'Asennuslinkkiä ei ole vielä asetettu. Tee komento kerran ja jaa se, niin muille asennus on yksi nappi.'}</p>
+        <Link className="btn ghost" href="/yllapito/komento">Rakennusohje</Link>
+      </section>
+
+      <section className="card">
         <h2>Esikatsele näkymiä</h2>
         <p className="muted">Puutarhan kasvu (kukkia):</p>
         <div className="chips" style={{ justifyContent: 'flex-start' }}>

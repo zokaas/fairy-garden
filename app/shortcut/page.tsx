@@ -1,99 +1,111 @@
 import Link from 'next/link';
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { loadGarden } from '@/lib/data';
+import { ago } from '@/lib/garden';
 import CopyButton from '@/components/CopyButton';
 import SyncButton from '@/components/SyncButton';
+import { cookies } from 'next/headers';
 
 export const dynamic = 'force-dynamic';
 
-export default function ShortcutGuide() {
+export default async function ShortcutGuide() {
   const token = cookies().get('fg_token')?.value;
   if (!token) redirect('/');
+  const { me } = await loadGarden();
   const site = process.env.NEXT_PUBLIC_SITE_URL ?? '';
   const url = `${site}/api/steps`;
   const install = process.env.NEXT_PUBLIC_SHORTCUT_INSTALL_URL;
   const body = JSON.stringify({ token, steps: '<Askeleet>' });
   const bodyDays = JSON.stringify({ token, lines: '<Rivit>' });
+  const working = !!me?.hasSteps;
 
   return (
     <>
-      <h1>Askelten automaattisynkka</h1>
-      <p className="sub">Tehdään kerran, sen jälkeen iPhone lähettää askeleesi itse.</p>
+      <h1>Askelten synkka</h1>
+      <p className="sub">Tehdään kerran. Sen jälkeen iPhone lähettää askeleesi itse.</p>
 
-      <section className="card">
-        <h2>Sinun salainen avaimesi</h2>
-        <span className="tok">{token}</span>
-        <CopyButton text={token} label="Kopioi avain" />
-        <p className="muted">Älä jaa tätä muille: avaimella voi kirjata askelia sinun nimissäsi.</p>
+      <section className={`card ${working ? 'quests all' : ''}`}>
+        <h2>Tila</h2>
+        {working ? (
+          <p><b>Synkka toimii.</b> Viimeksi synkattu {ago(me?.lastSync ?? null)}. Tarkista silti, että automaatio on tehty (vaihe 4).</p>
+        ) : (
+          <p><b>Ei vielä synkattu.</b> Tee alla olevat vaiheet. Kun ensimmäinen synkka onnistuu, tämä kortti muuttuu.</p>
+        )}
       </section>
 
-      {install && (
+      {install ? (
         <section className="card">
-          <h2>1. Pikavalinta: asenna valmis oikotie</h2>
+          <h2>Asenna kolmessa vaiheessa</h2>
           <ol className="steps-list">
-            <li>Napauta alla olevaa nappia ja valitse <b>Lisää komento</b>.</li>
-            <li>Kun komento kysyy <b>Avain</b>, liitä yllä kopioimasi avain.</li>
-            <li>Salli pääsy Terveyteen. Valmis!</li>
+            <li><b>Kopioi avaimesi</b> (salainen, älä jaa muille)
+              <span className="tok">{token}</span>
+              <CopyButton text={token} label="Kopioi avain" />
+            </li>
+            <li><b>Asenna oikotie</b>: napauta alla, valitse <i>Lisää komento</i>. Kun komento kysyy <b>Avain</b>, liitä kopioimasi avain. Salli pääsy Terveyteen.
+              <a className="btn" href={install}>Asenna oikotie</a>
+            </li>
+            <li><b>Kokeile</b>: aja komento kerran.
+              <SyncButton site={site} />
+            </li>
+            <li><b>Automaatio</b> (tehdään kerran): Komennot → <i>Automaatio</i> → <b>+</b> → <i>Vuorokaudenaika</i>. Tee kaksi: klo <b>07:00</b> ja klo <b>21:00</b>, molemmat joka päivä. Valitse “Fairy Garden” ja <b>Suorita heti</b>. Aamuajo viimeistelee eilisen päivän askeleet.</li>
           </ol>
-          <a className="btn" href={install}>Asenna oikotie</a>
+        </section>
+      ) : (
+        <section className="card nudge">
+          <h2>Asennuslinkki puuttuu vielä</h2>
+          <p>Ylläpitäjä ei ole vielä lisännyt valmista oikotietä. Pyydä häntä tekemään se (ohje ylläpidossa), tai tee oikotie käsin alla olevan ohjeen mukaan.</p>
         </section>
       )}
 
-      <section className="card">
-        <h2>{install ? 'Tai tee oikotie käsin: yksinkertainen versio' : 'Oikotie: yksinkertainen versio (vain tämä päivä)'}</h2>
-        <ol className="steps-list">
-          <li>Avaa <b>Komennot</b> → <b>+</b> → uusi komento, nimeksi “Fairy Garden”.</li>
-          <li>Lisää <b>Etsi terveysnäytteitä</b>: Tyyppi on <i>Askelmäärä</i>, Alkamispäivä on <i>tänään</i>.</li>
-          <li>Lisää <b>Laske tilastot</b>: <i>Summa</i> edellisestä.</li>
-          <li>Lisää <b>Hae URL-osoitteen sisältö</b>:
-            <code>{url}</code>
-            <CopyButton text={url} label="Kopioi osoite" />
-            Tapa: <b>POST</b>, pyynnön runko: <b>JSON</b>, ja lisää kentät:
-            <code>token = {token}{'\n'}steps = (Laskettu tilasto)</code>
-            <CopyButton text={body} label="Kopioi JSON-malli" />
-          </li>
-          <li>Anna Komennot-sovelluksen käyttää Terveyttä, kun iPhone kysyy.</li>
-        </ol>
-      </section>
+      <details className="card manual" open={!install}>
+        <summary><b>Tee oikotie käsin</b>{install ? ' (jos asennuslinkki ei toimi)' : ''}</summary>
+        <div style={{ marginTop: 12 }}>
+          {!install && (
+            <>
+              <h2>Avaimesi</h2>
+              <span className="tok">{token}</span>
+              <CopyButton text={token} label="Kopioi avain" />
+            </>
+          )}
+          <h2 style={{ marginTop: 14 }}>Yksinkertainen versio (vain tämä päivä)</h2>
+          <ol className="steps-list">
+            <li>Avaa <b>Komennot</b> → <b>+</b> → uusi komento, nimeksi “Fairy Garden”.</li>
+            <li>Lisää <b>Etsi terveysnäytteitä</b>: Tyyppi on <i>Askelmäärä</i>, Alkamispäivä on <i>tänään</i>.</li>
+            <li>Lisää <b>Laske tilastot</b>: <i>Summa</i> edellisestä.</li>
+            <li>Lisää <b>Hae URL-osoitteen sisältö</b>:
+              <code>{url}</code>
+              <CopyButton text={url} label="Kopioi osoite" />
+              Tapa <b>POST</b>, runko <b>JSON</b>, kentät:
+              <code>token = {token}{'\n'}steps = (Laskettu tilasto)</code>
+              <CopyButton text={body} label="Kopioi JSON-malli" />
+            </li>
+            <li>Salli pääsy Terveyteen, kun iPhone kysyy.</li>
+          </ol>
 
-      <section className="card">
-        <h2>Suositus: takautuva versio (viimeiset 7 päivää)</h2>
-        <p className="muted">Jos automaatio jää yhtenä iltana pois, tämä versio korjaa puuttuvat päivät itsestään seuraavalla kerralla. Se on vähän pidempi tehdä, mutta kannattaa.</p>
-        <ol className="steps-list">
-          <li>Tee uusi komento “Fairy Garden” (tai muokkaa vanhaa).</li>
-          <li>Lisää <b>Lista</b>, jossa on rivit <code>0 1 2 3 4 5 6</code> (yksi numero per rivi).</li>
-          <li>Lisää <b>Toista jokaiselle</b> tälle listalle. Toiston sisään:
-            <ol>
-              <li><b>Säädä päivämäärää</b>: nykyinen päivämäärä, vähennä <i>Toiston kohde</i> päivää.</li>
-              <li><b>Muotoile päivämäärä</b>: mukautettu muoto <code>yyyy-MM-dd</code>.</li>
-              <li><b>Etsi terveysnäytteitä</b>: Tyyppi <i>Askelmäärä</i>, Alkamispäivä on <i>säädetty päivämäärä</i>.</li>
-              <li><b>Laske tilastot</b>: <i>Summa</i>.</li>
-              <li><b>Teksti</b>: <code>[muotoiltu päivämäärä]=[tilasto]</code> ja <b>Lisää muuttujaan</b> “Rivit”.</li>
-            </ol>
-          </li>
-          <li>Toiston jälkeen: <b>Yhdistä tekstit</b> (Rivit), erottimena <i>Uusi rivi</i>.</li>
-          <li><b>Hae URL-osoitteen sisältö</b>: osoite <code>{url}</code>, tapa <b>POST</b>, runko <b>JSON</b>, kentät <code>token</code> ja <code>lines</code> (= yhdistetty teksti).
-            <CopyButton text={bodyDays} label="Kopioi JSON-malli" />
-          </li>
-        </ol>
-        <p className="muted">Palvelin tallentaa jokaiselle päivälle suuremman arvon vanhasta ja uudesta, joten uudelleen lähetys ei haittaa. Ennen kuin luotat tähän, aja komento kerran ja tarkista, että viimeiset päivät näkyvät Tilastoissa. Jos jokin kohta ei toimi, käytä yksinkertaista versiota yllä.</p>
-      </section>
+          <h2 style={{ marginTop: 14 }}>Takautuva versio (viimeiset 7 päivää)</h2>
+          <p className="muted">Korjaa ohi menneet päivät itsestään. Pidempi, mutta suositeltava.</p>
+          <ol className="steps-list">
+            <li>Lisää <b>Lista</b> rivit <code>0 1 2 3 4 5 6</code> (yksi numero per rivi).</li>
+            <li>Lisää <b>Toista jokaiselle</b> tälle listalle. Toiston sisään:
+              <ol>
+                <li><b>Säädä päivämäärää</b>: nykyinen päivämäärä, vähennä <i>Toiston kohde</i> päivää. Nimeä “Päivä”.</li>
+                <li><b>Säädä päivämäärää</b>: “Päivä”, <i>Hae päivän alku</i>. Nimeä “Alku”.</li>
+                <li><b>Säädä päivämäärää</b>: “Alku”, lisää 1 päivä. Nimeä “Loppu”.</li>
+                <li><b>Muotoile päivämäärä</b>: “Päivä”, mukautettu <code>yyyy-MM-dd</code>. Nimeä “Päivämerkki”.</li>
+                <li><b>Etsi terveysnäytteitä</b>: Tyyppi <i>Askelmäärä</i>, Alkamispäivä <i>on välillä</i> “Alku” ja “Loppu”.</li>
+                <li><b>Laske tilastot</b>: <i>Summa</i>.</li>
+                <li><b>Teksti</b>: <code>[Päivämerkki]=[Tilasto]</code>, sitten <b>Lisää muuttujaan</b> “Rivit”.</li>
+              </ol>
+            </li>
+            <li>Toiston jälkeen: <b>Yhdistä tekstit</b> (Rivit), erottimena <i>Uusi rivi</i>.</li>
+            <li><b>Hae URL-osoitteen sisältö</b>: osoite <code>{url}</code>, <b>POST</b>, <b>JSON</b>, kentät <code>token</code> ja <code>lines</code> (= yhdistetty teksti).
+              <CopyButton text={bodyDays} label="Kopioi JSON-malli" />
+            </li>
+          </ol>
+        </div>
+      </details>
 
-      <section className="card">
-        <h2>Automaatio (kaikille versioille)</h2>
-        <ol className="steps-list">
-          <li>Komennot → <b>Automaatio</b> → <b>+</b> → <b>Vuorokaudenaika</b>, esim. 21:00, joka päivä.</li>
-          <li>Valitse “Fairy Garden” ja <b>Suorita heti</b> (ei kysy joka kerta).</li>
-        </ol>
-        <p className="muted">Jos automaatio ei aina laukea, paina etusivun Synkkaa askeleet nyt -nappia kerran päivässä.</p>
-      </section>
-
-      <section className="card">
-        <h2>Kokeile heti</h2>
-        <SyncButton site={site} />
-      </section>
-
-      <Link className="btn" href="/">Takaisin puutarhaan 🌸</Link>
+      <Link className="btn" href="/">Takaisin puutarhaan</Link>
     </>
   );
 }

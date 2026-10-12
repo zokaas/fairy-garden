@@ -456,3 +456,7 @@ ul.hist li > small { grid-row: 2; grid-column: 2; color: var(--fg-3); font-size:
 ul.unlocks li { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); }
 ul.unlocks li:last-child { border: 0; } ul.unlocks small { display: block; color: var(--fg-3); font-size: .8rem; }
 ul.unlocks li.done .ob-check { background: var(--green); border-color: transparent; color: #04120c; } ul.unlocks li.done b { color: var(--fg-2); }
+
+/* Koodipalat ohjeissa: rivinsisäisiä */
+code { display: inline; padding: 1px 6px; margin: 0; border-radius: 6px; font: .8rem var(--mono); white-space: pre-wrap; word-break: break-all; background: var(--field); border: 1px solid var(--line-2); }
+.steps-list code { line-height: 1.9; }
