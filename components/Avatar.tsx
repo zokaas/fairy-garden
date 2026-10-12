@@ -1,6 +1,6 @@
-import { avatarUrl } from '@/lib/avatar';
+import { accEmoji, avatarUrl } from '@/lib/avatar';
 
-export type AvatarData = { avatarEmoji: string | null; avatarBg: string | null; avatarPath: string | null; avatarVer?: string | null };
+export type AvatarData = { avatarEmoji: string | null; avatarBg: string | null; avatarPath: string | null; avatarAcc?: string | null; avatarVer?: string | null };
 
 export default function Avatar({ a, size = 40, badge }: { a: AvatarData; size?: number; badge?: string }) {
   const url = avatarUrl(a.avatarPath);
@@ -12,6 +12,7 @@ export default function Avatar({ a, size = 40, badge }: { a: AvatarData; size?: 
       ) : (
         a.avatarEmoji ?? '🧚🏼‍♀️'
       )}
+      {accEmoji(a.avatarAcc) && <i className="avacc" style={{ fontSize: size * 0.4 }}>{accEmoji(a.avatarAcc)}</i>}
       {badge && <i className="avbadge" style={{ fontSize: size * 0.32 }}>{badge}</i>}
     </span>
   );

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { points, stageFor, helsinkiDay, isDay, streak } from './garden.ts';
+import { points, stageFor, helsinkiDay, isDay, streak, bestStreak, dayBefore, ago } from './garden.ts';
 
 assert.equal(points(12_345, 25), 14);
 assert.equal(stageFor(0).stage.name, 'Siemen');
@@ -13,4 +13,8 @@ assert.ok(!isDay('9.10.2026'));
 assert.equal(streak([{ day: '2026-10-08', steps: 6000 }, { day: '2026-10-07', steps: 9000 }, { day: '2026-10-05', steps: 9000 }], '2026-10-09'), 2);
 assert.equal(streak([{ day: '2026-10-09', steps: 5000 }], '2026-10-09'), 1);
 assert.equal(streak([], '2026-10-09'), 0);
+assert.equal(dayBefore('2026-03-01'), '2026-02-28');
+assert.equal(bestStreak([{ day: '2026-10-01', steps: 6000 }, { day: '2026-10-02', steps: 6000 }, { day: '2026-10-03', steps: 100 }, { day: '2026-10-04', steps: 6000 }]), 2);
+assert.equal(ago(null), 'ei vielä synkattu');
+assert.equal(ago('2026-10-09T10:00:00Z', Date.parse('2026-10-09T13:00:00Z')), '3 t sitten');
 console.log('garden: ok');

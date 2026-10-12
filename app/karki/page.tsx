@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { loadGarden } from '@/lib/data';
-import { stageFor } from '@/lib/garden';
+import { ago, stageFor } from '@/lib/garden';
 import Avatar from '@/components/Avatar';
 import { leave } from '../actions';
 
@@ -21,7 +21,7 @@ export default async function Karki() {
               <li key={b.id} className={b.mine ? 'me' : ''}>
                 <span className="pos">{medal[i] ?? i + 1}</span>
                 <span className="nm"><Avatar a={b} size={38} badge={stageFor(b.pts).stage.emoji} />
-                  <span>{b.name}<small>{b.totalSteps.toLocaleString('fi-FI')} askelta{b.streak > 1 ? ` · 🔥 ${b.streak}` : ''}</small></span>
+                  <span>{b.name}<small>{b.totalSteps.toLocaleString('fi-FI')} askelta{b.streak > 1 ? ` · 🔥 ${b.streak}` : ''} · synkattu {ago(b.lastSync)}</small></span>
                 </span>
                 <span className="pt">{b.pts} p</span>
               </li>

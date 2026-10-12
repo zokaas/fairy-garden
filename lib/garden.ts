@@ -1,4 +1,5 @@
 export const EVENT_DATE = '2026-11-28T16:00:00+02:00';
+export const SECRET_AT = '2026-11-28T20:00:00+02:00';
 export const SPORTS = ['Kävely', 'Juoksu', 'Pyöräily', 'Sali', 'Jooga', 'Tanssi', 'Uinti', 'Muu'] as const;
 
 export const STAGES = [
@@ -23,7 +24,7 @@ export function stageFor(points: number) {
   const cur = STAGES[idx];
   const next = STAGES[idx + 1] ?? null;
   const pct = next ? Math.min(100, ((points - cur.min / 1000) / ((next.min - cur.min) / 1000)) * 100) : 100;
-  return { stage: cur, next, pct };
+  return { stage: cur, next, pct, idx };
 }
 
 /** Päivämäärä Helsingin ajassa muodossa YYYY-MM-DD. */
@@ -49,4 +50,32 @@ export function streak(days: { day: string; steps: number }[], today = helsinkiD
     d.setUTCDate(d.getUTCDate() - 1);
   }
   return n;
+}
+
+export function dayBefore(day: string): string {
+  const d = new Date(`${day}T12:00:00Z`);
+  d.setUTCDate(d.getUTCDate() - 1);
+  return d.toISOString().slice(0, 10);
+}
+
+/** Pisin aktiivisten päivien putki koko ajalta. */
+export function bestStreak(days: { day: string; steps: number }[]): number {
+  const act = days.filter((d) => d.steps >= ACTIVE_DAY).map((d) => d.day).sort();
+  let best = 0, cur = 0, prev = '';
+  for (const d of act) {
+    cur = prev && dayBefore(d) === prev ? cur + 1 : 1;
+    best = Math.max(best, cur);
+    prev = d;
+  }
+  return best;
+}
+
+/** "nyt", "5 min sitten", "3 t sitten", "2 pv sitten" */
+export function ago(iso: string | null, now = Date.now()): string {
+  if (!iso) return 'ei vielä synkattu';
+  const m = Math.max(0, Math.round((now - Date.parse(iso)) / 60000));
+  if (m < 2) return 'juuri nyt';
+  if (m < 60) return `${m} min sitten`;
+  if (m < 60 * 24) return `${Math.round(m / 60)} t sitten`;
+  return `${Math.round(m / 1440)} pv sitten`;
 }

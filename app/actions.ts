@@ -5,7 +5,8 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/lib/db';
 import { SPORTS, helsinkiDay, isDay } from '@/lib/garden';
-import { AVATAR_BGS, AVATAR_EMOJIS } from '@/lib/avatar';
+import { ACCESSORIES, AVATAR_BGS, AVATAR_EMOJIS } from '@/lib/avatar';
+import { loadGarden } from '@/lib/data';
 
 const COOKIE = 'fg_token';
 
@@ -64,7 +65,10 @@ export async function saveAvatar(formData: FormData) {
   const bg = String(formData.get('bg') ?? '');
   const name = String(formData.get('name') ?? '').trim().slice(0, 30);
   if (!fairy || !AVATAR_EMOJIS.includes(emoji) || !AVATAR_BGS.includes(bg)) return;
-  const patch: Record<string, string> = { avatar_emoji: emoji, avatar_bg: bg };
+  const accId = String(formData.get('acc') ?? 'none');
+  const { me } = await loadGarden();
+  const acc = ACCESSORIES.find((a) => a.id === accId);
+  const patch: Record<string, string> = { avatar_emoji: emoji, avatar_bg: bg, avatar_acc: acc && me && me.stageIdx >= acc.stage ? acc.id : 'none' };
   if (name) patch.name = name;
   await db().from('fairies').update(patch).eq('id', fairy.id);
   revalidatePath('/', 'layout');

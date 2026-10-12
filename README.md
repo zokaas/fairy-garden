@@ -10,5 +10,8 @@ Next.js-PWA, johon askeleet tulevat iPhonen Komennot-automaatiosta (ei App Store
 ## Miten askeleet kulkevat
 Komennot-automaatio (joka päivä klo 21) lukee Terveydestä päivän askelsumman ja tekee `POST /api/steps` `{ "token": "...", "steps": 8234 }`. Palvelin tallentaa päivän suurimman arvon, joten myöhäinen nollasynkka ei tyhjennä päivää. Käsinkirjaus etusivulla toimii varana.
 
+## Päivitykset (migraatiot)
+Aja tietokantaan tarvittaessa `supabase/migrations/*.sql` numerojärjestyksessä (001 avatar, 002 asuste).
+
 ## Testit
 `npm test`

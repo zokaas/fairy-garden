@@ -102,3 +102,28 @@ ol.rank small { display: block; font-weight: 400; color: var(--muted); font-size
 .garden .fairy.av .avatar { border-width: 3px; }
 ol.rank .nm { display: flex; align-items: center; gap: 10px; }
 .me-head { display: flex; align-items: center; gap: 12px; justify-content: center; margin-bottom: 6px; }
+
+/* Asusteet, merkit, gaala */
+.avacc { position: absolute; top: -34%; left: 50%; transform: translateX(-50%); font-style: normal; line-height: 1; filter: drop-shadow(0 1px 2px #0002); pointer-events: none; }
+.picker label.locked { opacity: .5; cursor: not-allowed; }
+.picker span { position: relative; }
+.lock { position: absolute; right: 2px; bottom: 0; font-size: .6rem; }
+.nudge { border-color: var(--lilac); background: #f6f0ffcc; }
+.nudge p { margin: 0 0 4px; }
+.badges { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.badge { text-align: center; padding: 10px 6px; border-radius: 16px; background: #f5eff7; opacity: .55; }
+.badge.on { opacity: 1; background: #fff; border: 1.5px solid #f3cfe3; box-shadow: 0 3px 10px #f48fb133; }
+.badge span { display: block; font-size: 1.8rem; }
+.badge b { display: block; font-size: .78rem; } .badge small { display: block; color: var(--muted); font-size: .68rem; line-height: 1.2; }
+.badges.small { display: flex; flex-wrap: wrap; gap: 8px; font-size: 1.7rem; }
+ul.plain { list-style: none; padding: 0; margin: 0 0 8px; } ul.plain li { padding: 4px 0; }
+.secret { text-align: center; background: linear-gradient(160deg, #fff, #efe4ff); }
+.secret.open { background: linear-gradient(160deg, #fff7d6, #ffe0f4); animation: glow 2.4s ease-in-out infinite; }
+.lock-bounce { animation: hover 2.6s ease-in-out infinite; }
+.secret-count { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
+.secret-count div { background: #fff; border: 1.5px solid #e4d9fb; border-radius: 14px; padding: 8px 10px; min-width: 56px; }
+.secret-count b { display: block; font-size: 1.5rem; } .secret-count span { font-size: .7rem; color: var(--muted); }
+.podium { display: flex; align-items: flex-end; justify-content: center; gap: 8px; margin-top: 12px; }
+.podium .step { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: .85rem; }
+.podium .block { width: 100%; border-radius: 14px 14px 0 0; background: linear-gradient(var(--pink), var(--lilac)); margin-top: 6px; }
+.tabs a { font-size: .66rem; }

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { loadGarden } from '@/lib/data';
-import { DAILY_GOAL, stageFor } from '@/lib/garden';
+import { DAILY_GOAL, ago, stageFor } from '@/lib/garden';
+import { BADGES } from '@/lib/badges';
 import { join } from './actions';
 import Countdown from '@/components/Countdown';
 import Garden from '@/components/Garden';
@@ -39,7 +40,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
   }
 
   const { stage, next, pct } = stageFor(me.pts);
-  const stageIdx = [0, 10, 50, 100, 250, 500].findLastIndex((m) => me.pts >= m);
+  const stageIdx = me.stageIdx;
 
   return (
     <>
@@ -68,10 +69,25 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         </section>
       )}
 
+      {me.hasSteps && me.yesterday === 0 && (
+        <section className="card nudge">
+          <p>🌙 Eilisen askeleet puuttuvat. Synkkaa ne tai <Link href="/kirjaa">kirjaa käsin</Link> (valitse eilinen päivä).</p>
+          <p className="muted">Viimeksi synkattu: {ago(me.lastSync)}</p>
+        </section>
+      )}
+
       <section className="card">
         <h2>{next ? `Matkalla: ${next.emoji} ${next.name}` : 'Olet huipulla 👑'}</h2>
         <div className="bar"><i style={{ width: `${pct}%` }} /></div>
         {next && <p className="muted">Vielä {Math.max(0, Math.ceil(next.min / 1000 - me.pts))} pistettä seuraavaan tasoon.</p>}
+      </section>
+      <section className="card">
+        <h2>Merkit {me.badges.length}/{BADGES.length}</h2>
+        <div className="badges small">
+          {BADGES.filter((b) => me.badges.includes(b.id)).map((b) => <span key={b.id} title={b.name}>{b.emoji}</span>)}
+          {me.badges.length === 0 && <span className="muted">Ensimmäinen merkki tulee ensimmäisistä askelista.</span>}
+        </div>
+        <p className="muted"><Link href="/gaala">Kaikki merkit ja gaala →</Link></p>
       </section>
     </>
   );

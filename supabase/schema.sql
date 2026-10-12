@@ -6,6 +6,7 @@ create table if not exists public.fairies (
   avatar_emoji text,
   avatar_bg text,
   avatar_path text,
+  avatar_acc text,
   created_at timestamptz not null default now()
 );
 

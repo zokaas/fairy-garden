@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { loadGarden } from '@/lib/data';
-import { AVATAR_BGS, AVATAR_EMOJIS } from '@/lib/avatar';
+import { ACCESSORIES, AVATAR_BGS, AVATAR_EMOJIS } from '@/lib/avatar';
+import { STAGES } from '@/lib/garden';
 import Avatar from '@/components/Avatar';
 import PhotoPicker from '@/components/PhotoPicker';
 import { removePhoto, saveAvatar } from '../actions';
@@ -51,6 +52,19 @@ export default async function Profiili({ searchParams }: { searchParams: { uusi?
             </label>
           ))}
         </div>
+        <h2>Asuste</h2>
+        <div className="picker">
+          {ACCESSORIES.map((a) => {
+            const open = me.stageIdx >= a.stage;
+            return (
+              <label key={a.id} className={open ? '' : 'locked'} title={open ? a.name : `Aukeaa tasolla ${STAGES[a.stage].name}`}>
+                <input type="radio" name="acc" value={a.id} disabled={!open} defaultChecked={(me.avatarAcc ?? 'none') === a.id} />
+                <span>{a.emoji || '∅'}{!open && <small className="lock">🔒</small>}</span>
+              </label>
+            );
+          })}
+        </div>
+        <p className="muted">Asusteet aukeavat tasojen mukana: Itu 🌱, Silmu ✨, Kukka 🌸, Keiju 🪽, Keijukuningatar 👑.</p>
         <button className="btn">{uusi ? 'Valmis, puutarhaan 🌸' : 'Tallenna'}</button>
       </form>
     </>

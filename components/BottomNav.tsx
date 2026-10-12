@@ -7,6 +7,7 @@ const TABS = [
   { href: '/kirjaa', icon: '👟', label: 'Kirjaa' },
   { href: '/karki', icon: '🏆', label: 'Kärki' },
   { href: '/shortcut', icon: '📲', label: 'Synkka' },
+  { href: '/gaala', icon: '🌙', label: 'Gaala' },
 ];
 
 export default function BottomNav() {
