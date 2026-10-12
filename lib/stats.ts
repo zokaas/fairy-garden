@@ -76,21 +76,32 @@ export function weeklyMinutes(rows: { day: string; minutes: number }[], n: numbe
   return out;
 }
 
-const LANDMARKS = [
-  ['Helsinki–Tampere', 180],
-  ['Helsinki–Rovaniemi', 830],
-  ['Helsinki–Pariisi', 1900],
-  ['Helsinki–New York', 6600],
-  ['maapallon ympäri', 40075],
-  ['matkan Kuuhun', 384400],
+/** Etapit Helsingistä (tieväli, km, likimäärin). */
+export const LANDMARKS = [
+  ['Porvoo', 50], ['Lahti', 105], ['Tampere', 180], ['Jyväskylä', 270], ['Kuopio', 390], ['Oulu', 610],
+  ['Rovaniemi', 830], ['Nuorgam', 1190], ['Pariisi', 2300], ['Rooma', 3000], ['maapallon ympäri', 40075],
 ] as const;
 
-/** Hauska vertailu: "2,3 × Helsinki–Rovaniemi". */
-export function compare(distKm: number): string {
-  let pick: (typeof LANDMARKS)[number] = LANDMARKS[0];
-  for (const l of LANDMARKS) if (distKm >= l[1]) pick = l;
-  const v = distKm / pick[1];
-  return v < 1 ? `${Math.round(v * 100)} % matkasta ${pick[0]}` : `${v.toFixed(1).replace('.', ',')} × ${pick[0]}`;
+/** Missä kohtaa matkaa ollaan: viimeisin saavutettu etappi, seuraava ja matka sinne. */
+export function route(distKm: number) {
+  let reached: string | null = null;
+  let prev = 0;
+  for (const [name, d] of LANDMARKS) if (distKm >= d) { reached = name; prev = d; }
+  const next = LANDMARKS.find(([, d]) => d > distKm) ?? null;
+  return {
+    reached,
+    next: next ? next[0] : null,
+    left: next ? next[1] - distKm : 0,
+    pct: next ? Math.round(((distKm - prev) / (next[1] - prev)) * 100) : 100,
+  };
+}
+
+/** Lyhyt teksti laattaan: "Lahti ✓ → Tampere 67 km". */
+export function routeText(distKm: number): string {
+  const r = route(distKm);
+  const left = r.left >= 10 ? Math.round(r.left) : Math.round(r.left * 10) / 10;
+  if (!r.next) return `${r.reached} ✓`;
+  return `${r.reached ? `${r.reached} ✓ · ` : 'Helsinki · '}seuraava ${r.next}, ${String(left).replace('.', ',')} km`;
 }
 
 /** Viikkojen askeleet (viimeiset n viikkoa, vanhin ensin) viikon alun mukaan. */

@@ -33,7 +33,7 @@ export default function Ring({ value, goal }: { value: number; goal: number }) {
           style={{ transition: 'stroke-dashoffset 1.4s cubic-bezier(.2,.8,.2,1)' }} />
       </svg>
       <div className="ring-txt">
-        <b>{shown.toLocaleString('fi-FI')}</b>
+        <b style={{ fontSize: shown >= 100000 ? '1.8rem' : shown >= 10000 ? '2.3rem' : undefined }}>{shown.toLocaleString('fi-FI')}</b>
         <span>/ {goal.toLocaleString('fi-FI')} askelta</span>
         {value >= goal && <em>Tavoite täynnä</em>}
       </div>

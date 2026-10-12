@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { loadGarden, loadRaw } from '@/lib/data';
 import { ACTIVE_DAY, DAILY_GOAL, helsinkiDay, weekStart } from '@/lib/garden';
 import { TEAMS } from '@/lib/teams';
-import { byDay, compare, daysBetween, km, series, sportStats, sum, trend, weekdayAvg, weeklyMinutes, weeklySteps } from '@/lib/stats';
+import { byDay, route, routeText, daysBetween, km, series, sportStats, sum, trend, weekdayAvg, weeklyMinutes, weeklySteps } from '@/lib/stats';
 import BarChart from '@/components/BarChart';
 import CountUp from '@/components/CountUp';
 
@@ -14,11 +14,11 @@ const fi = (n: number, d = 0) => n.toLocaleString('fi-FI', { maximumFractionDigi
 const WD = ['Ma', 'Ti', 'Ke', 'To', 'Pe', 'La', 'Su'];
 const dm = (day: string) => `${Number(day.slice(8))}.${Number(day.slice(5, 7))}.`;
 
-function Tiles({ items }: { items: [string, string, string?][] }) {
+function Tiles({ items }: { items: [string, string, string?, number?][] }) {
   return (
     <div className="tiles">
-      {items.map(([label, value, sub]) => (
-        <div key={label}><b><CountUp text={value} /></b><span>{label}</span>{sub && <small>{sub}</small>}</div>
+      {items.map(([label, value, sub, pct]) => (
+        <div key={label}><b><CountUp text={value} /></b><span>{label}</span>{sub && <small>{sub}</small>}{pct !== undefined && <div className="bar"><i style={{ width: `${pct}%` }} /></div>}</div>
       ))}
     </div>
   );
@@ -91,7 +91,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
               ['Paras päivä', best ? fi(best[1]) : '–', best ? dm(best[0]) : undefined],
               [`Tavoitepäivät (${fi(DAILY_GOAL)}+)`, String(goalDays), activeDays.length ? `${Math.round((goalDays / activeDays.length) * 100)} % päivistä` : undefined],
               ['Putki nyt / ennätys', `${me.streak} / ${me.bestRun}`, `aktiivinen = ${fi(ACTIVE_DAY)}+`],
-              ['Matka', `${fi(km(myTotal), 1)} km`, compare(km(myTotal))],
+              ['Matka Helsingistä', `${fi(km(myTotal), 1)} km`, routeText(km(myTotal)), route(km(myTotal)).pct],
             ]} />
           </section>
           <section className="card">
@@ -127,7 +127,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
             <h2>Koko puutarha</h2>
             <Tiles items={[
               ['Askeleet yhteensä', fi(groupTotal)],
-              ['Matka yhteensä', `${fi(km(groupTotal))} km`, compare(km(groupTotal))],
+              ['Ryhmän matka Helsingistä', `${fi(km(groupTotal))} km`, routeText(km(groupTotal)), route(km(groupTotal)).pct],
               ['Keskiarvo / keiju-pv', fi(perFairyDay)],
               ['Keskiarvo / keiju yhteensä', fi(board.length ? groupTotal / board.length : 0)],
               ['Ennätyspäivä (ryhmä)', gBest ? fi(gBest[1]) : '–', gBest ? dm(gBest[0]) : undefined],
