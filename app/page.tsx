@@ -140,7 +140,6 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
           <section className="card center">
             <Ring value={me.today} goal={me.goal.todayTarget} />
             <p className="todaypts"><b>Pisteet tänään: +{fp(dSteps + dMins)} p</b><span>askelista {fp(dSteps)} p · urheilusta ja luovasta {fp(dMins)} p</span></p>
-            <p className="muted">Seuraavaan pisteeseen <b>{(STEPS_PER_POINT - (me.totalSteps % STEPS_PER_POINT)).toLocaleString('fi-FI')} askelta</b> (1 p / 2 500 askelta)</p>
             <div className="chips" style={{ justifyContent: 'center' }}>
               <span className="chip">{fp(me.pts)} p yhteensä</span>
               <span className="chip">sija {myRank} / {board.length}</span>
