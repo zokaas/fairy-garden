@@ -148,6 +148,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
             </div>
             <p className="muted">{searchParams.synkattu ? '✓ Synkkaus tehty. ' : ''}Askeleet synkattu: <b>{ago(me.lastSync)}</b></p>
             <SyncButton site={process.env.NEXT_PUBLIC_SITE_URL ?? ''} />
+            <p className="muted" style={{ margin: '0 0 6px' }}><Link href="/paivat">Selaa edellisiä päiviä →</Link></p>
             <details className="how">
               <summary>Miten pisteet lasketaan? (<Link href="/ohje">koko ohje</Link>)</summary>
               <ul>

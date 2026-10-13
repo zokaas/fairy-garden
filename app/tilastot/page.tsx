@@ -232,6 +232,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
           </section>
           <section className="card">
             <h2>Viimeiset 14 päivää<Scope who="me" /></h2>
+            <p className="muted" style={{ marginTop: -4 }}><Link href="/paivat">Selaa kaikkia päiviä →</Link></p>
             <BarChart items={series(mySteps, 14, today).map((d) => ({ label: String(Number(d.day.slice(8))), value: d.steps }))} highlight={13} />
             <p className="muted">{trendTxt(tr) === '–' ? 'Kerää lisää dataa nähdäksesi trendin.' : `Viimeiset 7 päivää ${fi(tr.last)} askelta, ${tr.pct !== null && tr.pct >= 0 ? 'enemmän' : 'vähemmän'} kuin edelliset 7 päivää (${trendTxt(tr)}).`}</p>
           </section>
@@ -266,6 +267,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
           </section>
           <section className="card">
             <h2>Viimeiset 14 päivää<Scope who="me" /></h2>
+            <p className="muted" style={{ marginTop: -4 }}><Link href="/paivat">Selaa kaikkia päiviä →</Link></p>
             <BarChart items={series(mySteps, 14, today).map((d) => ({ label: String(Number(d.day.slice(8))), value: d.steps }))} highlight={13} />
             <p className="muted">Viikkotrendi: viimeiset 7 pv <b>{fi(tr.last)}</b> askelta vs edelliset 7 pv <b>{fi(tr.prev)}</b> ({trendTxt(tr)}).</p>
           </section>
