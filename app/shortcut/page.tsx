@@ -4,6 +4,7 @@ import { loadGarden } from '@/lib/data';
 import { ago } from '@/lib/garden';
 import CopyButton from '@/components/CopyButton';
 import SyncButton from '@/components/SyncButton';
+import { AutoSyncToggle } from '@/components/AutoSync';
 import { cookies } from 'next/headers';
 
 export const dynamic = 'force-dynamic';
@@ -46,8 +47,10 @@ export default async function ShortcutGuide() {
             </li>
             <li><b>Kokeile</b>: aja komento kerran.
               <SyncButton site={site} />
+              <AutoSyncToggle />
+              <span className="muted"> Kun kokeilu on onnistunut, sovellus synkkaa itse aina kun avaat sen kotivalikosta.</span>
             </li>
-            <li><b>Automaatio</b> (tehdään kerran): Komennot → <i>Automaatio</i> → <b>+</b> → <i>Vuorokaudenaika</i>. Tee kaksi: klo <b>07:00</b> ja klo <b>21:00</b>, molemmat joka päivä. Valitse “Fairy Garden” ja <b>Suorita heti</b>. Aamuajo viimeistelee eilisen päivän askeleet.</li>
+            <li><b>Automaatio</b> (tehdään kerran): Komennot → <i>Automaatio</i> → <b>+</b> → <i>Vuorokaudenaika</i>. Tee kaksi: klo <b>07:00</b> ja klo <b>21:00</b>, molemmat joka päivä. Valitse “Fairy Garden” ja <b>Suorita heti</b>. Aamuajo viimeistelee eilisen päivän askeleet. Jos puhelin on lukossa, iOS ei välttämättä anna Terveys-dataa, mutta avatessasi sovelluksen synkka ajetaan joka tapauksessa.</li>
           </ol>
         </section>
       ) : (

@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import './globals.css';
 import BottomNav from '@/components/BottomNav';
 import ResumeRefresh from '@/components/ResumeRefresh';
+import AutoSync from '@/components/AutoSync';
 import Motion from '@/components/Motion';
 
 const sans = Inter({ subsets: ['latin'], variable: '--sans', display: 'swap' });
@@ -40,6 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main className={member ? 'withnav' : ''}>{children}</main>
         {member && <BottomNav />}
         {member && <ResumeRefresh />}
+        {member && <AutoSync />}
         <Motion />
       </body>
     </html>
