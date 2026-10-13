@@ -5,7 +5,7 @@ import { loadGarden, loadRaw } from '@/lib/data';
 import { ACTIVE_DAY, DAILY_GOAL, creativePointsOf, fp, helsinkiDay, kindOf, sportPoints, stepPoints, weekStart, workoutPoints } from '@/lib/garden';
 import { goalHistory, WEEK_GOAL } from '@/lib/weekly';
 import { timeOfDay } from '@/lib/stats';
-import { byDay, route, routeText, daysBetween, km, series, sportStats, sum, trend, weekdayAvg, weeklyMinutes, weeklySteps, bestOf, cumulative, heatCells, monthly, movingAvg, pointsOverTime, stepBuckets, weekdayVsWeekend, weeklyTotals } from '@/lib/stats';
+import { byDay, daysBetween, km, series, sportStats, sum, trend, weekdayAvg, weeklyMinutes, weeklySteps, bestOf, cumulative, heatCells, monthly, movingAvg, pointsOverTime, stepBuckets, weekdayVsWeekend, weeklyTotals } from '@/lib/stats';
 import BarChart from '@/components/BarChart';
 import CountUp from '@/components/CountUp';
 import LineChart from '@/components/LineChart';
@@ -249,7 +249,6 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
               ['Paras päivä', best ? fi(best[1]) : '–', best ? dm(best[0]) : undefined],
               [`Tavoitepäivät (${fi(DAILY_GOAL)}+)`, String(goalDays), activeDays.length ? `${Math.round((goalDays / activeDays.length) * 100)} % päivistä` : undefined],
               ['Putki nyt / ennätys', `${me.streak} / ${me.bestRun}`, `hyvä päivä = ${fi(ACTIVE_DAY)}+`],
-              ['Matka Helsingistä', `${fi(km(myTotal), 1)} km`, routeText(km(myTotal)), route(km(myTotal)).pct],
             ]} />
           </section>
           <section className="card">
@@ -325,7 +324,6 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
             <h2>Koko puutarha<Scope who="group" /></h2>
             <Tiles items={[
               ['Askeleet yhteensä', fi(groupTotal)],
-              ['Ryhmän matka Helsingistä', `${fi(km(groupTotal))} km`, routeText(km(groupTotal)), route(km(groupTotal)).pct],
               ['Keskiarvo / keiju-pv', fi(perFairyDay)],
               ['Keskiarvo / keiju yhteensä', fi(board.length ? groupTotal / board.length : 0)],
               ['Tyypillinen / keiju yhteensä', fi((() => { const v = board.map((b) => b.totalSteps).sort((a, b) => a - b); return v.length ? (v[Math.floor((v.length - 1) / 2)] + v[Math.ceil((v.length - 1) / 2)]) / 2 : 0; })())],
