@@ -484,3 +484,13 @@ a.gname { cursor: pointer; } a.gname:active { transform: scale(.97); }
 
 .ed-mode { margin: 4px 0 6px; } .ed-mode a { cursor: pointer; text-align: center; padding: 12px 8px; font-size: .9rem; }
 .ed-sec { margin-top: 18px; }
+
+/* Tilastot: omat vs ryhmä */
+.scope { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px; font: 600 .58rem var(--mono); letter-spacing: .06em; text-transform: uppercase; vertical-align: middle; border: 1px solid transparent; }
+.scope.me { color: var(--pink); background: color-mix(in srgb, var(--pink) 14%, transparent); border-color: color-mix(in srgb, var(--pink) 35%, transparent); }
+.scope.group { color: var(--sky); background: color-mix(in srgb, var(--sky) 14%, transparent); border-color: color-mix(in srgb, var(--sky) 35%, transparent); }
+.scope.mix { color: var(--violet); background: color-mix(in srgb, var(--violet) 14%, transparent); border-color: color-mix(in srgb, var(--violet) 35%, transparent); }
+.scope-legend { display: flex; flex-wrap: wrap; gap: 4px 2px; align-items: center; font-size: .74rem; color: var(--fg-3); margin: 0 0 12px; } .scope-legend .scope { margin-left: 6px; }
+table.cmp { width: 100%; border-collapse: collapse; font-size: .86rem; } table.cmp th { font: 600 .62rem var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--fg-3); text-align: right; padding: 4px 6px; } table.cmp th:first-child, table.cmp td:first-child { text-align: left; }
+table.cmp td { padding: 9px 6px; border-top: 1px solid var(--line); text-align: right; font-variant-numeric: tabular-nums; }
+table.cmp .c-me { color: var(--pink); font-weight: 700; } table.cmp .c-gr { color: var(--sky); } table.cmp .up { color: var(--green); } table.cmp .down { color: var(--red); }

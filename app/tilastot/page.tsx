@@ -29,6 +29,35 @@ function Tiles({ items }: { items: [string, string, string?, number?][] }) {
   );
 }
 
+type Who = 'me' | 'group' | 'mix';
+const SCOPE: Record<Who, string> = { me: 'Sinä', group: 'Ryhmä', mix: 'Sinä vs ryhmä' };
+function Scope({ who }: { who: Who }) {
+  return <span className={`scope ${who}`}>{SCOPE[who]}</span>;
+}
+
+/** Vierekkäinen vertailu: sinun luku, ryhmän keskiarvo ja ero. */
+function Compare({ rows }: { rows: { label: string; me: number; group: number; fmt?: (v: number) => string }[] }) {
+  return (
+    <table className="cmp">
+      <thead><tr><th></th><th className="c-me">Sinä</th><th className="c-gr">Ryhmä ka.</th><th>Ero</th></tr></thead>
+      <tbody>
+        {rows.map((r) => {
+          const f = r.fmt ?? ((v: number) => fi(v));
+          const pct = r.group > 0 ? Math.round(((r.me - r.group) / r.group) * 100) : null;
+          return (
+            <tr key={r.label}>
+              <td>{r.label}</td>
+              <td className="c-me">{f(r.me)}</td>
+              <td className="c-gr">{f(r.group)}</td>
+              <td className={pct === null ? '' : pct >= 0 ? 'up' : 'down'}>{pct === null ? '–' : `${pct >= 0 ? '+' : '−'}${Math.abs(pct)} %`}</td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+}
+
 export default async function Tilastot({ searchParams }: { searchParams: { nayta?: string; vs?: string; jakso?: string } }) {
   if (!cookies().get('fg_token')) redirect('/');
   const [{ board, me }, rawFull] = await Promise.all([loadGarden(), loadRaw()]);
@@ -60,6 +89,15 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
   const gSpan = gFirst ? daysBetween(gFirst, today) : 0;
   const gBest = [...groupActive].sort((a, b) => b[1] - a[1])[0];
   const perFairyDay = raw.steps.length ? groupTotal / raw.steps.filter((r) => r.steps > 0).length : 0;
+
+  const avgBoard = (get: (f: (typeof board)[number]) => number) => (board.length ? sum(board.map(get)) / board.length : 0);
+  const cmpRows = [
+    { label: 'Askelia / kävelypäivä', me: avgActive, group: perFairyDay },
+    { label: 'Pisteet', me: me.pts, group: avgBoard((f) => f.pts), fmt: (v: number) => fp(v) },
+    { label: 'Askeleet yhteensä', me: me.totalSteps, group: avgBoard((f) => f.totalSteps) },
+    { label: 'Viikon askeleet', me: me.week.steps, group: avgBoard((f) => f.week.steps) },
+    { label: 'Liikunta ja luova (min)', me: me.mins, group: avgBoard((f) => f.mins) },
+  ];
 
   const tr = trend(mySteps, today);
   const trG = trend(raw.steps, today);
@@ -119,7 +157,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
   const thisWeekKey = weekStart(today);
   const histCard = (
     <section className="card">
-      <h2>Viikkotavoite viikko viikolta</h2>
+      <h2>Viikkotavoite viikko viikolta<Scope who="me" /></h2>
       {histMe.length === 0 ? <p className="muted">Historia ilmestyy, kun ensimmäinen viikko on kirjattu.</p> : (
         <ul className="hist">
           {[...histMe].reverse().slice(0, 10).map((h) => (
@@ -138,7 +176,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
       )}
       {weekKeys.length > 1 && (
         <>
-          <h2 style={{ marginTop: 14 }}>Ryhmän täyttöprosentti viikoittain</h2>
+          <h2 style={{ marginTop: 14 }}>Ryhmän täyttöprosentti viikoittain<Scope who="group" /></h2>
           <BarChart height={100} unit=" %" items={weekKeys.slice(-10).map((w) => ({ label: `${Number(w.slice(8))}.${Number(w.slice(5, 7))}.`, value: groupRate(w) }))} highlight={weekKeys.slice(-10).length - 1} />
         </>
       )}
@@ -169,10 +207,13 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
           ))}
         </div>
       )}
+      {['yhteenveto', 'mina', 'ryhma', 'urheilu'].includes(tab) && (
+        <p className="scope-legend"><Scope who="me" /> omat lukusi <Scope who="group" /> kaikkien yhteensä tai keskiarvo <Scope who="mix" /> vertailu</p>
+      )}
       {tab === 'yhteenveto' && (
         <>
           <section className="card">
-            <h2>Sinun kautesi</h2>
+            <h2>Sinun kautesi<Scope who="me" /></h2>
             <Tiles items={[
               [jakso ? 'Pisteet (jakso)' : 'Pisteet', `${fp(jakso ? stepPoints(myTotal) + workoutPoints(myWork) : me.pts)} p`, `sija ${board.findIndex((b) => b.mine) + 1} / ${board.length}`],
               ['Askeleet yhteensä', fi(myTotal), `${fi(km(myTotal), 1)} km`],
@@ -184,17 +225,14 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
             ]} />
           </section>
           <section className="card">
-            <h2>Viimeiset 14 päivää</h2>
+            <h2>Viimeiset 14 päivää<Scope who="me" /></h2>
             <BarChart items={series(mySteps, 14, today).map((d) => ({ label: String(Number(d.day.slice(8))), value: d.steps }))} highlight={13} />
             <p className="muted">{trendTxt(tr) === '–' ? 'Kerää lisää dataa nähdäksesi trendin.' : `Viimeiset 7 päivää ${fi(tr.last)} askelta, ${tr.pct !== null && tr.pct >= 0 ? 'enemmän' : 'vähemmän'} kuin edelliset 7 päivää (${trendTxt(tr)}).`}</p>
           </section>
           {histCard}
           <section className="card">
-            <h2>Sinä ja ryhmä</h2>
-            <Tiles items={[
-              ['Sinun askelesi päivässä', fi(avgActive), 'kun kävelit'],
-              ['Ryhmän keskiarvo', fi(perFairyDay), vsGroup === null ? undefined : `${vsGroup >= 0 ? '+' : '−'}${Math.abs(vsGroup)} % sinä verrattuna`],
-            ]} />
+            <h2>Sinä ja ryhmä<Scope who="mix" /></h2>
+            <Compare rows={cmpRows} />
             <Link className="btn ghost" href={`/tilastot?nayta=mina${J}`} style={{ marginTop: 12 }}>Lisää tilastoja</Link>
           </section>
         </>
@@ -203,7 +241,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
       {tab === 'mina' && (
         <>
           <section className="card">
-            <h2>Askeleesi</h2>
+            <h2>Askeleesi<Scope who="me" /></h2>
             <Tiles items={[
               ['Yhteensä', fi(myTotal)],
               ['Keskiarvo kävelypäivältä', fi(avgActive), `${activeDays.length} päivää`],
@@ -215,12 +253,12 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
             ]} />
           </section>
           <section className="card">
-            <h2>Viimeiset 14 päivää</h2>
+            <h2>Viimeiset 14 päivää<Scope who="me" /></h2>
             <BarChart items={series(mySteps, 14, today).map((d) => ({ label: String(Number(d.day.slice(8))), value: d.steps }))} highlight={13} />
             <p className="muted">Viikkotrendi: viimeiset 7 pv <b>{fi(tr.last)}</b> askelta vs edelliset 7 pv <b>{fi(tr.prev)}</b> ({trendTxt(tr)}).</p>
           </section>
           <section className="card">
-            <h2>Askelten kertymä (60 pv)</h2>
+            <h2>Askelten kertymä (60 pv)<Scope who="mix" /></h2>
             <LineChart
               first={dm2(days60[0])} last={dm2(days60[days60.length - 1])}
               series={[
@@ -231,16 +269,16 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
             />
           </section>
           <section className="card">
-            <h2>Viikon keskiarvo (liukuva)</h2>
+            <h2>Viikon keskiarvo (liukuva)<Scope who="me" /></h2>
             <LineChart first={dm2(days45[0])} last={dm2(days45[days45.length - 1])} series={[{ name: 'Askelia / pv', values: movingAvg(daily(mySteps, days45), 7).map(Math.round), color: '#38bdf8' }]} />
             <p className="muted">Tasoittaa päivittäiset vaihtelut, joten näet onko suunta nouseva.</p>
           </section>
           <section className="card">
-            <h2>Päiväkartta (12 viikkoa)</h2>
+            <h2>Päiväkartta (12 viikkoa)<Scope who="me" /></h2>
             <Heatmap cols={heatCells(mySteps, 12, today)} />
           </section>
           <section className="card">
-            <h2>Päivien jakauma</h2>
+            <h2>Päivien jakauma<Scope who="me" /></h2>
             <BarChart items={stepBuckets(activeDays.map(([, v]) => v)).map((v, i) => ({ label: ['<5k', '5–10k', '10–15k', '15k+'][i], value: v }))} unit=" pv" height={100} />
             <Tiles items={[
               ['Arkipäivän ka.', fi(wdwe.weekday)],
@@ -250,12 +288,12 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
             ]} />
           </section>
           <section className="card">
-            <h2>Pisteiden jakauma</h2>
+            <h2>Pisteiden jakauma<Scope who="me" /></h2>
             <Donut items={[{ label: 'Askeleet', value: stepPoints(myTotal) }, { label: 'Urheilu', value: sportPoints(myMins) }, { label: 'Luova', value: creativePointsOf(myCreW) }, { label: 'Viikkotavoite', value: me.bonusPts }]} center={`${fp(me.pts)} p`} unit=" p" />
           </section>
           {myMonths.length > 0 && (
             <section className="card">
-              <h2>Kuukausittain</h2>
+              <h2>Kuukausittain<Scope who="me" /></h2>
               <table className="mon">
                 <thead><tr><th>Kk</th><th>Askeleet</th><th>Ka / pv</th><th>Urheilu</th></tr></thead>
                 <tbody>{myMonths.map((m) => <tr key={m.month}><td>{MONTHS[Number(m.month.slice(5)) - 1]}kuu</td><td>{fi(m.steps)}</td><td>{fi(m.days ? m.steps / m.days : 0)}</td><td>{fi(m.mins)} min</td></tr>)}</tbody>
@@ -264,23 +302,19 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
           )}
           {histCard}
           <section className="card">
-            <h2>Viikoittain, 8 viikkoa</h2>
+            <h2>Viikoittain, 8 viikkoa<Scope who="me" /></h2>
             <BarChart items={weeklySteps(mySteps, 8, wk).map((w) => ({ label: dm(w.day), value: w.steps }))} highlight={7} />
             <p className="muted">Palkki = viikon askeleet (viikko alkaa maanantaina).</p>
           </section>
           <section className="card">
-            <h2>Viikonpäivät: keskiarvosi</h2>
+            <h2>Viikonpäivät: keskiarvosi<Scope who="me" /></h2>
             <BarChart items={wdMe.map((v, i) => ({ label: WD[i], value: v }))} highlight={wdMe.indexOf(Math.max(...wdMe))} />
             <p className="muted">Paras päiväsi: <b>{bestWd(wdMe)}</b>.</p>
           </section>
           <section className="card">
-            <h2>Sinä vs ryhmä</h2>
-            <Tiles items={[
-              ['Sinun keskiarvo / pv', fi(avgActive)],
-              ['Ryhmän keskiarvo / keiju-pv', fi(perFairyDay)],
-              ['Ero', vsGroup === null ? '–' : `${vsGroup > 0 ? '+' : ''}${vsGroup} %`],
-              ['Sijasi (kaikki pisteet)', `${board.findIndex((b) => b.mine) + 1} / ${board.length}`],
-            ]} />
+            <h2>Sinä vs ryhmä<Scope who="mix" /></h2>
+            <Compare rows={cmpRows} />
+            <p className="muted">Sijasi (kaikki pisteet): <b>{board.findIndex((b) => b.mine) + 1} / {board.length}</b>. Ryhmä ka. = kaikkien keijujen keskiarvo.</p>
           </section>
         </>
       )}
@@ -288,7 +322,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
       {tab === 'ryhma' && (
         <>
           <section className="card">
-            <h2>Koko puutarha</h2>
+            <h2>Koko puutarha<Scope who="group" /></h2>
             <Tiles items={[
               ['Askeleet yhteensä', fi(groupTotal)],
               ['Ryhmän matka Helsingistä', `${fi(km(groupTotal))} km`, routeText(km(groupTotal)), route(km(groupTotal)).pct],
@@ -306,27 +340,27 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
             ]} />
           </section>
           <section className="card">
-            <h2>Ryhmän askeleet, 14 pv</h2>
+            <h2>Ryhmän askeleet, 14 pv<Scope who="group" /></h2>
             <BarChart items={series(raw.steps, 14, today).map((d) => ({ label: String(Number(d.day.slice(8))), value: d.steps }))} highlight={13} />
             <p className="muted">Viikkotrendi: {fi(trG.last)} vs {fi(trG.prev)} askelta ({trendTxt(trG)}).</p>
           </section>
           <section className="card">
-            <h2>Kisan kulku: kärki 5</h2>
+            <h2>Kisan kulku: kärki 5<Scope who="group" /></h2>
             <LineChart first={dm2(lastDays(60, gFirst)[0])} last={dm2(today)} fmt={(v) => `${v} p`}
               series={board.slice(0, 5).map((f) => ({ name: f.name, values: pointsOverTime(raw.steps.filter((r) => r.fairy_id === f.id), raw.workouts.filter((r) => r.fairy_id === f.id), lastDays(60, gFirst)) }))} />
             <p className="muted">Kertyvät pisteet päivä päivältä: näet kuka on noussut ja kuka laskenut.</p>
           </section>
           <section className="card">
-            <h2>Ryhmän päiväkartta (ka. / keiju)</h2>
+            <h2>Ryhmän päiväkartta (ka. / keiju)<Scope who="group" /></h2>
             <Heatmap cols={heatCells([...allDays.entries()].map(([day, v]) => ({ day, steps: v / Math.max(1, board.length) })), 12, today)} />
           </section>
           <section className="card">
-            <h2>Osallistuminen, 30 pv</h2>
+            <h2>Osallistuminen, 30 pv<Scope who="group" /></h2>
             <BarChart height={100} unit=" %" items={lastDays(30).map((d) => ({ label: String(Number(d.slice(8))), value: Math.round((raw.steps.filter((r) => r.day === d && r.steps >= ACTIVE_DAY).length / Math.max(1, board.length)) * 100) }))} />
             <p className="muted">Kuinka monta prosenttia keijuista käveli vähintään {fi(ACTIVE_DAY)} askelta.</p>
           </section>
           <section className="card">
-            <h2>Viikonpäivät: ryhmän keskiarvo</h2>
+            <h2>Viikonpäivät: ryhmän keskiarvo<Scope who="group" /></h2>
             <BarChart items={wdG.map((v, i) => ({ label: WD[i], value: v }))} highlight={wdG.indexOf(Math.max(...wdG))} />
             <p className="muted">Ryhmän paras päivä: <b>{bestWd(wdG)}</b>.</p>
           </section>
@@ -336,7 +370,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
       {tab === 'urheilu' && (
         <>
           <section className="card">
-            <h2>Oma liikuntasi</h2>
+            <h2>Oma liikuntasi<Scope who="me" /></h2>
             <Tiles items={[
               ['Minuutit yhteensä', fi(myMins)],
               ['Kertoja', String(myWork.length)],
@@ -346,11 +380,11 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
               ['Pisteet urheilusta ja luovasta', `${fp(workoutPoints(myWork))} p`, `askelpisteet ${stepPoints(myTotal)} p`],
             ]} />
             {mySports.length > 0 && <BarChart items={mySports.slice(0, 6).map((s) => ({ label: s.sport, value: s.minutes }))} unit=" min" height={120} />}
-            <h2 style={{ marginTop: 14 }}>Viikoittain (min), 8 viikkoa</h2>
+            <h2 style={{ marginTop: 14 }}>Viikoittain (min), 8 viikkoa<Scope who="me" /></h2>
             <BarChart items={weeklyMinutes(mySportW, 8, wk).map((w) => ({ label: dm(w.day), value: w.minutes }))} highlight={7} />
           </section>
           <section className="card">
-            <h2>Ryhmän liikunta</h2>
+            <h2>Ryhmän liikunta<Scope who="group" /></h2>
             <Tiles items={[
               ['Minuutit yhteensä', fi(gMins)],
               ['Kertoja', String(raw.workouts.length)],
@@ -365,22 +399,22 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
                 {gSports.map((s) => <li key={s.sport}><b>{s.sport}</b>: {s.sessions} kertaa, {fi(s.minutes)} min, keskim. {fi(s.minutes / s.sessions)} min</li>)}
               </ul>
             )}
-            <h2 style={{ marginTop: 14 }}>Ryhmän viikoittain (min)</h2>
+            <h2 style={{ marginTop: 14 }}>Ryhmän viikoittain (min)<Scope who="group" /></h2>
             <BarChart items={weeklyMinutes(gSportW, 8, wk).map((w) => ({ label: dm(w.day), value: w.minutes }))} highlight={7} />
           </section>
           {gSports.length > 0 && (
             <>
               <section className="card">
-                <h2>Lajijakauma (ryhmä)</h2>
+                <h2>Lajijakauma (ryhmä)<Scope who="group" /></h2>
                 <Donut items={gSports.slice(0, 6).map((x) => ({ label: x.sport, value: x.minutes }))} center={`${fi(gMins)} min`} unit=" min" />
               </section>
               <section className="card">
-                <h2>Minuutit viikonpäivittäin</h2>
+                <h2>Minuutit viikonpäivittäin<Scope who="group" /></h2>
                 <BarChart items={wdMinutes(gSportW).map((v, i) => ({ label: WD[i], value: v }))} highlight={wdMinutes(gSportW).indexOf(Math.max(...wdMinutes(gSportW)))} />
                 <p className="muted">Sinä: {wdMinutes(mySportW).map((v, i) => `${WD[i]} ${v}`).join(' · ')}</p>
               </section>
               <section className="card">
-                <h2>Lajien kärki</h2>
+                <h2>Lajien kärki<Scope who="group" /></h2>
                 <ul className="rec">
                   {sportLeaders.map((l) => <li key={l.sport}><span className="rl"><small>{l.sport}</small><b>{l.who}</b></span><span className="rv2">{fi(l.mins)} min<small>yhteensä {fi(l.total)}</small></span></li>)}
                 </ul>
@@ -388,18 +422,18 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
             </>
           )}
           <section className="card">
-            <h2>Omat lajisi</h2>
+            <h2>Omat lajisi<Scope who="me" /></h2>
             {myWork.length === 0 ? <p className="muted">Kirjaa ensimmäinen urheilu tai luova hetki, niin lajijakauma ilmestyy.</p> : (
               <>
                 <Donut items={sportStats(myWork).slice(0, 6).map((x) => ({ label: x.sport, value: x.minutes }))} center={`${fi(sum(myWork.map((w) => w.minutes)))} min`} unit=" min" />
-                <h2 style={{ marginTop: 14 }}>Milloin kirjaat liikuntasi</h2>
+                <h2 style={{ marginTop: 14 }}>Milloin kirjaat liikuntasi<Scope who="me" /></h2>
                 <BarChart height={90} unit=" min" items={timeOfDay(myWork).map((v, i) => ({ label: ['Aamu', 'Päivä', 'Ilta', 'Yö'][i], value: v }))} />
                 <p className="muted">Kirjausajan mukaan (aamu 5–11, päivä 11–17, ilta 17–22, yö 22–5), ei varsinaisen treenin ajan.</p>
               </>
             )}
           </section>
           <section className="card">
-            <h2>Luovat harrastukset</h2>
+            <h2>Luovat harrastukset<Scope who="mix" /></h2>
             <Tiles items={[
               ['Omat minuutit', `${fi(myCreMins)} min`, `${myCreW.length} kertaa`],
               ['Pisteitä vielä tällä viikolla', `${fi(me.creativeLeft)} min`, 'katto 120 min / viikko'],
@@ -411,7 +445,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
           </section>
           {minsRank.length > 0 && (
             <section className="card">
-              <h2>Liikuntakärki</h2>
+              <h2>Liikuntakärki<Scope who="group" /></h2>
               <ol className="rank">
                 {minsRank.slice(0, 10).map((b, i) => (
                   <li key={b.id} className={b.mine ? 'me' : ''}><span className="pos">{i + 1}</span><span className="nm"><span>{b.name}<small>{b.workouts} kertaa</small></span></span><span className="pt">{fi(b.sportMins)} min</span></li>
