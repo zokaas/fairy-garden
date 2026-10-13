@@ -43,13 +43,13 @@ export default async function Tekemiset() {
   return (
     <>
       <h1>Kuka teki mitä</h1>
-      <p className="sub">Keijujen liikunta- ja luovuuskirjaukset. Kannusta, kun joku on ollut reipas!</p>
+      <p className="sub">Tässä näkyvät kaikkien keijujen urheilu- ja luovuuskirjaukset uusimmasta vanhimpaan. 💪 = urheilu, 🎨 = luova harrastus.</p>
 
       <section className="card">
         <div className="tiles">
-          <div><b>{thisWeek.length}</b><span>kirjausta tällä viikolla</span></div>
-          <div><b>{doers} / {board.length}</b><span>keijua on kirjannut</span></div>
-          <div><b>{topSport ? topSport[0] : '–'}</b><span>suosituin laji</span>{topSport && <small>{topSport[1]} kertaa</small>}</div>
+          <div><b>{thisWeek.length}</b><span>kirjausta tällä viikolla (kaikki yhteensä)</span></div>
+          <div><b>{doers} / {board.length}</b><span>keijua on kirjannut liikuntaa tällä viikolla</span></div>
+          <div><b>{topSport ? topSport[0] : '–'}</b><span>suosituin laji tällä viikolla</span>{topSport && <small>{topSport[1]} kertaa</small>}</div>
         </div>
       </section>
 

@@ -142,9 +142,9 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
             <Ring value={me.today} goal={me.goal.todayTarget} />
             <p className="todaypts"><b>Pisteet tänään: +{fp(dSteps + dMins)} p</b><span>askelista {fp(dSteps)} p · urheilusta ja luovasta {fp(dMins)} p</span></p>
             <div className="chips" style={{ justifyContent: 'center' }}>
-              <span className="chip">{fp(me.pts)} p yhteensä</span>
-              <span className="chip">sija {myRank} / {board.length}</span>
-              {me.streak > 0 && <span className="chip">putki {me.streak} pv</span>}
+              <span className="chip">Pisteet {fp(me.pts)} p</span>
+              <span className="chip">Sijoitus {myRank}. / {board.length}</span>
+              {me.streak > 0 && <span className="chip">Putki {me.streak} pv</span>}
             </div>
             <p className="muted">{searchParams.synkattu ? '✓ Synkkaus tehty. ' : ''}Askeleet synkattu: <b>{ago(me.lastSync)}</b></p>
             <SyncButton site={process.env.NEXT_PUBLIC_SITE_URL ?? ''} />
@@ -175,15 +175,15 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
       {me.hasSteps && (() => {
         const g = me.goal;
         const rows = [
-          { label: 'Askeleet', val: Math.min(g.stepDaysOk, WEEK_GOAL.stepDays), max: WEEK_GOAL.stepDays, hint: `päivää tavoitteessa (yksi lepopäivä sallittu). Tänään ${g.todayTarget.toLocaleString('fi-FI')} (${g.todayIsSport ? 'urheilupäivä' : 'ilman urheilua'})`, ok: g.stepsDone },
-          { label: 'Urheilu', val: g.sportDays, max: WEEK_GOAL.sportDays, hint: 'päivää. Sali, lenkki, laskettelu, hiihto, lentopallo, tribe, pilates, tennis…', ok: g.sportDone },
-          { label: 'Luova', val: g.creativeDays, max: WEEK_GOAL.creativeDays, hint: 'päivä. Piirtäminen, virkkaaminen, lukeminen, soittaminen, ompelu…', ok: g.creativeDone },
+          { label: 'Askelpäivät', val: Math.min(g.stepDaysOk, WEEK_GOAL.stepDays), max: WEEK_GOAL.stepDays, hint: `päivää tavoitteessa (yksi lepopäivä sallittu). Tänään ${g.todayTarget.toLocaleString('fi-FI')} (${g.todayIsSport ? 'urheilupäivä' : 'ilman urheilua'})`, ok: g.stepsDone },
+          { label: 'Urheilupäivät', val: g.sportDays, max: WEEK_GOAL.sportDays, hint: 'päivää, joina kirjasit urheilua. Esim. sali, juoksu, jooga, tanssi, tennis, hiihto…', ok: g.sportDone },
+          { label: 'Luovat päivät', val: g.creativeDays, max: WEEK_GOAL.creativeDays, hint: 'päivä, jona kirjasit luovaa. Esim. piirtäminen, lukeminen, sudoku, virkkaaminen, soittaminen…', ok: g.creativeDone },
         ];
         const n = board.length;
         const nDone = board.filter((b) => b.goal.done).length;
         return (
           <section className={`card ${g.done ? 'quests all' : ''}`}>
-            <h2>Viikon tavoite</h2>
+            <h2>Viikon tavoite <small className="muted">(ma–su, +10 p)</small></h2>
             <div className="goalmini">
               {rows.map((r) => (
                 <div key={r.label} className={r.ok ? 'ok' : ''}>

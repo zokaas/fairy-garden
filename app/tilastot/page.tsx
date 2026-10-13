@@ -212,6 +212,14 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
           ))}
         </div>
       )}
+      <p className="muted" style={{ margin: '0 0 8px' }}>{({
+        yhteenveto: 'Omat luvut lyhyesti ja vertailu ryhmään.',
+        mina: 'Omat askeleesi ja pisteesi tarkemmin: päivät, viikot ja kehitys.',
+        ryhma: 'Koko ryhmän luvut: yhteensä ja keskiarvot.',
+        urheilu: 'Urheilu ja luovat harrastukset: omat ja ryhmän minuutit sekä lajit.',
+        vertailu: 'Vertaa itseäsi toiseen keijuun ja ryhmän keskiarvoon.',
+        ennatykset: 'Kauden parhaat tulokset.',
+      } as Record<string, string>)[tab]}</p>
       <Glossary tab={tab} />
       {['yhteenveto', 'mina', 'ryhma', 'urheilu'].includes(tab) && (
         <p className="scope-legend"><Scope who="me" /> omat lukusi <Scope who="group" /> kaikkien yhteensä tai keskiarvo <Scope who="mix" /> vertailu</p>

@@ -43,7 +43,7 @@ export default function Glossary({ tab }: { tab: string }) {
   if (!items) return null;
   return (
     <details className="card gloss">
-      <summary>Mitä luvut tarkoittavat?</summary>
+      <summary>Mitä luvut tarkoittavat? (napauta)</summary>
       <dl>
         {items.map(([k, v]) => (
           <div key={k}><dt>{k}</dt><dd>{v}</dd></div>
