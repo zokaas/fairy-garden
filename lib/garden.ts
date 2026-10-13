@@ -7,7 +7,7 @@ export const SPORTS = [
   'Laskettelu', 'Lumilautailu', 'Hiihto', 'Kiipeily', 'Kamppailulaji', 'Muu urheilu',
 ] as const;
 export const CREATIVE = [
-  'Piirtäminen', 'Maalaus', 'Askartelu', 'Virkkaaminen', 'Neulominen', 'Ompelu', 'Keramiikka', 'Lukeminen', 'Kirjoittaminen', 'Soittaminen', 'Palapeli', 'Muu luova',
+  'Piirtäminen', 'Maalaus', 'Askartelu', 'Virkkaaminen', 'Neulominen', 'Ompelu', 'Keramiikka', 'Lukeminen', 'Kirjoittaminen', 'Soittaminen', 'Palapeli', 'Sudoku', 'Muu luova',
 ] as const;
 export type Kind = 'urheilu' | 'luova';
 /** Laji kuuluu luoviin harrastuksiin tai (oletuksena) urheiluun. */
