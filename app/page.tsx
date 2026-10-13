@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { loadGarden } from '@/lib/data';
-import { helsinkiDay, GROWTH, MINUTES_PER_POINT, STEPS_PER_POINT, UNLOCKS, fp, stepPoints, ago, phaseOf, type Phase } from '@/lib/garden';
+import { helsinkiDay, GROWTH, STEPS_PER_POINT, UNLOCKS, fp, stepPoints, ago, phaseOf, type Phase } from '@/lib/garden';
 import type { Fairy } from '@/lib/data';
 import { dailyQuests } from '@/lib/quests';
 import Journey from '@/components/Journey';
@@ -139,12 +139,12 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         return (
           <section className="card center">
             <Ring value={me.today} goal={me.goal.todayTarget} />
-            <p className="todaypts"><b>Tänään +{fp(dSteps + dMins)} p</b><span>{fp(dSteps)} askelista · {fp(dMins)} urheilusta tai luovasta</span></p>
-            <p className="muted">Seuraava piste: {(STEPS_PER_POINT - (me.totalSteps % STEPS_PER_POINT)).toLocaleString('fi-FI')} askelta tai {MINUTES_PER_POINT / 2 - (me.sportMins % (MINUTES_PER_POINT / 2))} min urheilua (+0,5 p)</p>
+            <p className="todaypts"><b>Pisteet tänään: +{fp(dSteps + dMins)} p</b><span>askelista {fp(dSteps)} p · urheilusta ja luovasta {fp(dMins)} p</span></p>
+            <p className="muted">Seuraavaan pisteeseen <b>{(STEPS_PER_POINT - (me.totalSteps % STEPS_PER_POINT)).toLocaleString('fi-FI')} askelta</b> (1 p / 2 500 askelta)</p>
             <div className="chips" style={{ justifyContent: 'center' }}>
               <span className="chip">{fp(me.pts)} p yhteensä</span>
               <span className="chip">sija {myRank} / {board.length}</span>
-              <span className="chip">{me.streak} pv putki</span>
+              {me.streak > 0 && <span className="chip">putki {me.streak} pv</span>}
             </div>
             <p className="muted">{searchParams.synkattu ? '✓ Synkkaus tehty. ' : ''}Askeleet synkattu: <b>{ago(me.lastSync)}</b></p>
             <SyncButton site={process.env.NEXT_PUBLIC_SITE_URL ?? ''} />
@@ -152,8 +152,9 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
               <summary>Miten pisteet lasketaan? (<Link href="/ohje">koko ohje</Link>)</summary>
               <ul>
                 <li><b>Kukka</b> jokaisesta päivästä, jolloin saavutat askeltavoitteen (10 000, tai 7 000 jos urheilet).</li>
-                <li><b>1 piste</b> jokaisesta 2 500 askeleesta.</li>
+                <li><b>1 piste</b> jokaisesta 2 500 askeleesta (pisteet kertyvät kisan kaikista askeleista, ei vain tämän päivän).</li>
                 <li><b>1 piste</b> jokaisesta 30 minuutista urheilua (ei rajaa) tai luovaa harrastusta (pisteitä enintään 2 h viikossa). Puolikas piste jokaisesta 15 minuutista.</li>
+                <li><b>Putki</b>: peräkkäisten päivien määrä, joina kävelit vähintään 5 000 askelta.</li>
                 <li><b>+{WEEK_BONUS} pistettä</b> jokaisesta viikosta, jolloin täytät koko viikon tavoitteen.</li>
               </ul>
             </details>
