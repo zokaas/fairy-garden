@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/lib/db';
 import { CREATIVE, SPORTS, dayBefore, helsinkiDay, isDay } from '@/lib/garden';
-import { ACCESSORIES, AVATAR_BGS, AVATAR_EMOJIS } from '@/lib/avatar';
+import { AVATAR_BGS, AVATAR_EMOJIS } from '@/lib/avatar';
 import { loadGarden } from '@/lib/data';
 import { hashPin, verifyPin } from '@/lib/pin';
 import { sendPush } from '@/lib/push';
@@ -79,10 +79,7 @@ export async function saveAvatar(formData: FormData) {
   const bg = String(formData.get('bg') ?? '');
   const name = String(formData.get('name') ?? '').trim().slice(0, 30);
   if (!fairy || !AVATAR_EMOJIS.includes(emoji) || !AVATAR_BGS.includes(bg)) return;
-  const accId = String(formData.get('acc') ?? 'none');
-  const { me } = await loadGarden();
-  const acc = ACCESSORIES.find((a) => a.id === accId);
-  const patch: Record<string, string> = { avatar_emoji: emoji, avatar_bg: bg, avatar_acc: acc && me && me.stageIdx >= acc.stage ? acc.id : 'none' };
+  const patch: Record<string, string> = { avatar_emoji: emoji, avatar_bg: bg };
   if (name) patch.name = name;
   const supabase = db();
   if (formData.get('mode') === 'hahmo' && fairy.avatar_path) {

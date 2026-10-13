@@ -3,14 +3,13 @@ import { useMemo, useState } from 'react';
 import Avatar from './Avatar';
 import FairyFigure from './FairyFigure';
 import PhotoPicker from './PhotoPicker';
-import { ACCESSORIES, AVATAR_BGS, AVATAR_EMOJIS } from '@/lib/avatar';
-import { GROWTH } from '@/lib/garden';
+import { AVATAR_BGS, AVATAR_EMOJIS } from '@/lib/avatar';
 
 type Mode = 'hahmo' | 'kuva';
 
-/** Avatarin muokkaus: valitse ensin keiju-hahmo (hahmo, tausta, asuste) tai oma kuva. Elävä esikatselu pysyy näkyvissä. */
+/** Avatarin muokkaus: valitse ensin keiju-hahmo (hahmo ja tausta) tai oma kuva. Elävä esikatselu pysyy näkyvissä. */
 export default function AvatarEditor({ initial, stage, photoPath, photoVer, isNew, saveAction, removeAction }: {
-  initial: { name: string; emoji: string; bg: string; acc: string };
+  initial: { name: string; emoji: string; bg: string };
   stage: number;
   photoPath: string | null;
   photoVer: string | null;
@@ -21,19 +20,16 @@ export default function AvatarEditor({ initial, stage, photoPath, photoVer, isNe
   const [name, setName] = useState(initial.name);
   const [emoji, setEmoji] = useState(initial.emoji);
   const [bg, setBg] = useState(initial.bg);
-  const [acc, setAcc] = useState(initial.acc);
   const [mode, setMode] = useState<Mode>(photoPath ? 'kuva' : 'hahmo');
   const initialMode: Mode = photoPath ? 'kuva' : 'hahmo';
 
-  const dirty = isNew || mode !== initialMode || name !== initial.name || emoji !== initial.emoji || bg !== initial.bg || acc !== initial.acc;
-  const preview = useMemo(() => ({ avatarEmoji: emoji, avatarBg: bg, avatarPath: mode === 'kuva' ? photoPath : null, avatarAcc: acc, avatarVer: photoVer }), [emoji, bg, acc, mode, photoPath, photoVer]);
-  const openAcc = ACCESSORIES.filter((a) => stage >= a.stage);
+  const dirty = isNew || mode !== initialMode || name !== initial.name || emoji !== initial.emoji || bg !== initial.bg;
+  const preview = useMemo(() => ({ avatarEmoji: emoji, avatarBg: bg, avatarPath: mode === 'kuva' ? photoPath : null, avatarVer: photoVer }), [emoji, bg, mode, photoPath, photoVer]);
 
   function randomize() {
     const pick = <T,>(a: readonly T[]) => a[Math.floor(Math.random() * a.length)];
     setEmoji(pick(AVATAR_EMOJIS));
     setBg(pick(AVATAR_BGS));
-    setAcc(pick(openAcc).id);
   }
 
   return (
@@ -41,7 +37,6 @@ export default function AvatarEditor({ initial, stage, photoPath, photoVer, isNe
       {isNew && <input type="hidden" name="uusi" value="1" />}
       <input type="hidden" name="emoji" value={emoji} />
       <input type="hidden" name="bg" value={bg} />
-      <input type="hidden" name="acc" value={acc} />
       <input type="hidden" name="mode" value={mode} />
 
       <div className="ed-preview">
@@ -52,7 +47,7 @@ export default function AvatarEditor({ initial, stage, photoPath, photoVer, isNe
         </div>
         <div className="ed-actions">
           <button type="button" className="btn ghost ed-rand" onClick={randomize}>Yllätä minut</button>
-          {dirty && !isNew && <button type="button" className="btn ghost ed-rand" onClick={() => { setName(initial.name); setEmoji(initial.emoji); setBg(initial.bg); setAcc(initial.acc); }}>Peru muutokset</button>}
+          {dirty && !isNew && <button type="button" className="btn ghost ed-rand" onClick={() => { setName(initial.name); setEmoji(initial.emoji); setBg(initial.bg); }}>Peru muutokset</button>}
         </div>
       </div>
 
@@ -82,19 +77,6 @@ export default function AvatarEditor({ initial, stage, photoPath, photoVer, isNe
               <button type="button" key={c} role="radio" aria-checked={bg === c} aria-label="Taustaväri" className={`pick ${bg === c ? 'sel' : ''}`} onClick={() => setBg(c)}><i style={{ background: c }} /></button>
             ))}
           </div>
-
-          <p className="ed-label ed-sec">3. Asuste</p>
-          <div className="picker" role="radiogroup" aria-label="Asuste">
-            {ACCESSORIES.map((a) => {
-              const open = stage >= a.stage;
-              return (
-                <button type="button" key={a.id} role="radio" aria-checked={acc === a.id} disabled={!open} className={`pick ${acc === a.id ? 'sel' : ''} ${open ? '' : 'locked'}`} onClick={() => setAcc(a.id)} title={open ? a.name : `Aukeaa ${GROWTH[a.stage]} kukalla`}>
-                  {a.emoji || '∅'}{!open && <small className="lock">🔒</small>}
-                </button>
-              );
-            })}
-          </div>
-          <p className="muted">Asusteet aukeavat kukkien mukana (jokainen tavoitepäivä on yksi kukka).{stage < 5 ? ` Seuraava aukeaa ${GROWTH[stage + 1]} kukalla.` : ''}</p>
         </>
       )}
 

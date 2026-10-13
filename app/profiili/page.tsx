@@ -19,7 +19,7 @@ export default async function Profiili({ searchParams }: { searchParams: { uusi?
       {searchParams.ok && <p className="toast">Tallennettu 🌸</p>}
 
       <AvatarEditor
-        initial={{ name: me.name, emoji: me.avatarEmoji ?? 'fig', bg: me.avatarBg ?? AVATAR_BGS[0], acc: me.avatarAcc ?? 'none' }}
+        initial={{ name: me.name, emoji: me.avatarEmoji ?? 'fig', bg: me.avatarBg ?? AVATAR_BGS[0] }}
         stage={me.stageIdx}
         photoPath={me.avatarPath}
         photoVer={me.avatarVer}
