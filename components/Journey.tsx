@@ -10,7 +10,7 @@ function at(f: number): [number, number] {
 }
 
 /** Haltijan polku: kokonaisaskeleet kuljettavat keijun kohti Albertinkatua. */
-export default function Journey({ steps, avatar, stageIdx = 2 }: { steps: number; avatar: AvatarData; stageIdx?: number }) {
+export default function Journey({ steps, avatar, stageIdx = 2, note }: { steps: number; avatar: AvatarData; stageIdx?: number; note?: string }) {
   const f = Math.min(1, steps / JOURNEY_GOAL);
   const [x, y] = at(f);
   const next = STOPS.find((s) => s.at > steps);
@@ -35,6 +35,7 @@ export default function Journey({ steps, avatar, stageIdx = 2 }: { steps: number
       <p className="muted">
         {next ? <>Seuraava etappi: {next.emoji} <b>{next.name}</b>, vielä {(next.at - steps).toLocaleString('fi-FI')} askelta.</> : <>Perillä Albertinkadulla. Olet todellinen reippailija.</>}
       </p>
+      {note && <p className="muted forecast">{note}</p>}
     </section>
   );
 }

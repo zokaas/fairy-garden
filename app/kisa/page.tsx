@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { loadGarden } from '@/lib/data';
@@ -25,6 +26,7 @@ export default async function Kisa({ searchParams }: { searchParams: { avaa?: st
       <h1>Kuka on reippain?</h1>
       <p className="sub">Kisa päättyy {endDate} Eniten pisteitä keränneestä tulee <b>Reippain keiju</b>.</p>
       <Countdown to={contest.end} />
+      <p className="muted" style={{ marginTop: -4 }}><Link href="/ohje">Näin kisa toimii →</Link></p>
 
       <section className={`card secret ${over ? 'open' : ''}`}>
         {over ? (

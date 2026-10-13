@@ -12,6 +12,9 @@ import LineChart from '@/components/LineChart';
 import Heatmap from '@/components/Heatmap';
 import Donut from '@/components/Donut';
 import Avatar from '@/components/Avatar';
+import Glossary from '@/components/Glossary';
+import { forecast } from '@/lib/forecast';
+import { getContest } from '@/lib/contest';
 
 export const dynamic = 'force-dynamic';
 
@@ -99,6 +102,8 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
     { label: 'Liikunta ja luova (min)', me: me.mins, group: avgBoard((f) => f.mins) },
   ];
 
+  const contestInfo = await getContest();
+  const fc = forecast(me.totalSteps, today, new Date(contestInfo.end).toLocaleDateString('sv-SE', { timeZone: 'Europe/Helsinki' }));
   const tr = trend(mySteps, today);
   const trG = trend(raw.steps, today);
   const wdMe = weekdayAvg(mySteps);
@@ -207,6 +212,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
           ))}
         </div>
       )}
+      <Glossary tab={tab} />
       {['yhteenveto', 'mina', 'ryhma', 'urheilu'].includes(tab) && (
         <p className="scope-legend"><Scope who="me" /> omat lukusi <Scope who="group" /> kaikkien yhteensä tai keskiarvo <Scope who="mix" /> vertailu</p>
       )}
@@ -229,6 +235,13 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
             <BarChart items={series(mySteps, 14, today).map((d) => ({ label: String(Number(d.day.slice(8))), value: d.steps }))} highlight={13} />
             <p className="muted">{trendTxt(tr) === '–' ? 'Kerää lisää dataa nähdäksesi trendin.' : `Viimeiset 7 päivää ${fi(tr.last)} askelta, ${tr.pct !== null && tr.pct >= 0 ? 'enemmän' : 'vähemmän'} kuin edelliset 7 päivää (${trendTxt(tr)}).`}</p>
           </section>
+          {fc && (
+            <section className="card">
+              <h2>Ennuste<Scope who="me" /></h2>
+              <p>{fc.text}</p>
+              <p className="muted">Perustuu keskiarvoosi kisan alusta (12.10.). Se muuttuu, kun kävelet enemmän tai vähemmän.</p>
+            </section>
+          )}
           {histCard}
           <section className="card">
             <h2>Sinä ja ryhmä<Scope who="mix" /></h2>

@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import { loadGarden } from '@/lib/data';
-import { GROWTH, MINUTES_PER_POINT, STEPS_PER_POINT, UNLOCKS, fp, stepPoints, ago, phaseOf, type Phase } from '@/lib/garden';
+import { helsinkiDay, GROWTH, MINUTES_PER_POINT, STEPS_PER_POINT, UNLOCKS, fp, stepPoints, ago, phaseOf, type Phase } from '@/lib/garden';
 import type { Fairy } from '@/lib/data';
 import { dailyQuests } from '@/lib/quests';
 import Journey from '@/components/Journey';
+import { forecast } from '@/lib/forecast';
 import Ticker from '@/components/Ticker';
 import Avatar from '@/components/Avatar';
 import { WEEK_BONUS, WEEK_GOAL } from '@/lib/weekly';
@@ -146,7 +147,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
             <p className="muted">{searchParams.synkattu ? '✓ Synkkaus tehty. ' : ''}Askeleet synkattu: <b>{ago(me.lastSync)}</b></p>
             <SyncButton site={process.env.NEXT_PUBLIC_SITE_URL ?? ''} />
             <details className="how">
-              <summary>Miten pisteet lasketaan?</summary>
+              <summary>Miten pisteet lasketaan? (<Link href="/ohje">koko ohje</Link>)</summary>
               <ul>
                 <li><b>Kukka</b> jokaisesta päivästä, jolloin saavutat askeltavoitteen (10 000, tai 7 000 jos urheilet).</li>
                 <li><b>1 piste</b> jokaisesta 2 500 askeleesta.</li>
@@ -259,7 +260,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         </ul>
         <p className="muted">Jokainen päivä, jolloin saavutat askeltavoitteen, on yksi kukka. Sinulla on nyt {me.flowers}.</p>
       </section>
-      {me.hasSteps && <Journey steps={me.totalSteps} avatar={me} stageIdx={stageIdx} />}
+      {me.hasSteps && <Journey steps={me.totalSteps} avatar={me} stageIdx={stageIdx} note={forecast(me.totalSteps, helsinkiDay(), new Date(contest.end).toLocaleDateString('sv-SE', { timeZone: 'Europe/Helsinki' }))?.text} />}
 
       <section className="card">
         <h2>Merkit {me.badges.length}/{BADGES.length}</h2>

@@ -114,4 +114,12 @@ assert.equal(sportPoints(14), 0);
 assert.equal(sportPoints(15), 0.5);
 assert.deepEqual(parseDays({ values: '100\n17 000', values2: '90\n8 800' }, '2026-10-14'), [{ day: '2026-10-13', steps: 100 }, { day: '2026-10-14', steps: 17000 }]);
 assert.deepEqual(parseDays({ values: '0\n0', values2: '7000\n8800' }, '2026-10-14'), [{ day: '2026-10-13', steps: 7000 }, { day: '2026-10-14', steps: 8800 }]);
+import { forecast } from './forecast.ts';
+const f1 = forecast(40_000, '2026-10-19', '2026-11-27')!; // 5 000 / pv -> 62 pv -> jää haaveeksi
+assert.equal(f1.onTrack, false);
+const f2 = forecast(80_000, '2026-10-19', '2026-11-27')!; // 10 000 / pv -> 27 pv -> 15.11.
+assert.equal(f2.onTrack, true);
+assert.equal(f2.finish, '2026-11-15');
+assert.equal(forecast(0, '2026-10-19', '2026-11-27'), null);
+assert.equal(forecast(400_000, '2026-10-19', '2026-11-27')!.onTrack, true);
 console.log('garden: ok');

@@ -30,6 +30,11 @@ export default async function Profiili({ searchParams }: { searchParams: { uusi?
           {!uusi && (
         <>
           <section className="card">
+            <h2>Ohjeet</h2>
+            <p className="muted">Pisteet, viikkotavoite, kukat ja synkka lyhyesti.</p>
+            <a className="btn ghost" href="/ohje">Näin kisa toimii</a>
+          </section>
+          <section className="card">
             <h2>Askelten synkka</h2>
             <p className="muted">Oikotie, jolla iPhone lähettää askeleesi automaattisesti.</p>
             <a className="btn ghost" href="/shortcut">Avaa Synkka-ohje</a>

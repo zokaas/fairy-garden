@@ -514,3 +514,9 @@ details.adm[open] > summary { margin-bottom: 10px; }
 .pp-card { pointer-events: auto; max-width: 520px; margin: 0 auto; padding: 16px; border-radius: 16px; border: 1px solid var(--line-2); background: var(--surface); box-shadow: 0 12px 40px #0000002e; }
 .pp-card p { margin: 6px 0 12px; color: var(--fg-2); font-size: .88rem; }
 .pp-actions { display: flex; gap: 8px; } .pp-actions .btn { flex: 1; margin: 0; }
+
+.seg.six a { font-size: .66rem; padding: 8px 1px; }
+
+.forecast { margin-top: 6px; padding-top: 8px; border-top: 1px dashed var(--line-2); }
+details.gloss > summary { cursor: pointer; font-weight: 600; font-size: .86rem; color: var(--fg-2); list-style: none; } details.gloss > summary::-webkit-details-marker { display: none; } details.gloss > summary::before { content: 'ⓘ '; color: var(--violet); }
+details.gloss dl { margin: 10px 0 0; } details.gloss dt { font-weight: 600; font-size: .84rem; margin-top: 10px; } details.gloss dd { margin: 2px 0 0; color: var(--fg-2); font-size: .82rem; line-height: 1.45; }
