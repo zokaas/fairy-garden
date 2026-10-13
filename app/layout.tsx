@@ -6,6 +6,7 @@ import BottomNav from '@/components/BottomNav';
 import ResumeRefresh from '@/components/ResumeRefresh';
 import AutoSync from '@/components/AutoSync';
 import PushPrompt from '@/components/PushPrompt';
+import ProfileButton from '@/components/ProfileButton';
 import Motion from '@/components/Motion';
 
 const sans = Inter({ subsets: ['latin'], variable: '--sans', display: 'swap' });
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <main className={member ? 'withnav' : ''}>{children}</main>
         {member && <BottomNav />}
+        {member && <ProfileButton />}
         {member && <ResumeRefresh />}
         {member && <AutoSync />}
         {member && <PushPrompt />}

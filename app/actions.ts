@@ -66,6 +66,21 @@ export async function logWorkout(formData: FormData) {
   redirect('/kirjaa?ok=liikunta');
 }
 
+/** Poistaa oman liikuntakirjauksen (vain omat, vain viimeisen 7 päivän ajalta). */
+export async function deleteWorkout(formData: FormData) {
+  const token = cookies().get(COOKIE)?.value;
+  const id = String(formData.get('id') ?? '');
+  if (!token || !/^[0-9a-f-]{36}$/i.test(id)) return;
+  const supabase = db();
+  const { data: fairy } = await supabase.from('fairies').select('id').eq('token', token).maybeSingle();
+  if (!fairy) return;
+  let oldest = helsinkiDay();
+  for (let i = 0; i < 7; i++) oldest = dayBefore(oldest);
+  await supabase.from('workouts').delete().eq('id', id).eq('fairy_id', fairy.id).gte('day', oldest);
+  revalidatePath('/', 'layout');
+  redirect('/kirjaa?ok=poistettu');
+}
+
 async function myFairy() {
   const token = cookies().get(COOKIE)?.value;
   if (!token) return null;
