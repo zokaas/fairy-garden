@@ -536,3 +536,9 @@ ul.mylog li { display: flex; align-items: center; justify-content: space-between
 @keyframes syncSpin { to { transform: rotate(360deg); } }
 @keyframes syncShine { 0%, 60% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
 @media (prefers-reduced-motion: reduce) { .sync-btn::after, .sync-btn.busy .sync-ic { animation: none; } }
+
+/* Synkkanappi: pehmeämpi, pastellisävyinen */
+.sync-btn { color: var(--fg); font-weight: 600; border: 1px solid color-mix(in srgb, var(--violet) 28%, transparent); background: linear-gradient(135deg, color-mix(in srgb, var(--pink) 20%, var(--surface)), color-mix(in srgb, var(--violet) 20%, var(--surface)) 55%, color-mix(in srgb, var(--sky) 20%, var(--surface))); background-size: 100% 100%; box-shadow: 0 6px 18px color-mix(in srgb, var(--violet) 14%, transparent); }
+.sync-btn::after { display: none; }
+.sync-btn .sync-ic { color: var(--violet); }
+.sync-btn:active { background-position: 0 0; box-shadow: 0 2px 8px color-mix(in srgb, var(--violet) 16%, transparent); transform: scale(.98); }
