@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { loadGarden } from '@/lib/data';
+import { fp } from '@/lib/garden';
 import { awards } from '@/lib/awards';
 import { BADGES } from '@/lib/badges';
 import { getContest } from '@/lib/contest';

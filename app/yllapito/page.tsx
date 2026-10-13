@@ -4,7 +4,7 @@ import { loadGarden, loadRaw } from '@/lib/data';
 import { syncWatch } from '@/lib/watch';
 import { DEMO } from '@/lib/demo';
 import { db } from '@/lib/db';
-import { GROWTH, ago, helsinkiDay } from '@/lib/garden';
+import { GROWTH, ago, fp, helsinkiDay } from '@/lib/garden';
 import Avatar from '@/components/Avatar';
 import { getContest } from '@/lib/contest';
 import { adminDelete, adminResetPassword, adminSetSteps, clearTest, remindAll, remindFairy, saveContest, seedTest, testPush, testWeekly } from './actions';
