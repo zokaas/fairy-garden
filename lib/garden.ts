@@ -1,6 +1,15 @@
 export const EVENT_DATE = '2026-11-28T16:00:00+02:00';
-export const SPORTS = ['Sali', 'Lenkkeily', 'Juoksu', 'Pyöräily', 'Laskettelu', 'Hiihto', 'Lentopallo', 'Tribe', 'Pilates', 'Tennis', 'Jooga', 'Tanssi', 'Uinti', 'Muu urheilu'] as const;
-export const CREATIVE = ['Piirtäminen', 'Virkkaaminen', 'Lukeminen', 'Soittaminen', 'Ompelu', 'Maalaus', 'Kirjoittaminen', 'Muu luova'] as const;
+export const SPORTS = [
+  'Sali', 'Kuntopiiri', 'Crossfit', 'Ryhmäliikunta', 'Juoksu', 'Lenkkeily', 'Vaellus', 'Pyöräily', 'Spinning', 'Uinti', 'Vesijuoksu',
+  'Jooga', 'Pilates', 'Tribe', 'Venyttely', 'Tanssi', 'Zumba',
+  'Tennis', 'Padel', 'Sulkapallo', 'Squash', 'Lentopallo', 'Jalkapallo', 'Salibandy', 'Koripallo', 'Jääkiekko', 'Pesäpallo', 'Golf', 'Frisbeegolf',
+  'Laskettelu', 'Lumilautailu', 'Hiihto', 'Luistelu', 'Rullaluistelu', 'Kiipeily', 'Soutu', 'Melonta', 'Ratsastus', 'Nyrkkeily', 'Kamppailulaji', 'Muu urheilu',
+] as const;
+export const CREATIVE = [
+  'Piirtäminen', 'Maalaus', 'Askartelu', 'Virkkaaminen', 'Neulominen', 'Ompelu', 'Kirjonta', 'Keramiikka', 'Puutyöt',
+  'Lukeminen', 'Kirjoittaminen', 'Soittaminen', 'Laulaminen', 'Sävellys', 'Valokuvaus', 'Videoeditointi',
+  'Leipominen', 'Ruoanlaitto', 'Sisustaminen', 'Palapeli', 'Puutarhanhoito', 'Muu luova',
+] as const;
 export type Kind = 'urheilu' | 'luova';
 /** Laji kuuluu luoviin harrastuksiin tai (oletuksena) urheiluun. */
 export const kindOf = (sport: string): Kind => ((CREATIVE as readonly string[]).includes(sport) ? 'luova' : 'urheilu');
