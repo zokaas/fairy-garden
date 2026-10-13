@@ -52,7 +52,7 @@ export default async function Karki({ searchParams }: { searchParams: { lista?: 
         askeleet: 'Kisan askeleet yhteensä. Valitse Tämä viikko nähdäksesi viikon askeleet.',
         urheilu: 'Urheilun minuutit. Pieni teksti kertoo urheilupäivät tällä viikolla (tavoite 3).',
         luova: 'Luovien harrastusten minuutit. Pisteitä luovasta saa enintään 2 h viikossa.',
-      }[key]}</p>}
+      }[key]}{(key === 'urheilu' || key === 'luova') && <> <Link href="/tekemiset">Katso kaikkien kirjaukset (kuka teki mitä) →</Link></>}</p>}
       {key === 'tanaan' && <p className="muted" style={{ margin: '-6px 0 12px' }}>Askeleet tänään. Luvut päivittyvät, kun keiju synkkaa askeleensa.</p>}
       {key === 'nousu' && <p className="muted" style={{ margin: '-6px 0 12px' }}>Kuka on kasvattanut askeleitaan eniten: tämä viikko verrattuna viime viikon samaan ajankohtaan. Tässä voi voittaa kuka tahansa.</p>}
 
