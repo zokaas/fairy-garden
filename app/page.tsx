@@ -109,7 +109,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
       <Celebrate flowers={me.flowers} force={admin && !!searchParams.juhla} />
       <Link href="/profiili" className="me-chip">
         <Avatar a={me} size={36} stage={stageIdx} />
-        <span><b>{me.name}</b><small>Muokkaa avataria ja tiliä</small></span>
+        <span><b>{me.name}</b><small>Muokkaa avataria ja asetuksia</small></span>
         <i aria-hidden>›</i>
       </Link>
       <Garden

@@ -51,16 +51,6 @@ export async function login(formData: FormData) {
   redirect('/');
 }
 
-export async function deleteAccount(formData: FormData) {
-  const { me } = await loadGarden();
-  if (!me || String(formData.get('confirm') ?? '').trim().toLowerCase() !== me.name.toLowerCase()) redirect('/profiili?virhe=vahvistus');
-  const supabase = db();
-  if (me.avatarPath) await supabase.storage.from('avatars').remove([me.avatarPath]);
-  await supabase.from('fairies').delete().eq('id', me.id);
-  cookies().delete(COOKIE);
-  redirect('/');
-}
-
 export async function logWorkout(formData: FormData) {
   const token = cookies().get(COOKIE)?.value;
   const sport = String(formData.get('sport') ?? '');

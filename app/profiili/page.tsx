@@ -4,18 +4,18 @@ import { AVATAR_BGS } from '@/lib/avatar';
 import AvatarEditor from '@/components/AvatarEditor';
 import PushToggle from '@/components/PushToggle';
 import ThemeToggle from '@/components/ThemeToggle';
-import { deleteAccount, removePhoto, saveAvatar } from '../actions';
+import { removePhoto, saveAvatar } from '../actions';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Profiili({ searchParams }: { searchParams: { uusi?: string; ok?: string; virhe?: string } }) {
+export default async function Profiili({ searchParams }: { searchParams: { uusi?: string; ok?: string } }) {
   const { me, board } = await loadGarden();
   if (!me) redirect('/');
   const uusi = !!searchParams.uusi;
   return (
     <>
       <h1>{uusi ? 'Valitse oma keijusi' : 'Profiili'}</h1>
-      <p className="sub">{uusi ? 'Voit vaihtaa tämän myöhemmin.' : 'Avatar, ilmoitukset ja tili. Avatar näkyy puutarhassa ja kärkilistalla.'}</p>
+      <p className="sub">{uusi ? 'Voit vaihtaa tämän myöhemmin.' : 'Avatar, ulkoasu ja ilmoitukset. Avatar näkyy puutarhassa ja kärkilistalla.'}</p>
       {searchParams.ok && <p className="toast">Tallennettu 🌸</p>}
 
       <AvatarEditor
@@ -46,20 +46,6 @@ export default async function Profiili({ searchParams }: { searchParams: { uusi?
         </>
       )}
 
-      {!uusi && (
-        <section className="card danger">
-          <h2>Poista tili</h2>
-          <p className="muted">Poistaa nimesi, askeleesi, liikuntasi ja avatarisi pysyvästi. Esim. jos sinulla on vahingossa kaksi tunnusta. Tätä ei voi perua.</p>
-          {searchParams.virhe && <p className="err">Nimi ei täsmännyt, tiliä ei poistettu.</p>}
-          <details open={!!searchParams.virhe}>
-            <summary className="btn ghost">Poista tilini…</summary>
-            <form action={deleteAccount}>
-              <input name="confirm" placeholder={`Kirjoita nimesi: ${me.name}`} autoComplete="off" required />
-              <button className="btn ghost">Poista pysyvästi</button>
-            </form>
-          </details>
-        </section>
-      )}
     </>
   );
 }
