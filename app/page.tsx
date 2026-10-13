@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { loadGarden } from '@/lib/data';
-import { helsinkiDay, GROWTH, UNLOCKS, fp, stepPoints, ago, phaseOf, type Phase } from '@/lib/garden';
+import { loadGarden, loadRaw } from '@/lib/data';
+import { helsinkiDay, kindOf, GROWTH, UNLOCKS, fp, stepPoints, ago, phaseOf, type Phase } from '@/lib/garden';
 import type { Fairy } from '@/lib/data';
 import { dailyQuests } from '@/lib/quests';
 import Journey from '@/components/Journey';
@@ -23,6 +23,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function Home({ searchParams }: { searchParams: { virhe?: string; synkattu?: string; kirjaudu?: string; d?: string; taso?: string; aika?: string; juhla?: string; tyhja?: string } }) {
   const { board, me: realMe, myRank } = await loadGarden();
+  const rawToday = realMe?.hasSteps ? await loadRaw() : null;
   // Ylläpitäjän esikatselu: ?taso=0..5, ?aika=night|dawn|day|dusk, ?juhla=1, ?tyhja=1 (uuden käyttäjän näkymä)
   const admin = !!realMe?.isAdmin;
   let me: Fairy | null = admin && searchParams.tyhja ? { ...realMe!, hasSteps: false, today: 0, yesterday: 0, totalSteps: 0, pts: 0, stageIdx: 0, badges: [], streak: 0, workouts: 0, flowers: 0, avatarEmoji: null } : realMe;
@@ -169,6 +170,38 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
           <p className="muted">Viimeksi synkattu: {ago(me.lastSync)}</p>
         </section>
       )}
+
+      {me.hasSteps && rawToday && (() => {
+        const t = helsinkiDay();
+        const rows = board.map((b) => {
+          const w = rawToday.workouts.filter((x) => x.fairy_id === b.id && x.day === t);
+          const part = (kind: 'urheilu' | 'luova') => {
+            const m = new Map<string, number>();
+            for (const x of w) if (kindOf(x.sport) === kind) m.set(x.sport, (m.get(x.sport) ?? 0) + x.minutes);
+            return [...m.entries()].map(([sp, min]) => `${sp} ${min} min`).join(', ');
+          };
+          return { b, sport: part('urheilu'), creative: part('luova') };
+        }).sort((a, c) => c.b.today - a.b.today);
+        return (
+          <section className="card">
+            <h2>Tänään kaikilla</h2>
+            <ul className="plain todaylist">
+              {rows.map(({ b, sport, creative }) => (
+                <li key={b.id} className={b.mine ? 'me' : ''}>
+                  <Avatar a={b} size={32} stage={b.stageIdx} />
+                  <span className="tl-n"><b>{b.name}{b.mine ? ' (sinä)' : ''}</b>
+                    {sport && <small>💪 {sport}</small>}
+                    {creative && <small>🎨 {creative}</small>}
+                    {!sport && !creative && <small className="muted">ei liikuntaa vielä</small>}
+                  </span>
+                  <span className="tl-s">{b.today.toLocaleString('fi-FI')}<small>{b.today >= b.goal.todayTarget ? ' 🌸' : ' 👟'}</small></span>
+                </li>
+              ))}
+            </ul>
+            <p className="muted" style={{ margin: '8px 0 0' }}><Link href="/karki?lista=tanaan">Askeleet tänään →</Link> · <Link href="/tekemiset">Kuka teki mitä →</Link></p>
+          </section>
+        );
+      })()}
 
       {me.hasSteps && (() => {
         const g = me.goal;
