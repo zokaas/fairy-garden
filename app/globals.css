@@ -547,3 +547,11 @@ ul.mylog li { display: flex; align-items: center; justify-content: space-between
 .scene .bud { transform-box: fill-box; transform-origin: 50% 100%; animation: budSway 5s ease-in-out infinite; }
 @keyframes budSway { 0%, 100% { transform: rotate(-1.6deg); } 50% { transform: rotate(1.6deg); } }
 @media (prefers-reduced-motion: reduce) { .scene .bud { animation: none; } }
+
+/* Pehmennys: etusivun rengit ja korostukset */
+.ring svg { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--violet) 16%, transparent)); }
+.ring-txt b { font-weight: 600; }
+.todaypts b { font-weight: 600; font-size: 1.25rem; background: linear-gradient(90deg, color-mix(in srgb, var(--pink) 72%, var(--fg-2)), color-mix(in srgb, var(--violet) 72%, var(--fg-2)) 60%, color-mix(in srgb, var(--sky) 72%, var(--fg-2))); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.chips .chip { background: color-mix(in srgb, var(--surface-2) 70%, transparent); border-color: color-mix(in srgb, var(--line-2) 70%, transparent); color: var(--fg-2); font-weight: 500; }
+.card { box-shadow: 0 1px 2px #0000000a, 0 8px 24px #00000008; border-color: color-mix(in srgb, var(--line) 85%, transparent); }
+.tiles .bar i, .bar i { opacity: .75; }
