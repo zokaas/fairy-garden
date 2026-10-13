@@ -100,18 +100,16 @@ export async function testPush() {
   const me = await requireAdmin();
   const { sendPush } = await import('@/lib/push');
   const n = await sendPush({ title: 'Testi ✨', body: 'Ilmoitukset toimivat, keiju!', url: '/' }, [me.id]);
-  done(n > 0 ? 'Testi-ilmoitus lähetetty' : !process.env.VAPID_PRIVATE_KEY || !process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
-    ? 'VAPID-avaimet puuttuvat Vercelistä. Lisää ne ja deployaa uudelleen'
-    : 'Sinulla ei ole ilmoitustilausta. Laita ilmoitukset päälle Profiilissa (sovellus kotivalikosta)');
+  const { vapidProblem } = await import('@/lib/push');
+  done(n > 0 ? 'Testi-ilmoitus lähetetty' : vapidProblem() ?? 'Sinulla ei ole ilmoitustilausta. Laita ilmoitukset päälle Profiilissa (sovellus kotivalikosta)');
 }
 
 export async function testWeekly() {
   const me = await requireAdmin();
   const { sendWeeklySummary } = await import('@/lib/summary');
   const r = await sendWeeklySummary(me.id);
-  done(r.sent > 0 ? 'Viikkoyhteenveto lähetetty itsellesi' : !process.env.VAPID_PRIVATE_KEY || !process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
-    ? 'VAPID-avaimet puuttuvat Vercelistä. Lisää ne ja deployaa uudelleen'
-    : 'Sinulla ei ole ilmoitustilausta. Laita ilmoitukset päälle Profiilissa');
+  const { vapidProblem } = await import('@/lib/push');
+  done(r.sent > 0 ? 'Viikkoyhteenveto lähetetty itsellesi' : vapidProblem() ?? 'Sinulla ei ole ilmoitustilausta. Laita ilmoitukset päälle Profiilissa');
 }
 
 function dm(d: string) {

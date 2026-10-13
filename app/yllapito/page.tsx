@@ -28,7 +28,7 @@ export default async function Yllapito({ searchParams }: { searchParams: { ok?: 
   return (
     <>
       <h1>Ylläpito</h1>
-      {searchParams.ok && <p className={`toast ${/^(Ei|VAPID|Sinulla)/.test(searchParams.ok) ? 'warn' : ''}`}>{/^(Ei|VAPID|Sinulla)/.test(searchParams.ok) ? '⚠️' : '✓'} {searchParams.ok}</p>}
+      {searchParams.ok && <p className={`toast ${/^(Ei|Vercel|Virheellinen|Sinulla)/.test(searchParams.ok) ? 'warn' : ''}`}>{/^(Ei|Vercel|Virheellinen|Sinulla)/.test(searchParams.ok) ? '⚠️' : '✓'} {searchParams.ok}</p>}
 
       <section className="card">
         <h2>Tilanne</h2>
