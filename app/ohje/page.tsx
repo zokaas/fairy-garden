@@ -53,7 +53,7 @@ export default async function Ohje() {
         <h2>👟 Miten askeleet päivittyvät?</h2>
         <ul className="plain">
           <li>Askeleet siirtyvät <b>Fairy Garden -oikotiellä</b> (Komennot-sovellus). Asennus kestää noin 5 min ja tehdään kerran.</li>
-          <li>Kun avaat sovelluksen <b>Koti-valikon kuvakkeesta</b>, askeleet synkataan itsestään (enintään 5 minuutin välein).</li>
+          <li>Kun avaat sovelluksen <b>Koti-valikon kuvakkeesta</b>, askeleet synkataan itsestään (enintään 2 tunnin välein).</li>
           <li>Voit synkata myös käsin etusivun napista <b>Synkkaa askeleet nyt</b>.</li>
           <li>Etusivun rivi <b>"Askeleet synkattu"</b> kertoo, milloin luku on viimeksi päivitetty.</li>
           <li>Jos lukusi on selvästi suurempi kuin Terveys-sovelluksessa, ks. <Link href="/shortcut">Synkka-ohje</Link>.</li>

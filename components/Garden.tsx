@@ -13,8 +13,9 @@ function Bud({ p }: { p: number }) {
   const st = p < 0.25 ? 0 : p < 0.5 ? 1 : p < 0.75 ? 2 : 3;
   const h = [9, 17, 26, 32][st];
   return (
-    <g transform="translate(200 236)" className="bud">
-      <ellipse rx="10" ry="5" fill="#8b6a46" />
+    <g transform="translate(200 238) scale(1.5)">
+    <ellipse rx="10" ry="5" fill="#8b6a46" />
+    <g className="bud">
       <path d={`M0 -2V${-h}`} stroke="#3f8a67" strokeWidth="2.2" strokeLinecap="round" fill="none" />
       {st >= 1 && <path d={`M0 ${-h * 0.45}C-8 ${-h * 0.5 - 5} -11 ${-h * 0.4} -9 ${-h * 0.25}C-4 ${-h * 0.25} -1 ${-h * 0.32} 0 ${-h * 0.45}Z`} fill="#4c9a76" />}
       {st >= 1 && <path d={`M0 ${-h * 0.6}C8 ${-h * 0.65 - 5} 11 ${-h * 0.55} 9 ${-h * 0.4}C4 ${-h * 0.4} 1 ${-h * 0.47} 0 ${-h * 0.6}Z`} fill="#58a884" />}
@@ -25,6 +26,7 @@ function Bud({ p }: { p: number }) {
           <path d="M-5 -1C-3.5 -9 3.5 -9 5 -1C3 -3 -3 -3 -5 -1Z" fill="#e8869f" />
         </g>
       )}
+    </g>
     </g>
   );
 }
