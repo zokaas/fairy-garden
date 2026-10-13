@@ -41,7 +41,7 @@ export default async function Ohje() {
 
       <section className="card">
         <h2>🌸 Kukat ja puutarha</h2>
-        <p>Jokainen päivä, jolloin askeltavoite täyttyy, kasvattaa puutarhaasi <b>yhden kukan</b>. Puutarha muuttuu kukkien mukana: {GROWTH.slice(1).join(', ')} kukalla aukeaa uusia näkymiä.</p>
+        <p>Jokainen päivä, jolloin askeltavoite täyttyy, kasvattaa puutarhaasi <b>yhden kukan</b>. Puutarhan edessä kasvaa <b>päivän nuppu</b>, joka venyy askelten mukana (neljä vaihetta) ja puhkeaa kukaksi, kun tavoite täyttyy. Puutarha muuttuu kukkien mukana: {GROWTH.slice(1).join(', ')} kukalla aukeaa uusia näkymiä.</p>
       </section>
 
       <section className="card">

@@ -8,8 +8,29 @@ const COLORS = ['#d4527f', '#e8869f', '#9c7bd6', '#e9b44c', '#c2415f', '#7aa7e0'
 const TYPES = ['tulip', 'daisy', 'bell', 'rose'];
 
 /** Piirretty puutarhamaisema: kukkia kasvaa yksi pistettä kohti (max 40), taivas seuraa kellonaikaa, tasot tuovat mökin, sateenkaaren ja linnan. */
-export default function Garden({ flowers: count, stageIdx, name, href, avatar, phase = 'day', lines = [] }: {
-  flowers: number; stageIdx: number; name?: string; href?: string; avatar?: AvatarData; phase?: Phase; lines?: string[];
+/** Päivän nuppu: kasvaa neljässä vaiheessa askelten mukana (p = 0..1 päivän tavoitteesta) ja puhkeaa kukaksi tavoitteessa. */
+function Bud({ p }: { p: number }) {
+  const st = p < 0.25 ? 0 : p < 0.5 ? 1 : p < 0.75 ? 2 : 3;
+  const h = [9, 17, 26, 32][st];
+  return (
+    <g transform="translate(200 236)" className="bud">
+      <ellipse rx="10" ry="5" fill="#8b6a46" />
+      <path d={`M0 -2V${-h}`} stroke="#3f8a67" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+      {st >= 1 && <path d={`M0 ${-h * 0.45}C-8 ${-h * 0.5 - 5} -11 ${-h * 0.4} -9 ${-h * 0.25}C-4 ${-h * 0.25} -1 ${-h * 0.32} 0 ${-h * 0.45}Z`} fill="#4c9a76" />}
+      {st >= 1 && <path d={`M0 ${-h * 0.6}C8 ${-h * 0.65 - 5} 11 ${-h * 0.55} 9 ${-h * 0.4}C4 ${-h * 0.4} 1 ${-h * 0.47} 0 ${-h * 0.6}Z`} fill="#58a884" />}
+      {st === 2 && <ellipse cx="0" cy={-h - 4} rx="4" ry="5.5" fill="#e8869f" />}
+      {st === 3 && (
+        <g transform={`translate(0 ${-h - 5})`}>
+          <ellipse rx="5.5" ry="7.5" fill="#d4527f" />
+          <path d="M-5 -1C-3.5 -9 3.5 -9 5 -1C3 -3 -3 -3 -5 -1Z" fill="#e8869f" />
+        </g>
+      )}
+    </g>
+  );
+}
+
+export default function Garden({ flowers: count, stageIdx, name, href, avatar, phase = 'day', lines = [], progress }: {
+  flowers: number; stageIdx: number; name?: string; href?: string; avatar?: AvatarData; phase?: Phase; lines?: string[]; progress?: number;
 }) {
   const n = Math.min(60, count);
   const night = phase === 'night';
@@ -84,7 +105,7 @@ export default function Garden({ flowers: count, stageIdx, name, href, avatar, p
             <g className="sway" style={{ animationDelay: `${f.d}s`, color: f.color }}><use href={`#${f.type}`} /></g>
           </g>
         ))}
-        {n === 0 && <g transform="translate(200 232)"><ellipse rx="9" ry="5" fill="#8b6a46" /><path d="M0 -3V-12" stroke="#3f8a67" strokeWidth="2" /></g>}
+        {progress !== undefined ? (progress < 1 && <Bud p={progress} />) : n === 0 && <g transform="translate(200 232)"><ellipse rx="9" ry="5" fill="#8b6a46" /><path d="M0 -3V-12" stroke="#3f8a67" strokeWidth="2" /></g>}
         {night && [60, 150, 250, 340].map((x, i) => <circle key={x} className="ff" cx={x} cy={170 + (i % 2) * 24} r="2.4" fill="#fff7a8" style={{ animationDelay: `${i * 0.9}s` }} />)}
         </g>
       </svg>

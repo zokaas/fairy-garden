@@ -116,6 +116,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         phase={phase}
         name={me.name}
         href="/profiili"
+        progress={me.hasSteps ? Math.max(0, Math.min(1, me.today / Math.max(1, me.goal.todayTarget))) : 0}
         avatar={me}
         lines={[
           me.today < me.goal.todayTarget ? `Vielä ${(me.goal.todayTarget - me.today).toLocaleString('fi-FI')} askelta päivän tavoitteeseen! 👟` : 'Päivän tavoite täynnä, mahtavaa! ✨',

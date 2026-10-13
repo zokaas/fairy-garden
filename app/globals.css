@@ -542,3 +542,8 @@ ul.mylog li { display: flex; align-items: center; justify-content: space-between
 .sync-btn::after { display: none; }
 .sync-btn .sync-ic { color: var(--violet); }
 .sync-btn:active { background-position: 0 0; box-shadow: 0 2px 8px color-mix(in srgb, var(--violet) 16%, transparent); transform: scale(.98); }
+
+/* Päivän nuppu */
+.scene .bud { transform-box: fill-box; transform-origin: 50% 100%; animation: budSway 5s ease-in-out infinite; }
+@keyframes budSway { 0%, 100% { transform: rotate(-1.6deg); } 50% { transform: rotate(1.6deg); } }
+@media (prefers-reduced-motion: reduce) { .scene .bud { animation: none; } }
