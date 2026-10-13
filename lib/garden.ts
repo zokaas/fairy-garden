@@ -31,8 +31,11 @@ export function growthIdx(flowers: number): number {
 export const STEPS_PER_POINT = 2500;
 export const MINUTES_PER_POINT = 30;
 
-/** Askelpisteet: 1 piste / 2 500 askelta. */
+/** Askelpisteet yhdeltä päivältä: 1 piste / 2 500 askelta (alaspäin pyöristettynä). */
 export const stepPoints = (steps: number) => Math.floor(steps / STEPS_PER_POINT);
+
+/** Askelpisteet useilta päiviltä: jokainen päivä lasketaan erikseen ja pisteet summataan. */
+export const stepPointsOf = (rows: { steps: number }[]) => rows.reduce((a, r) => a + stepPoints(r.steps), 0);
 
 /** Liikuntapisteet: 1 piste / 30 min, puolikas piste (0,5) täydeltä 15 minuutilta. */
 export const sportPoints = (workoutMinutes: number) => Math.floor(workoutMinutes / (MINUTES_PER_POINT / 2)) / 2;
@@ -62,8 +65,8 @@ export const sportPointsOf = (ws: Work[]) => sportPoints(sumMin(ws.filter((w) =>
 /** Liikunnan ja luovan yhteispisteet (luovalla viikkokatto). */
 export const workoutPoints = (ws: Work[]) => sportPointsOf(ws) + creativePointsOf(ws);
 
-export function points(steps: number, ws: Work[]): number {
-  return stepPoints(steps) + workoutPoints(ws);
+export function points(stepRows: { steps: number }[], ws: Work[]): number {
+  return stepPointsOf(stepRows) + workoutPoints(ws);
 }
 
 

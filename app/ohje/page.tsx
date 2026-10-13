@@ -22,7 +22,7 @@ export default async function Ohje() {
       <section className="card">
         <h2>🏁 Pisteet</h2>
         <ul className="plain">
-          <li>🚶 <b>1 piste / {fi(STEPS_PER_POINT)} askelta.</b> Kävely ratkaisee eniten. Askeleet tulevat itsestään Terveys-sovelluksesta.</li>
+          <li>🚶 <b>1 piste / {fi(STEPS_PER_POINT)} askelta</b>, laskettuna <b>jokaiselta päivältä erikseen</b> (esim. 5 100 askelta päivässä = 2 p, 2 400 askelta = 0 p). Kävely ratkaisee eniten. Askeleet tulevat itsestään Terveys-sovelluksesta.</li>
           <li>💪 <b>1 piste / 30 min urheilua</b> (0,5 p jokaisesta 15 minuutista). Ei ylärajaa.</li>
           <li>🎨 <b>1 piste / 30 min luovaa harrastusta</b> (piirtäminen, virkkaus, lukeminen…). Pisteitä enintään <b>{CREATIVE_WEEK_CAP / 60} h viikossa</b>.</li>
           <li>🎯 <b>+{WEEK_BONUS} pistettä</b> jokaisesta viikosta, kun viikkotavoite täyttyy.</li>

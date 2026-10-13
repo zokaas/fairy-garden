@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { loadGarden } from '@/lib/data';
-import { helsinkiDay, GROWTH, STEPS_PER_POINT, UNLOCKS, fp, stepPoints, ago, phaseOf, type Phase } from '@/lib/garden';
+import { helsinkiDay, GROWTH, UNLOCKS, fp, stepPoints, ago, phaseOf, type Phase } from '@/lib/garden';
 import type { Fairy } from '@/lib/data';
 import { dailyQuests } from '@/lib/quests';
 import Journey from '@/components/Journey';
@@ -76,7 +76,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
           <ol>
             <li><b>Liity</b> nimellä, joka näkyy kärkilistalla.</li>
             <li><b>Yhdistä askeleet</b> iPhonen Terveydestä (5 min, kerran).</li>
-            <li><b>Kävele</b>: jokainen 2 500 askelta on 1 piste. Urheilu ja luova harrastus 1 p / 30 min (0,5 p / 15 min). Luovasta enintään 2 h viikossa.</li>
+            <li><b>Kävele</b>: jokainen 2 500 askelta päivässä on 1 piste. Urheilu ja luova harrastus 1 p / 30 min (0,5 p / 15 min). Luovasta enintään 2 h viikossa.</li>
           </ol>
         </section>
       </>
@@ -102,7 +102,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         ))}
       </ol>
       {!me.hasSteps && <Link className="btn" href="/shortcut">Yhdistä askeleet nyt</Link>}
-      <p className="muted">Pisteet: 1 p / 2 500 askelta, 1 p / 30 min urheilua, 1 p / 30 min luovaa (max 2 h / vko; 0,5 p / 15 min), +10 p täydestä viikosta.</p>
+      <p className="muted">Pisteet: 1 p / 2 500 askelta päivässä, 1 p / 30 min urheilua, 1 p / 30 min luovaa (max 2 h / vko; 0,5 p / 15 min), +10 p täydestä viikosta.</p>
     </section>
   ) : null;
 
@@ -135,7 +135,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
       {!me.hasSteps ? (
         onboarding
       ) : (() => {
-        const dSteps = stepPoints(me.totalSteps) - stepPoints(Math.max(0, me.totalSteps - me.today));
+        const dSteps = stepPoints(me.today);
         const dMins = me.minsPtsToday;
         return (
           <section className="card center">
@@ -152,7 +152,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
               <summary>Miten pisteet lasketaan? (<Link href="/ohje">koko ohje</Link>)</summary>
               <ul>
                 <li><b>Kukka</b> jokaisesta päivästä, jolloin saavutat askeltavoitteen (10 000, tai 7 000 jos urheilet).</li>
-                <li><b>1 piste</b> jokaisesta 2 500 askeleesta (pisteet kertyvät kisan kaikista askeleista, ei vain tämän päivän).</li>
+                <li><b>1 piste</b> jokaisesta 2 500 askeleesta, laskettuna <b>jokaiselta päivältä erikseen</b> (esim. 5 100 askelta päivässä = 2 p).</li>
                 <li><b>1 piste</b> jokaisesta 30 minuutista urheilua (ei rajaa) tai luovaa harrastusta (pisteitä enintään 2 h viikossa). Puolikas piste jokaisesta 15 minuutista.</li>
                 <li><b>Putki</b>: peräkkäisten päivien määrä, joina kävelit vähintään 5 000 askelta.</li>
                 <li><b>+{WEEK_BONUS} pistettä</b> jokaisesta viikosta, jolloin täytät koko viikon tavoitteen.</li>
@@ -212,7 +212,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         const below = myRank < board.length ? board[myRank] : null;
         const rows = [above, me, below].filter(Boolean) as typeof board;
         const hint = above
-          ? `Noin ${((above.pts - me.pts + 1) * STEPS_PER_POINT).toLocaleString('fi-FI')} askelta, niin ohitat keijun ${above.name}.`
+          ? `Keijuun ${above.name} on ${fp(above.pts - me.pts)} pistettä. Jokainen 2 500 askelta päivässä tuo 1 pisteen.`
           : below ? `Johdat! Keiju ${below.name} on ${fp(me.pts - below.pts)} pisteen päässä.` : '';
         return (
           <section className="card duel">

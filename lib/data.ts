@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import { db } from '@/lib/db';
 import { DEMO, demoRows } from '@/lib/demo';
 import { WEEK_BONUS, flowerDays, weekGoal, weeksDone, type WeekGoal } from '@/lib/weekly';
-import { CREATIVE_WEEK_CAP, creativeCountedMins, creativePointsOf, inContest, sportPointsOf, workoutPoints, ACTIVE_DAY, DAILY_GOAL, bestStreak, kindOf, dayBefore, helsinkiDay, points, sportPoints, growthIdx, stepPoints, streak, weekStart } from '@/lib/garden';
+import { CREATIVE_WEEK_CAP, creativeCountedMins, creativePointsOf, inContest, sportPointsOf, workoutPoints, ACTIVE_DAY, DAILY_GOAL, bestStreak, kindOf, dayBefore, helsinkiDay, points, sportPoints, growthIdx, stepPointsOf, streak, weekStart } from '@/lib/garden';
 import { BADGES } from '@/lib/badges';
 
 export type Fairy = {
@@ -83,7 +83,7 @@ export async function loadGarden() {
       const last = st.reduce<string | null>((a, s) => (!a || s.updated_at > a ? s.updated_at : a), null);
       const wDone = weeksDone(st, ws, today);
       const bonusPts = wDone * WEEK_BONUS;
-      const pts = points(totalSteps, ws) + bonusPts;
+      const pts = points(st, ws) + bonusPts;
       const stageIdx = growthIdx(flowerDays(st, ws));
       const stats = { totalSteps, bestDay: Math.max(0, ...st.map((x) => x.steps)), bestStreak: bestStreak(st), workouts: ws.length, mins, hasSteps: st.length > 0, stageIdx, weeksDone: wDone, flowers: flowerDays(st, ws), creativeMins: ws.filter((w) => kindOf(w.sport) === 'luova').reduce((a, w) => a + w.minutes, 0), sportKinds: new Set(ws.map((w) => w.sport)).size };
       return {
@@ -113,7 +113,7 @@ export async function loadGarden() {
           creativeMins: ws.filter((w) => w.day >= wk && kindOf(w.sport) === 'luova').reduce((a, w) => a + w.minutes, 0),
         },
         weekPts: points(
-          st.filter((x) => x.day >= wk).reduce((a, x) => a + x.steps, 0),
+          st.filter((x) => x.day >= wk),
           ws.filter((w) => w.day >= wk),
         ) + (weekGoal(st, ws, today).done ? WEEK_BONUS : 0),
         bestDay: stats.bestDay,
@@ -121,7 +121,7 @@ export async function loadGarden() {
         workouts: ws.length,
         activeDays: st.filter((x) => x.steps > 0).length,
         avgSteps: st.filter((x) => x.steps > 0).length ? Math.round(totalSteps / st.filter((x) => x.steps > 0).length) : 0,
-        stepPts: stepPoints(totalSteps),
+        stepPts: stepPointsOf(st),
         sportPts: workoutPoints(ws),
         sportOnlyPts: sportPointsOf(ws),
         creativePts: creativePointsOf(ws),

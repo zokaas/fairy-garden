@@ -1,4 +1,4 @@
-import { dayBefore, helsinkiDay, workoutPoints } from './garden.ts';
+import { dayBefore, helsinkiDay, stepPoints, workoutPoints } from './garden.ts';
 
 export type StepRow = { fairy_id: string; day: string; steps: number };
 export type WorkRow = { fairy_id: string; day: string; sport: string; minutes: number; created_at?: string };
@@ -214,11 +214,12 @@ export function heatCells(rows: { day: string; steps: number }[], weeks: number,
 export function pointsOverTime(steps: { day: string; steps: number }[], work: { day: string; minutes: number; sport?: string }[], days: string[]): number[] {
   const s = byDay(steps);
   const ws = work.map((r) => ({ day: r.day, minutes: r.minutes, sport: r.sport ?? 'Muu urheilu' }));
-  let cs = 0;
-  for (const [d, v] of s) if (d < days[0]) cs += v;
+  let cp = 0;
+  // ennen jakson alkua kertyneet askelpisteet (päivittäin)
+  for (const [d, v] of s) if (d < days[0]) cp += stepPoints(v);
   return days.map((d) => {
-    cs += s.get(d) ?? 0;
-    return Math.floor(cs / 2500) + workoutPoints(ws.filter((r) => r.day <= d));
+    cp += stepPoints(s.get(d) ?? 0);
+    return cp + workoutPoints(ws.filter((r) => r.day <= d));
   });
 }
 

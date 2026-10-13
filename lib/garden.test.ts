@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
-import { sportPoints, points, creativeCountedMins, workoutPoints, inContest, growthIdx, helsinkiDay, isDay, streak, bestStreak, dayBefore, ago, phaseOf, fairyName, weekStart } from './garden.ts';
+import { sportPoints, stepPointsOf, points, creativeCountedMins, workoutPoints, inContest, growthIdx, helsinkiDay, isDay, streak, bestStreak, dayBefore, ago, phaseOf, fairyName, weekStart } from './garden.ts';
 
-assert.equal(points(12_345, [{ day: '2026-10-13', sport: 'Sali', minutes: 25 }]), 4.5); // 4 askelpistettä, alle 30 min = 0
-assert.equal(points(12_345, [{ day: '2026-10-13', sport: 'Sali', minutes: 60 }]), 6); // 4 + 2
-assert.equal(points(10_000, [{ day: '2026-10-13', sport: 'Sali', minutes: 90 }]), 7); // 4 + 3
-assert.equal(points(0, [{ day: '2026-10-13', sport: 'Sali', minutes: 600 }]), 20); // urheilu yksinään antaa pisteitä
+assert.equal(points([{ steps: 12_345 }], [{ day: '2026-10-13', sport: 'Sali', minutes: 25 }]), 4.5); // 4 askelpistettä, alle 30 min = 0
+assert.equal(points([{ steps: 12_345 }], [{ day: '2026-10-13', sport: 'Sali', minutes: 60 }]), 6); // 4 + 2
+assert.equal(points([{ steps: 10_000 }], [{ day: '2026-10-13', sport: 'Sali', minutes: 90 }]), 7); // 4 + 3
+assert.equal(points([], [{ day: '2026-10-13', sport: 'Sali', minutes: 600 }]), 20); // urheilu yksinään antaa pisteitä
 assert.equal(growthIdx(0), 0);
 assert.equal(growthIdx(3), 1);
 assert.equal(growthIdx(31), 3);
@@ -122,4 +122,7 @@ assert.equal(f2.onTrack, true);
 assert.equal(f2.finish, '2026-11-15');
 assert.equal(forecast(0, '2026-10-19', '2026-11-27'), null);
 assert.equal(forecast(400_000, '2026-10-19', '2026-11-27')!.onTrack, true);
+// askelpisteet lasketaan päivittäin: 2 400 + 2 400 = 0 p, 5 000 + 2 600 = 2 + 1 = 3 p
+assert.equal(stepPointsOf([{ steps: 2_400 }, { steps: 2_400 }]), 0);
+assert.equal(stepPointsOf([{ steps: 5_000 }, { steps: 2_600 }]), 3);
 console.log('garden: ok');

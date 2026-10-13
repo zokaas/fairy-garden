@@ -77,7 +77,7 @@ export default async function Karki({ searchParams }: { searchParams: { lista?: 
             })}
           </ol>
         )}
-        <p className="muted">Pienet luvut oikealla: ero sinuun (+ = edellä sinua). Pisteet: 1 p / 2 500 askelta, 1 p / 30 min urheilua (0,5 p / 15 min, ei rajaa) ja 1 p / 30 min luovaa harrastusta (max 2 h viikossa).</p>
+        <p className="muted">Pienet luvut oikealla: ero sinuun (+ = edellä sinua). Pisteet: 1 p / 2 500 askelta päivässä, 1 p / 30 min urheilua (0,5 p / 15 min, ei rajaa) ja 1 p / 30 min luovaa harrastusta (max 2 h viikossa).</p>
       </section>
     </>
   );
