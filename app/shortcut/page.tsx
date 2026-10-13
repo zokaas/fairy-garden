@@ -61,6 +61,19 @@ export default async function ShortcutGuide() {
         </section>
       )}
 
+      <details className="card">
+        <summary><b>Askeleet näyttävät liian suurilta?</b></summary>
+        <div style={{ marginTop: 12 }}>
+          <p className="muted">Jos sinulla on <b>sekä iPhone että Apple Watch</b>, komento voi laskea molempien askeleet yhteen, jolloin luku on lähes tuplat. Vertaa sovelluksen lukua Terveys-sovelluksen lukuun. Jos ne eroavat, tee näin:</p>
+          <ol className="steps-list">
+            <li>Komennot → <b>Fairy Garden</b> → avaa komento muokattavaksi.</li>
+            <li>Napauta toimintoa <b>Find Health Samples</b> → <b>Add Filter</b> → <b>Source</b>.</li>
+            <li>Valitse lähteeksi <b>Apple Watch</b> (tai iPhone, jos et käytä kelloa).</li>
+            <li>Aja komento ja tarkista, että luku vastaa Terveyttä. Jos et pääse korjaamaan lukua, kerro ylläpitäjälle.</li>
+          </ol>
+        </div>
+      </details>
+
       <details className="card manual" open={!install}>
         <summary><b>Tee oikotie käsin</b>{install ? ' (jos asennuslinkki ei toimi)' : ''}</summary>
         <div style={{ marginTop: 12 }}>
