@@ -1,3 +1,4 @@
+import { SHORTCUT_INSTALL_URL } from '@/lib/shortcut';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { loadGarden } from '@/lib/data';
@@ -15,7 +16,7 @@ export default async function ShortcutGuide() {
   const { me } = await loadGarden();
   const site = process.env.NEXT_PUBLIC_SITE_URL ?? '';
   const url = `${site}/api/steps`;
-  const install = process.env.NEXT_PUBLIC_SHORTCUT_INSTALL_URL;
+  const install = SHORTCUT_INSTALL_URL;
   const body = JSON.stringify({ token, steps: '<Askeleet>' });
   const bodyDays = JSON.stringify({ token, values: '<values>' });
   const working = !!me?.hasSteps;

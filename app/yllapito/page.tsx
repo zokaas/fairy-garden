@@ -1,3 +1,4 @@
+import { SHORTCUT_INSTALL_URL } from '@/lib/shortcut';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { loadGarden, loadRaw } from '@/lib/data';
@@ -67,7 +68,7 @@ export default async function Yllapito({ searchParams }: { searchParams: { ok?: 
 
       <section className="card">
         <h2>Jaettava komento</h2>
-        <p className="muted">{process.env.NEXT_PUBLIC_SHORTCUT_INSTALL_URL ? 'Asennuslinkki on asetettu.' : 'Asennuslinkkiä ei ole vielä asetettu. Tee komento kerran ja jaa se, niin muille asennus on yksi nappi.'}</p>
+        <p className="muted">{SHORTCUT_INSTALL_URL ? 'Asennuslinkki on asetettu.' : ''}</p>
         <Link className="btn ghost" href="/yllapito/komento">Rakennusohje</Link>
       </section>
 

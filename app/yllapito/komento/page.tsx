@@ -1,3 +1,4 @@
+import { SHORTCUT_INSTALL_URL } from '@/lib/shortcut';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { loadGarden } from '@/lib/data';
@@ -10,7 +11,7 @@ export default async function KomentoOhje() {
   if (!me?.isAdmin) redirect('/');
   const site = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://SINUN-OSOITE';
   const url = `${site}/api/steps`;
-  const hasLink = !!process.env.NEXT_PUBLIC_SHORTCUT_INSTALL_URL;
+  const hasLink = !!SHORTCUT_INSTALL_URL;
   const msg = `Hei! Fairy Garden -kisa alkaa. Näin pääset mukaan (5 min):\n1) Avaa ${site} Safarilla, luo keiju ja valitse Jaa → Lisää Koti-valikkoon.\n2) Avaa sovellus kotinäytöltä ja mene Profiili → Ilmoitukset → laita päälle.\n3) Etusivun "Aloita"-kortista: kopioi avaimesi, asenna oikotie ja liitä avain kun komento kysyy.\n4) Tee kaksi automaatiota (07:00 ja 21:00) ohjeen mukaan.`;
 
   return (
