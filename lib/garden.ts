@@ -29,8 +29,30 @@ export const stepPoints = (steps: number) => Math.floor(steps / STEPS_PER_POINT)
 /** Urheilupisteet: 1 piste / 30 min. */
 export const sportPoints = (workoutMinutes: number) => Math.floor(workoutMinutes / MINUTES_PER_POINT);
 
-export function points(steps: number, workoutMinutes: number): number {
-  return stepPoints(steps) + sportPoints(workoutMinutes);
+/** Kisa alkaa maanantaina 12.10.2026. Sitä edeltävät päivät eivät kerrytä mitään. */
+export const CONTEST_START = '2026-10-12';
+export const inContest = (day: string) => day >= CONTEST_START;
+
+/** Luovasta harrastuksesta saa pisteitä enintään 2 h viikossa. Urheilu ja askeleet ovat rajattomia. */
+export const CREATIVE_WEEK_CAP = 120;
+
+type Work = { day: string; sport: string; minutes: number };
+const sumMin = (ws: Work[]) => ws.reduce((a, w) => a + w.minutes, 0);
+
+/** Pisteisiin lasketut luovan minuutit: viikoittain enintään CREATIVE_WEEK_CAP. */
+export function creativeCountedMins(ws: Work[]): number {
+  const perWeek = new Map<string, number>();
+  for (const w of ws) if (kindOf(w.sport) === 'luova') perWeek.set(weekStart(w.day), (perWeek.get(weekStart(w.day)) ?? 0) + w.minutes);
+  return [...perWeek.values()].reduce((a, m) => a + Math.min(m, CREATIVE_WEEK_CAP), 0);
+}
+
+export const creativePointsOf = (ws: Work[]) => sportPoints(creativeCountedMins(ws));
+export const sportPointsOf = (ws: Work[]) => sportPoints(sumMin(ws.filter((w) => kindOf(w.sport) === 'urheilu')));
+/** Liikunnan ja luovan yhteispisteet (luovalla viikkokatto). */
+export const workoutPoints = (ws: Work[]) => sportPointsOf(ws) + creativePointsOf(ws);
+
+export function points(steps: number, ws: Work[]): number {
+  return stepPoints(steps) + workoutPoints(ws);
 }
 
 

@@ -1,6 +1,6 @@
 import 'server-only';
 import { db } from './db';
-import { dayBefore, helsinkiDay, sportPoints, stepPoints, weekStart } from './garden';
+import { dayBefore, helsinkiDay, inContest, stepPoints, weekStart, workoutPoints } from './garden';
 import { WEEK_BONUS, WEEK_GOAL, weekGoal } from './weekly';
 import { sendPush } from './push';
 
@@ -20,12 +20,12 @@ export async function sendWeeklySummary(onlyId?: string): Promise<{ targets: num
   const lastSun = dayBefore(thisWeek);
 
   const rows = (fairies ?? []).map((f) => {
-    const st = (steps ?? []).filter((r) => r.fairy_id === f.id);
-    const ws = (work ?? []).filter((r) => r.fairy_id === f.id);
+    const st = (steps ?? []).filter((r) => r.fairy_id === f.id && inContest(r.day));
+    const ws = (work ?? []).filter((r) => r.fairy_id === f.id && inContest(r.day));
     const g = weekGoal(st, ws, lastSun);
     const sSum = st.filter((r) => r.day >= lastMon && r.day <= lastSun).reduce((a, r) => a + r.steps, 0);
-    const mSum = ws.filter((r) => r.day >= lastMon && r.day <= lastSun).reduce((a, r) => a + r.minutes, 0);
-    return { id: f.id as string, name: f.name as string, g, pts: stepPoints(sSum) + sportPoints(mSum) + (g.done ? WEEK_BONUS : 0) };
+    const wLast = ws.filter((r) => r.day >= lastMon && r.day <= lastSun);
+    return { id: f.id as string, name: f.name as string, g, pts: stepPoints(sSum) + workoutPoints(wLast) + (g.done ? WEEK_BONUS : 0) };
   }).sort((a, b) => b.pts - a.pts);
 
   const subscribed = new Set((subs ?? []).map((s) => s.fairy_id as string));

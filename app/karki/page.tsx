@@ -82,7 +82,7 @@ export default async function Karki({ searchParams }: { searchParams: { lista?: 
             })}
           </ol>
         )}
-        <p className="muted">Pienet luvut oikealla: ero sinuun (+ = edellä sinua). Napauta ✨ ja lähetä kimalle. Pisteet: 1 p / 2 500 askelta, 1 p / 30 min urheilua ja 1 p / 30 min luovaa harrastusta.</p>
+        <p className="muted">Pienet luvut oikealla: ero sinuun (+ = edellä sinua). Napauta ✨ ja lähetä kimalle. Pisteet: 1 p / 2 500 askelta, 1 p / 30 min urheilua (ei rajaa) ja 1 p / 30 min luovaa harrastusta (max 2 h viikossa).</p>
       </section>
       <form action={leave}><button className="btn ghost">Poistu tältä laitteelta</button></form>
     </>

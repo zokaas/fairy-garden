@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
-import { points, growthIdx, helsinkiDay, isDay, streak, bestStreak, dayBefore, ago, phaseOf, fairyName, weekStart } from './garden.ts';
+import { points, creativeCountedMins, workoutPoints, inContest, growthIdx, helsinkiDay, isDay, streak, bestStreak, dayBefore, ago, phaseOf, fairyName, weekStart } from './garden.ts';
 
-assert.equal(points(12_345, 25), 4); // 4 askelpistettä, alle 30 min = 0
-assert.equal(points(12_345, 60), 6); // 4 + 2
-assert.equal(points(10_000, 90), 7); // 4 + 3
-assert.equal(points(0, 600), 20); // urheilu yksinään antaa pisteitä
+assert.equal(points(12_345, [{ day: '2026-10-13', sport: 'Sali', minutes: 25 }]), 4); // 4 askelpistettä, alle 30 min = 0
+assert.equal(points(12_345, [{ day: '2026-10-13', sport: 'Sali', minutes: 60 }]), 6); // 4 + 2
+assert.equal(points(10_000, [{ day: '2026-10-13', sport: 'Sali', minutes: 90 }]), 7); // 4 + 3
+assert.equal(points(0, [{ day: '2026-10-13', sport: 'Sali', minutes: 600 }]), 20); // urheilu yksinään antaa pisteitä
 assert.equal(growthIdx(0), 0);
 assert.equal(growthIdx(3), 1);
 assert.equal(growthIdx(31), 3);
@@ -102,4 +102,11 @@ assert.equal(goalHistory(fullSteps, fullWork, '2026-10-14').length, 2);
 assert.equal(goalHistory(fullSteps, fullWork, '2026-10-14')[0].g.done, true);
 assert.deepEqual(goalHistory([], [], '2026-10-14'), []);
 assert.equal(flowerDays([{ day: '2026-10-12', steps: 7500 }, { day: '2026-10-13', steps: 9000 }, { day: '2026-10-14', steps: 10000 }], [{ day: '2026-10-12', sport: 'Sali' }, { day: '2026-10-13', sport: 'Lukeminen' }]), 2);
+// luovalla viikkokatto 120 min; urheilu rajaton; uusi viikko nollaa
+const cr = (day: string, minutes: number) => ({ day, sport: 'Lukeminen', minutes });
+assert.equal(creativeCountedMins([cr('2026-10-12', 90), cr('2026-10-14', 90)]), 120);
+assert.equal(creativeCountedMins([cr('2026-10-12', 100), cr('2026-10-19', 100)]), 200);
+assert.equal(workoutPoints([cr('2026-10-12', 300), { day: '2026-10-13', sport: 'Sali', minutes: 300 }]), 4 + 10);
+assert.equal(inContest('2026-10-11'), false);
+assert.equal(inContest('2026-10-12'), true);
 console.log('garden: ok');

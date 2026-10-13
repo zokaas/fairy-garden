@@ -1,4 +1,4 @@
-import { dayBefore, helsinkiDay } from './garden.ts';
+import { dayBefore, helsinkiDay, workoutPoints } from './garden.ts';
 
 export type StepRow = { fairy_id: string; day: string; steps: number };
 export type WorkRow = { fairy_id: string; day: string; sport: string; minutes: number; created_at?: string };
@@ -210,19 +210,15 @@ export function heatCells(rows: { day: string; steps: number }[], weeks: number,
   return cols;
 }
 
-/** Kertyvät pisteet päivittäin (1 p / 2 500 askelta + 1 p / 30 min), annetuilla päivillä. */
-export function pointsOverTime(steps: { day: string; steps: number }[], work: { day: string; minutes: number }[], days: string[]): number[] {
+/** Kertyvät pisteet päivittäin (1 p / 2 500 askelta + liikuntapisteet, luovalla viikkokatto), annetuilla päivillä. */
+export function pointsOverTime(steps: { day: string; steps: number }[], work: { day: string; minutes: number; sport?: string }[], days: string[]): number[] {
   const s = byDay(steps);
-  const w = new Map<string, number>();
-  for (const r of work) w.set(r.day, (w.get(r.day) ?? 0) + r.minutes);
-  let cs = 0, cm = 0;
-  // ennen jakson alkua kertynyt
+  const ws = work.map((r) => ({ day: r.day, minutes: r.minutes, sport: r.sport ?? 'Muu urheilu' }));
+  let cs = 0;
   for (const [d, v] of s) if (d < days[0]) cs += v;
-  for (const [d, v] of w) if (d < days[0]) cm += v;
   return days.map((d) => {
     cs += s.get(d) ?? 0;
-    cm += w.get(d) ?? 0;
-    return Math.floor(cs / 2500) + Math.floor(cm / 30);
+    return Math.floor(cs / 2500) + workoutPoints(ws.filter((r) => r.day <= d));
   });
 }
 

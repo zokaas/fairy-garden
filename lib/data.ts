@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import { db } from '@/lib/db';
 import { DEMO, demoRows } from '@/lib/demo';
 import { WEEK_BONUS, flowerDays, weekGoal, weeksDone, type WeekGoal } from '@/lib/weekly';
-import { ACTIVE_DAY, DAILY_GOAL, bestStreak, kindOf, dayBefore, helsinkiDay, points, sportPoints, growthIdx, stepPoints, streak, weekStart } from '@/lib/garden';
+import { CREATIVE_WEEK_CAP, creativeCountedMins, creativePointsOf, inContest, sportPointsOf, workoutPoints, ACTIVE_DAY, DAILY_GOAL, bestStreak, kindOf, dayBefore, helsinkiDay, points, sportPoints, growthIdx, stepPoints, streak, weekStart } from '@/lib/garden';
 import { BADGES } from '@/lib/badges';
 
 export type Fairy = {
@@ -47,6 +47,10 @@ export type Fairy = {
   avgSteps: number;
   stepPts: number;
   sportPts: number;
+  sportOnlyPts: number;
+  creativePts: number;
+  creativeLeft: number;
+  minsPtsToday: number;
   avgSession: number;
 };
 
@@ -58,7 +62,7 @@ async function fetchRows() {
     supabase.from('workouts').select('fairy_id, minutes, day, sport'),
     supabase.from('cheers').select('from_id, to_id, day'),
   ]);
-  return { fairies: fairies ?? [], steps: steps ?? [], workouts: workouts ?? [], cheers: cheers ?? [] };
+  return { fairies: fairies ?? [], steps: (steps ?? []).filter((r) => inContest(r.day)), workouts: (workouts ?? []).filter((r) => inContest(r.day)), cheers: cheers ?? [] };
 }
 
 export async function loadGarden() {
@@ -79,7 +83,7 @@ export async function loadGarden() {
       const last = st.reduce<string | null>((a, s) => (!a || s.updated_at > a ? s.updated_at : a), null);
       const wDone = weeksDone(st, ws, today);
       const bonusPts = wDone * WEEK_BONUS;
-      const pts = points(totalSteps, mins) + bonusPts;
+      const pts = points(totalSteps, ws) + bonusPts;
       const stageIdx = growthIdx(flowerDays(st, ws));
       const stats = { totalSteps, bestDay: Math.max(0, ...st.map((x) => x.steps)), bestStreak: bestStreak(st), workouts: ws.length, mins, hasSteps: st.length > 0, stageIdx, weeksDone: wDone };
       return {
@@ -110,7 +114,7 @@ export async function loadGarden() {
         },
         weekPts: points(
           st.filter((x) => x.day >= wk).reduce((a, x) => a + x.steps, 0),
-          ws.filter((w) => w.day >= wk).reduce((a, w) => a + w.minutes, 0),
+          ws.filter((w) => w.day >= wk),
         ) + (weekGoal(st, ws, today).done ? WEEK_BONUS : 0),
         bestDay: stats.bestDay,
         bestRun: stats.bestStreak,
@@ -118,7 +122,11 @@ export async function loadGarden() {
         activeDays: st.filter((x) => x.steps > 0).length,
         avgSteps: st.filter((x) => x.steps > 0).length ? Math.round(totalSteps / st.filter((x) => x.steps > 0).length) : 0,
         stepPts: stepPoints(totalSteps),
-        sportPts: sportPoints(mins),
+        sportPts: workoutPoints(ws),
+        sportOnlyPts: sportPointsOf(ws),
+        creativePts: creativePointsOf(ws),
+        creativeLeft: Math.max(0, CREATIVE_WEEK_CAP - creativeCountedMins(ws.filter((w) => w.day >= wk))),
+        minsPtsToday: workoutPoints(ws) - workoutPoints(ws.filter((w) => w.day !== today)),
         avgSession: ws.length ? Math.round(mins / ws.length) : 0,
         cheersTotal: (cheers ?? []).filter((c) => c.to_id === f.id).length,
         stageIdx,
@@ -158,5 +166,5 @@ export async function loadRaw() {
     supabase.from('workouts').select('fairy_id, day, sport, minutes, created_at'),
     supabase.from('cheers').select('from_id, to_id, day'),
   ]);
-  return { steps: (steps ?? []) as import('./stats').StepRow[], workouts: (workouts ?? []) as import('./stats').WorkRow[], cheers: (cheers ?? []) as { from_id: string; to_id: string; day: string }[] };
+  return { steps: ((steps ?? []) as import('./stats').StepRow[]).filter((r) => inContest(r.day)), workouts: ((workouts ?? []) as import('./stats').WorkRow[]).filter((r) => inContest(r.day)), cheers: (cheers ?? []) as { from_id: string; to_id: string; day: string }[] };
 }

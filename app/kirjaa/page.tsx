@@ -18,7 +18,7 @@ export default async function Kirjaa({ searchParams }: { searchParams: { ok?: st
       <section className="card">
         <h2>Lisää kirjaus</h2>
         <WorkoutForm action={logWorkout} />
-        <p className="muted">1 piste / 30 min, sekä urheilusta että luovasta harrastuksesta. Kävely ratkaisee silti eniten: se kirjautuu itsestään askelista.</p>
+        <p className="muted">1 piste / 30 min. Urheilu on rajatonta, luovasta saa pisteitä enintään 2 h viikossa (kirjata voi enemmänkin). Kävely ratkaisee silti eniten: se kirjautuu itsestään askelista.</p>
       </section>
 
       {me && (

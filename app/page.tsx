@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { loadGarden } from '@/lib/data';
-import { GROWTH, MINUTES_PER_POINT, STEPS_PER_POINT, UNLOCKS, sportPoints, stepPoints, ago, phaseOf, type Phase } from '@/lib/garden';
+import { GROWTH, MINUTES_PER_POINT, STEPS_PER_POINT, UNLOCKS, stepPoints, ago, phaseOf, type Phase } from '@/lib/garden';
 import type { Fairy } from '@/lib/data';
 import { dailyQuests } from '@/lib/quests';
 import Journey from '@/components/Journey';
@@ -74,7 +74,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
           <ol>
             <li><b>Liity</b> nimellä, joka näkyy kärkilistalla.</li>
             <li><b>Yhdistä askeleet</b> iPhonen Terveydestä (5 min, kerran).</li>
-            <li><b>Kävele</b>: jokainen 2 500 askelta on 1 piste. Urheilu ja luova harrastus: 1 p / 30 min.</li>
+            <li><b>Kävele</b>: jokainen 2 500 askelta on 1 piste. Urheilu 1 p / 30 min, luova harrastus 1 p / 30 min (enintään 2 h viikossa).</li>
           </ol>
         </section>
       </>
@@ -100,7 +100,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         ))}
       </ol>
       {!me.hasSteps && <Link className="btn" href="/shortcut">Yhdistä askeleet nyt</Link>}
-      <p className="muted">Pisteet: 1 p / 2 500 askelta, 1 p / 30 min urheilua tai luovaa harrastusta, +10 p täydestä viikosta.</p>
+      <p className="muted">Pisteet: 1 p / 2 500 askelta, 1 p / 30 min urheilua, 1 p / 30 min luovaa (max 2 h / vko), +10 p täydestä viikosta.</p>
     </section>
   ) : null;
 
@@ -132,12 +132,12 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         onboarding
       ) : (() => {
         const dSteps = stepPoints(me.totalSteps) - stepPoints(Math.max(0, me.totalSteps - me.today));
-        const dMins = sportPoints(me.mins) - sportPoints(Math.max(0, me.mins - me.minsToday));
+        const dMins = me.minsPtsToday;
         return (
           <section className="card center">
             <Ring value={me.today} goal={me.goal.todayTarget} />
             <p className="todaypts"><b>Tänään +{dSteps + dMins} p</b><span>{dSteps} askelista · {dMins} urheilusta tai luovasta</span></p>
-            <p className="muted">Seuraava piste: {(STEPS_PER_POINT - (me.totalSteps % STEPS_PER_POINT)).toLocaleString('fi-FI')} askelta tai {MINUTES_PER_POINT - (me.mins % MINUTES_PER_POINT)} min liikuntaa</p>
+            <p className="muted">Seuraava piste: {(STEPS_PER_POINT - (me.totalSteps % STEPS_PER_POINT)).toLocaleString('fi-FI')} askelta tai {MINUTES_PER_POINT - (me.sportMins % MINUTES_PER_POINT)} min urheilua</p>
             <div className="chips" style={{ justifyContent: 'center' }}>
               <span className="chip">{me.pts} p yhteensä</span>
               <span className="chip">sija {myRank} / {board.length}</span>
@@ -150,7 +150,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
               <ul>
                 <li><b>Kukka</b> jokaisesta päivästä, jolloin saavutat askeltavoitteen (10 000, tai 7 000 jos urheilet).</li>
                 <li><b>1 piste</b> jokaisesta 2 500 askeleesta.</li>
-                <li><b>1 piste</b> jokaisesta 30 minuutista urheilua tai luovaa harrastusta.</li>
+                <li><b>1 piste</b> jokaisesta 30 minuutista urheilua (ei rajaa) tai luovaa harrastusta (pisteitä enintään 2 h viikossa).</li>
                 <li><b>+{WEEK_BONUS} pistettä</b> jokaisesta viikosta, jolloin täytät koko viikon tavoitteen.</li>
               </ul>
             </details>
