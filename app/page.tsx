@@ -126,7 +126,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
       />
       <p className="muted" style={{ textAlign: 'center', marginTop: -6 }}>
         {me.hasSteps ? (
-          <>{me.flowers} {me.flowers === 1 ? 'kukka' : 'kukkaa'} · {me.today >= me.goal.todayTarget ? 'tämän päivän kukka on puhjennut ✓' : `tämän päivän kukkaan ${(me.goal.todayTarget - me.today).toLocaleString('fi-FI')} askelta`}</>
+          <>🌸 {me.flowers} {me.flowers === 1 ? 'kukka' : 'kukkaa'} puutarhassa<br />{me.today >= me.goal.todayTarget ? 'Tämän päivän kukka on puhjennut ✓' : `Vielä ${(me.goal.todayTarget - me.today).toLocaleString('fi-FI')} askelta, niin tämän päivän kukka puhkeaa`}</>
         ) : 'Jokainen päivä, jolloin saavutat askeltavoitteen, kasvattaa puutarhaasi kukan.'}
       </p>
       <Countdown to={contest.end} />
