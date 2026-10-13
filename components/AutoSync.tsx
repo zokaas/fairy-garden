@@ -3,14 +3,14 @@ import { useEffect, useState } from 'react';
 
 const KEY_ON = 'fg_autosync';
 const KEY_LAST = 'fg_autosync_last';
-const GAP = 30 * 60 * 1000;
+const GAP = 5 * 60 * 1000;
 
 const get = (k: string) => { try { return localStorage.getItem(k); } catch { return null; } };
 const set = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* ei tallennusta */ } };
 
 /**
  * Käynnistää Komennon automaattisesti, kun kotivalikon sovellus avataan (puhelin on silloin auki, joten Terveys-data on luettavissa).
- * Päälle vasta kun käyttäjä on kerran synkannut napilla (paluu ?synkattu=1). Enintään kerran 30 min välein, vain kotivalikon sovelluksessa.
+ * Päälle vasta kun käyttäjä on kerran synkannut napilla (paluu ?synkattu=1). Enintään kerran 5 min välein, vain kotivalikon sovelluksessa.
  */
 export default function AutoSync() {
   useEffect(() => {
@@ -38,7 +38,7 @@ export function AutoSyncToggle() {
   return (
     <label className="row" style={{ gap: 10, alignItems: 'center' }}>
       <input type="checkbox" checked={on} onChange={(e) => { setOn(e.target.checked); set(KEY_ON, e.target.checked ? '1' : '0'); }} />
-      <span>Synkkaa automaattisesti, kun avaan sovelluksen (enintään 30 min välein)</span>
+      <span>Synkkaa automaattisesti, kun avaan sovelluksen (enintään 5 min välein)</span>
     </label>
   );
 }
