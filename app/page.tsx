@@ -20,7 +20,7 @@ import SyncButton from '@/components/SyncButton';
 export const dynamic = 'force-dynamic';
 
 export default async function Home({ searchParams }: { searchParams: { virhe?: string; synkattu?: string; kirjaudu?: string; d?: string; taso?: string; aika?: string; juhla?: string; tyhja?: string } }) {
-  const { board, me: realMe, myRank, sentToday } = await loadGarden();
+  const { board, me: realMe, myRank } = await loadGarden();
   // Ylläpitäjän esikatselu: ?taso=0..5, ?aika=night|dawn|day|dusk, ?juhla=1, ?tyhja=1 (uuden käyttäjän näkymä)
   const admin = !!realMe?.isAdmin;
   let me: Fairy | null = admin && searchParams.tyhja ? { ...realMe!, hasSteps: false, today: 0, yesterday: 0, totalSteps: 0, pts: 0, stageIdx: 0, badges: [], streak: 0, workouts: 0, flowers: 0, avatarEmoji: null } : realMe;
@@ -107,6 +107,11 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
   return (
     <>
       <Celebrate flowers={me.flowers} force={admin && !!searchParams.juhla} />
+      <Link href="/profiili" className="me-chip">
+        <Avatar a={me} size={36} stage={stageIdx} />
+        <span><b>{me.name}</b><small>Muokkaa avataria ja tiliä</small></span>
+        <i aria-hidden>›</i>
+      </Link>
       <Garden
         flowers={me.flowers}
         stageIdx={stageIdx}
@@ -124,7 +129,6 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         {me.hasSteps ? (
           <>{me.flowers} {me.flowers === 1 ? 'kukka' : 'kukkaa'} · {me.today >= me.goal.todayTarget ? 'tämän päivän kukka on puhjennut ✓' : `tämän päivän kukkaan ${(me.goal.todayTarget - me.today).toLocaleString('fi-FI')} askelta`}</>
         ) : 'Jokainen päivä, jolloin saavutat askeltavoitteen, kasvattaa puutarhaasi kukan.'}
-        <br /><Link href="/profiili">Muokkaa avataria</Link>
       </p>
       <Countdown to={contest.end} />
 
@@ -228,7 +232,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
       })()}
 
       {me.hasSteps && (() => {
-        const quests = dailyQuests({ today: me.today, yesterday: me.yesterday, sentToday: sentToday.length, sportToday: me.sportToday, creativeToday: me.creativeToday, sportDays: me.goal.sportDays, creativeDays: me.goal.creativeDays });
+        const quests = dailyQuests({ today: me.today, yesterday: me.yesterday, sportToday: me.sportToday, creativeToday: me.creativeToday, sportDays: me.goal.sportDays, creativeDays: me.goal.creativeDays });
         const all = quests.every((x) => x.done);
         return (
           <section className={`card quests ${all ? 'all' : ''}`}>
@@ -245,11 +249,6 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         );
       })()}
 
-      {me.cheersToday > 0 && (
-        <section className="card cheers">
-          <p>Sait tänään <b>{me.cheersToday}</b> {me.cheersToday === 1 ? 'kimallen' : 'kimallusta'}</p>
-        </section>
-      )}
 
 
       <section className="card">

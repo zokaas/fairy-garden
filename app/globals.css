@@ -13,7 +13,7 @@
   color-scheme: dark;
 }
 @media (prefers-color-scheme: light) {
-  :root {
+  :root:not([data-theme="dark"]) {
     --bg: #fafafa; --surface: #ffffff; --surface-2: #f4f4f5; --field: #ffffff;
     --line: #0000001a; --line-2: #00000030;
     --fg: #09090b; --fg-2: #52525b; --fg-3: #8a8a93;
@@ -22,6 +22,15 @@
     --grad-v: linear-gradient(180deg, #e11d74, #7c3aed 55%, #0284c7);
     color-scheme: light;
   }
+}
+:root[data-theme="light"] {
+    --bg: #fafafa; --surface: #ffffff; --surface-2: #f4f4f5; --field: #ffffff;
+    --line: #0000001a; --line-2: #00000030;
+    --fg: #09090b; --fg-2: #52525b; --fg-3: #8a8a93;
+    --pink: #e11d74; --violet: #7c3aed; --sky: #0284c7; --green: #059669; --yellow: #ca8a04; --red: #e11d48;
+    --grad: linear-gradient(90deg, #e11d74, #7c3aed 55%, #0284c7);
+    --grad-v: linear-gradient(180deg, #e11d74, #7c3aed 55%, #0284c7);
+    color-scheme: light;
 }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
@@ -460,3 +469,11 @@ ul.unlocks li.done .ob-check { background: var(--green); border-color: transpare
 /* Koodipalat ohjeissa: rivinsisäisiä */
 code { display: inline; padding: 1px 6px; margin: 0; border-radius: 6px; font: .8rem var(--mono); white-space: pre-wrap; word-break: break-all; background: var(--field); border: 1px solid var(--line-2); }
 .steps-list code { line-height: 1.9; }
+
+/* Profiili: sticky esikatselu, profiilichip, tilin poisto */
+.editor .ed-preview { position: sticky; top: 8px; z-index: 5; backdrop-filter: blur(10px); }
+.ed-actions { grid-column: 2; display: flex; gap: 8px; flex-wrap: wrap; } .ed-actions .ed-rand { grid-column: auto; flex: 1 1 auto; }
+.me-chip { display: flex; align-items: center; gap: 12px; padding: 8px 14px 8px 10px; margin: 0 0 12px; border: 1px solid var(--line-2); border-radius: 999px; background: var(--surface); color: var(--fg); text-decoration: none; }
+.me-chip span { display: flex; flex-direction: column; line-height: 1.25; flex: 1; min-width: 0; } .me-chip b { font-weight: 600; } .me-chip small { color: var(--fg-3); font-size: .72rem; } .me-chip i { color: var(--fg-3); font-style: normal; font-size: 1.3rem; }
+.card.danger summary.btn { list-style: none; text-align: center; cursor: pointer; } .card.danger summary.btn::-webkit-details-marker { display: none; }
+.card.danger form { display: grid; gap: 10px; margin-top: 10px; }

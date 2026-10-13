@@ -85,7 +85,7 @@ export async function loadGarden() {
       const bonusPts = wDone * WEEK_BONUS;
       const pts = points(totalSteps, ws) + bonusPts;
       const stageIdx = growthIdx(flowerDays(st, ws));
-      const stats = { totalSteps, bestDay: Math.max(0, ...st.map((x) => x.steps)), bestStreak: bestStreak(st), workouts: ws.length, mins, hasSteps: st.length > 0, stageIdx, weeksDone: wDone };
+      const stats = { totalSteps, bestDay: Math.max(0, ...st.map((x) => x.steps)), bestStreak: bestStreak(st), workouts: ws.length, mins, hasSteps: st.length > 0, stageIdx, weeksDone: wDone, flowers: flowerDays(st, ws), creativeMins: ws.filter((w) => kindOf(w.sport) === 'luova').reduce((a, w) => a + w.minutes, 0), sportKinds: new Set(ws.map((w) => w.sport)).size };
       return {
         id: f.id,
         name: f.name,
@@ -150,8 +150,7 @@ export async function loadGarden() {
     })
     .sort((a, b) => b.pts - a.pts);
   const me = board.find((b) => b.mine) ?? null;
-  const sentToday = me ? (cheers ?? []).filter((c) => c.from_id === me.id && c.day === today).map((c) => c.to_id as string) : [];
-  return { board, me, myRank: board.findIndex((b) => b.mine) + 1, sentToday };
+  return { board, me, myRank: board.findIndex((b) => b.mine) + 1 };
 }
 
 /** Raakadata tilastoja varten: kaikkien askeleet ja liikunnat. */

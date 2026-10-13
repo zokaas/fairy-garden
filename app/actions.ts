@@ -76,11 +76,6 @@ export async function logWorkout(formData: FormData) {
   redirect('/kirjaa?ok=liikunta');
 }
 
-export async function leave() {
-  cookies().delete(COOKIE);
-  redirect('/');
-}
-
 async function myFairy() {
   const token = cookies().get(COOKIE)?.value;
   if (!token) return null;
@@ -132,14 +127,5 @@ export async function removePhoto() {
   if (fairy.avatar_path) await supabase.storage.from('avatars').remove([fairy.avatar_path]);
   revalidatePath('/', 'layout');
   redirect('/profiili?ok=1');
-}
-
-export async function sendCheer(formData: FormData) {
-  const toId = String(formData.get('to') ?? '');
-  const { me } = await loadGarden();
-  if (!me || !toId || toId === me.id) return;
-  const { data: inserted } = await db().from('cheers').upsert({ from_id: me.id, to_id: toId, day: helsinkiDay() }, { onConflict: 'from_id,to_id,day', ignoreDuplicates: true }).select('id');
-  if (inserted && inserted.length > 0) await sendPush({ title: 'Kimalle! ✨', body: `${me.name} lähetti sinulle kimallen 💌`, url: '/' }, [toId]);
-  revalidatePath('/', 'layout');
 }
 

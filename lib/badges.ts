@@ -1,4 +1,4 @@
-export type Stats = { totalSteps: number; bestDay: number; bestStreak: number; workouts: number; mins: number; hasSteps: boolean; stageIdx: number; weeksDone?: number };
+export type Stats = { totalSteps: number; bestDay: number; bestStreak: number; workouts: number; mins: number; hasSteps: boolean; stageIdx: number; weeksDone?: number; flowers?: number; creativeMins?: number; sportKinds?: number };
 
 export const BADGES: { id: string; emoji: string; name: string; desc: string; test: (s: Stats) => boolean }[] = [
   { id: 'eka', emoji: '🌱', name: 'Ensiaskeleet', desc: 'Ensimmäiset askeleet kirjattu', test: (s) => s.hasSteps },
@@ -15,4 +15,14 @@ export const BADGES: { id: string; emoji: string; name: string; desc: string; te
   { id: 'viikko', emoji: '🎯', name: 'Viikon tavoite täynnä', desc: 'Täytit koko viikon tavoitteen', test: (s) => (s.weeksDone ?? 0) >= 1 },
   { id: 'viikko3', emoji: '🏅', name: 'Kolme täyttä viikkoa', desc: 'Kolme viikkoa tavoitteen', test: (s) => (s.weeksDone ?? 0) >= 3 },
   { id: 'kunk', emoji: '👑', name: 'Puutarhan kuningatar', desc: '42 kukkaa puutarhassa', test: (s) => s.stageIdx >= 5 },
+  { id: 'kukka3', emoji: '🌷', name: 'Ensimmäiset kukat', desc: '3 kukkaa puutarhassa', test: (s) => (s.flowers ?? 0) >= 3 },
+  { id: 'kukka10', emoji: '🌼', name: 'Kymmenen kukkaa', desc: '10 kukkaa puutarhassa', test: (s) => (s.flowers ?? 0) >= 10 },
+  { id: '30k', emoji: '🏃‍♀️', name: 'Maratoonari', desc: '30 000 askelta yhdessä päivässä', test: (s) => s.bestDay >= 30_000 },
+  { id: '50k', emoji: '🥾', name: 'Viisikymmentätuhatta', desc: '50 000 askelta yhteensä', test: (s) => s.totalSteps >= 50_000 },
+  { id: '250k', emoji: '🏔️', name: 'Vuorikiipeilijä', desc: '250 000 askelta yhteensä', test: (s) => s.totalSteps >= 250_000 },
+  { id: 'aktiivinen', emoji: '💥', name: 'Aktiivinen', desc: '20 liikunta- tai luovuuskirjausta', test: (s) => s.workouts >= 20 },
+  { id: 'rauta', emoji: '🏆', name: 'Rautakeiju', desc: '1 000 minuuttia liikuntaa', test: (s) => s.mins >= 1000 },
+  { id: 'monipuol', emoji: '🎲', name: 'Monilahjakkuus', desc: '5 eri lajia kokeiltu', test: (s) => (s.sportKinds ?? 0) >= 5 },
+  { id: 'luova', emoji: '🎨', name: 'Luova sielu', desc: '5 tuntia luovaa harrastusta', test: (s) => (s.creativeMins ?? 0) >= 300 },
+  { id: 'viikko5', emoji: '🏵️', name: 'Viisi täyttä viikkoa', desc: 'Viisi viikkoa tavoitteen', test: (s) => (s.weeksDone ?? 0) >= 5 },
 ];

@@ -5,7 +5,6 @@ import { loadGarden } from '@/lib/data';
 import { ago, fp } from '@/lib/garden';
 import { LISTS, isList, type ListKey } from '@/lib/lists';
 import Avatar from '@/components/Avatar';
-import { leave, sendCheer } from '../actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,7 +12,7 @@ const fi = (n: number, d = 0) => n.toLocaleString('fi-FI', { maximumFractionDigi
 
 export default async function Karki({ searchParams }: { searchParams: { lista?: string; nayta?: string } }) {
   if (!cookies().get('fg_token')) redirect('/');
-  const { board: all, me, sentToday } = await loadGarden();
+  const { board: all, me } = await loadGarden();
   const key: ListKey = isList(searchParams.lista) ? searchParams.lista : 'kaikki';
   const week = searchParams.nayta === 'viikko';
   const L = LISTS[key];
@@ -71,20 +70,13 @@ export default async function Karki({ searchParams }: { searchParams: { lista?: 
                     <span>{b.name}<small>{sub(b)}</small>{key === 'askeleet' && <small>synkattu {ago(b.lastSync)}</small>}</span>
                   </span>
                   <span className="pt">{L.fmt(score(b))}{diff !== null && <small className={diff > 0 ? 'neg' : 'pos2'}>{diff > 0 ? '+' : diff < 0 ? '−' : ''}{fi(Math.abs(diff))}</small>}</span>
-                  {me && !b.mine && (
-                    <form action={sendCheer}>
-                      <input type="hidden" name="to" value={b.id} />
-                      <button className={`cheer ${sentToday.includes(b.id) ? 'sent' : ''}`} disabled={sentToday.includes(b.id)} title="Lähetä kimalle">{sentToday.includes(b.id) ? '💌' : '✨'}</button>
-                    </form>
-                  )}
                 </li>
               );
             })}
           </ol>
         )}
-        <p className="muted">Pienet luvut oikealla: ero sinuun (+ = edellä sinua). Napauta ✨ ja lähetä kimalle. Pisteet: 1 p / 2 500 askelta, 1 p / 30 min urheilua (0,5 p / 15 min, ei rajaa) ja 1 p / 30 min luovaa harrastusta (max 2 h viikossa).</p>
+        <p className="muted">Pienet luvut oikealla: ero sinuun (+ = edellä sinua). Pisteet: 1 p / 2 500 askelta, 1 p / 30 min urheilua (0,5 p / 15 min, ei rajaa) ja 1 p / 30 min luovaa harrastusta (max 2 h viikossa).</p>
       </section>
-      <form action={leave}><button className="btn ghost">Poistu tältä laitteelta</button></form>
     </>
   );
 }

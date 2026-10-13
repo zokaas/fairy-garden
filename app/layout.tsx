@@ -36,7 +36,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const member = !!cookies().get('fg_token');
   return (
-    <html lang="fi" className={`${sans.variable} ${mono.variable}`}>
+    <html lang="fi" className={`${sans.variable} ${mono.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: "try{var t=localStorage.getItem('fg_theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}" }} />
+      </head>
       <body>
         <main className={member ? 'withnav' : ''}>{children}</main>
         {member && <BottomNav />}

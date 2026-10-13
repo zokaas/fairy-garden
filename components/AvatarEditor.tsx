@@ -49,7 +49,10 @@ export default function AvatarEditor({ initial, stage, photoPath, photoVer, isNe
           <div><Avatar a={preview} size={40} stage={stage} /><small>listassa</small></div>
           <div><Avatar a={preview} size={64} stage={stage} /><small>puutarhassa</small></div>
         </div>
-        <button type="button" className="btn ghost ed-rand" onClick={randomize}>Yllätä minut</button>
+        <div className="ed-actions">
+          <button type="button" className="btn ghost ed-rand" onClick={randomize}>Yllätä minut</button>
+          {dirty && !isNew && <button type="button" className="btn ghost ed-rand" onClick={() => { setName(initial.name); setEmoji(initial.emoji); setBg(initial.bg); setAcc(initial.acc); }}>Peru muutokset</button>}
+        </div>
       </div>
 
       <label className="ed-label" htmlFor="ed-name">Nimi</label>

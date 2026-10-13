@@ -109,10 +109,6 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
     const top = [...per.entries()].sort((a, b) => b[1] - a[1])[0];
     return { sport: sp.sport, who: top ? nameOf[top[0]] : '–', mins: top ? top[1] : 0, total: sp.minutes };
   });
-  const sentCount: Record<string, number> = {};
-  raw.cheers.forEach((c) => { sentCount[c.from_id] = (sentCount[c.from_id] ?? 0) + 1; });
-  const topReceived = [...board].sort((a, b) => b.cheersTotal - a.cheersTotal)[0];
-  const topSenderId = Object.entries(sentCount).sort((a, b) => b[1] - a[1])[0];
 
   // ===== Viikkotavoitteen historia (koko kausi) =====
   const forFairy = (id: string) => goalHistory(rawFull.steps.filter((r) => r.fairy_id === id), rawFull.workouts.filter((r) => r.fairy_id === id), today);
@@ -330,15 +326,6 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
             <p className="muted">Kuinka monta prosenttia keijuista käveli vähintään {fi(ACTIVE_DAY)} askelta.</p>
           </section>
           <section className="card">
-            <h2>Kimallukset</h2>
-            <Tiles items={[
-              ['Eniten saanut', topReceived && topReceived.cheersTotal > 0 ? topReceived.name : '–', topReceived && topReceived.cheersTotal > 0 ? `${topReceived.cheersTotal} kimallusta` : undefined],
-              ['Eniten lähettänyt', topSenderId ? nameOf[topSenderId[0]] ?? '–' : '–', topSenderId ? `${topSenderId[1]} kimallusta` : undefined],
-              ['Kimalluksia yhteensä', String(raw.cheers.length)],
-              ['Tänään', String(raw.cheers.filter((c) => c.day === today).length)],
-            ]} />
-          </section>
-          <section className="card">
             <h2>Viikonpäivät: ryhmän keskiarvo</h2>
             <BarChart items={wdG.map((v, i) => ({ label: WD[i], value: v }))} highlight={wdG.indexOf(Math.max(...wdG))} />
             <p className="muted">Ryhmän paras päivä: <b>{bestWd(wdG)}</b>.</p>
@@ -507,7 +494,6 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
           sportDay ? { label: 'Eniten urheilua yhtenä päivänä', who: board.find((b) => b.id === sportDay.id), value: `${fi(sportDay.v)} min`, sub: dm2(sportDay.day) } : null,
           longest ? { label: 'Pisin urheilukerta', who: board.find((b) => b.id === longest.fairy_id), value: `${longest.minutes} min`, sub: `${longest.sport} · ${dm2(longest.day)}` } : null,
           maxBy((f) => f.workouts)?.workouts ? { label: 'Eniten urheilukertoja', who: maxBy((f) => f.workouts), value: String(maxBy((f) => f.workouts).workouts) } : null,
-          topReceived && topReceived.cheersTotal > 0 ? { label: 'Eniten kimalluksia saanut', who: topReceived, value: String(topReceived.cheersTotal) } : null,
         ].filter(Boolean) as { label: string; who?: (typeof board)[number]; value: string; sub?: string }[];
         return (
           <section className="card">
