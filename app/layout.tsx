@@ -5,6 +5,7 @@ import './globals.css';
 import BottomNav from '@/components/BottomNav';
 import ResumeRefresh from '@/components/ResumeRefresh';
 import AutoSync from '@/components/AutoSync';
+import PushPrompt from '@/components/PushPrompt';
 import Motion from '@/components/Motion';
 
 const sans = Inter({ subsets: ['latin'], variable: '--sans', display: 'swap' });
@@ -45,6 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {member && <BottomNav />}
         {member && <ResumeRefresh />}
         {member && <AutoSync />}
+        {member && <PushPrompt />}
         <Motion />
       </body>
     </html>

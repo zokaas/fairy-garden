@@ -508,3 +508,9 @@ details.adm > summary { display: flex; align-items: center; justify-content: spa
 details.adm > summary h2 { margin: 0; } details.adm > summary::after { content: '›'; font-size: 1.4rem; color: var(--fg-3); transition: transform .2s var(--ease); } details.adm[open] > summary::after { transform: rotate(90deg); }
 details.adm[open] > summary { margin-bottom: 10px; }
 .toast.warn { background: color-mix(in srgb, var(--yellow) 16%, var(--surface)); border-color: color-mix(in srgb, var(--yellow) 45%, transparent); color: var(--fg); }
+
+/* Ilmoituskehote sovellusta avattaessa */
+.pp-wrap { position: fixed; left: 0; right: 0; bottom: calc(78px + env(safe-area-inset-bottom)); z-index: 60; padding: 0 16px; pointer-events: none; animation: pop .45s var(--ease); }
+.pp-card { pointer-events: auto; max-width: 520px; margin: 0 auto; padding: 16px; border-radius: 16px; border: 1px solid var(--line-2); background: var(--surface); box-shadow: 0 12px 40px #0000002e; }
+.pp-card p { margin: 6px 0 12px; color: var(--fg-2); font-size: .88rem; }
+.pp-actions { display: flex; gap: 8px; } .pp-actions .btn { flex: 1; margin: 0; }
