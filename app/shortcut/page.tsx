@@ -37,7 +37,7 @@ export default async function ShortcutGuide() {
 
       {install ? (
         <section className="card">
-          <h2>Asenna kolmessa vaiheessa</h2>
+          <h2>Asenna neljässä vaiheessa</h2>
           <ol className="steps-list">
             <li><b>Kopioi avaimesi</b> (salainen, älä jaa muille)
               <span className="tok">{token}</span>
@@ -46,7 +46,8 @@ export default async function ShortcutGuide() {
             <li><b>Asenna oikotie</b>: napauta alla, valitse <i>Lisää komento</i>. Kun komento kysyy <b>Avain</b>, liitä kopioimasi avain. Salli pääsy Terveyteen.
               <a className="btn" href={install}>Asenna oikotie</a>
             </li>
-            <li><b>Kokeile</b>: aja komento kerran.
+            <li><b>Valitse askelten lähde</b> (tärkeä): Komennot → <b>Fairy Garden</b> → napauta toimintoa <b>Find Health Samples</b> → suodatin <b>Source is …</b> → valitse <b>oma laitteesi</b> (iPhonesi tai Apple Watchisi nimi). Näin askeleet eivät lasketa kahteen kertaan.</li>
+            <li><b>Kokeile</b>: aja komento kerran ja vertaa lukua Terveys-sovelluksen lukuun.
               <SyncButton site={site} />
               <AutoSyncToggle />
               <span className="muted"> Sovellus synkkaa itse aina kun avaat sen kotivalikosta.</span>
@@ -68,7 +69,7 @@ export default async function ShortcutGuide() {
           <ol className="steps-list">
             <li>Komennot → <b>Fairy Garden</b> → avaa komento muokattavaksi.</li>
             <li>Napauta toimintoa <b>Find Health Samples</b> → <b>Add Filter</b> → <b>Source</b>.</li>
-            <li>Valitse lähteeksi <b>Apple Watch</b> (tai iPhone, jos et käytä kelloa).</li>
+            <li>Valitse lähteeksi <b>oma laitteesi</b>: Apple Watch, jos käytät kelloa, muuten iPhone.</li>
             <li>Aja komento ja tarkista, että luku vastaa Terveyttä. Jos et pääse korjaamaan lukua, kerro ylläpitäjälle.</li>
           </ol>
         </div>
