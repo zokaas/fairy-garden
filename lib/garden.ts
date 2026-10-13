@@ -123,14 +123,14 @@ export function phaseOf(d = new Date()): Phase {
 }
 
 /** Haltijan polku: matka kotipuutarhasta Albertinkadulle askelilla mitattuna. */
-export const JOURNEY_GOAL = 200_000;
+export const JOURNEY_GOAL = 350_000;
 export const STOPS = [
   { at: 0, emoji: '🏡', name: 'Kotipuutarha' },
-  { at: 25_000, emoji: '🍄', name: 'Sienimetsä' },
-  { at: 60_000, emoji: '🌼', name: 'Kukkaniitty' },
-  { at: 100_000, emoji: '🌊', name: 'Kimalteleva joki' },
-  { at: 150_000, emoji: '🏰', name: 'Keijukuninkaan portti' },
-  { at: 200_000, emoji: '🥂', name: 'Albertinkatu' },
+  { at: 45_000, emoji: '🍄', name: 'Sienimetsä' },
+  { at: 105_000, emoji: '🌼', name: 'Kukkaniitty' },
+  { at: 175_000, emoji: '🌊', name: 'Kimalteleva joki' },
+  { at: 260_000, emoji: '🏰', name: 'Keijukuninkaan portti' },
+  { at: 350_000, emoji: '🥂', name: 'Albertinkatu' },
 ] as const;
 
 const NAMES_A = ['Kimalteleva', 'Hulmuava', 'Unelias', 'Utuinen', 'Hurmaava', 'Pilvenhattara', 'Karamellinen', 'Sumuinen', 'Tähtipölyinen', 'Pyörremyrsky'];
