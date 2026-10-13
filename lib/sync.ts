@@ -18,7 +18,7 @@ const clean = (v: unknown): number => {
  *  - { steps: 8234, day?: "2026-10-09" } (vain tämä päivä)
  * Hylkää tulevat ja yli 14 päivää vanhat päivät sekä mahdottomat luvut. Samalle päivälle jää suurin arvo.
  */
-export function parseDays(body: { days?: unknown; lines?: unknown; values?: unknown; newest?: unknown; steps?: unknown; day?: unknown }, today = helsinkiDay()): DayEntry[] {
+export function parseDays(body: { days?: unknown; lines?: unknown; values?: unknown; values2?: unknown; newest?: unknown; steps?: unknown; day?: unknown }, today = helsinkiDay()): DayEntry[] {
   const raw: { day: unknown; steps: unknown }[] = [];
   if (Array.isArray(body.days)) for (const d of body.days) raw.push({ day: (d as { day?: unknown })?.day, steps: (d as { steps?: unknown })?.steps });
   if (typeof body.lines === 'string') {
@@ -27,10 +27,10 @@ export function parseDays(body: { days?: unknown; lines?: unknown; values?: unkn
       if (m) raw.push({ day: m[1], steps: m[2] });
     }
   }
-  if (typeof body.values === 'string') {
-    // Pelkät summat ilman päivämääriä, yksi per rivi, vierekkäisiltä päiviltä (Fill Missing).
-    // Oletus: vanhin ensin, viimeinen rivi = tänään. newest:"first" kääntää järjestyksen.
-    const vals = body.values.split(/[\n;]+/).map((v) => v.trim()).filter(Boolean);
+  // values = pelkät summat (vanhin ensin, viimeinen = tänään). values2 = toinen lähde (esim. iPhone vs Apple Watch): päivälle jää suurempi arvo.
+  for (const list of [body.values, body.values2]) {
+    if (typeof list !== 'string') continue;
+    const vals = list.split(/[\n;]+/).map((v) => v.trim()).filter(Boolean);
     if (body.newest === 'first') vals.reverse();
     let d = today;
     for (let i = vals.length - 1; i >= 0; i--) {

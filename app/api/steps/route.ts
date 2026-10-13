@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic';
  * (myös { "days": [{ "day": "2026-10-09", "steps": 8234 }] } käy). Päivälle jää aina suurin arvo.
  */
 export async function POST(req: Request) {
-  let body: { token?: unknown; days?: unknown; lines?: unknown; values?: unknown; newest?: unknown; steps?: unknown; day?: unknown };
+  let body: { token?: unknown; days?: unknown; lines?: unknown; values?: unknown; values2?: unknown; newest?: unknown; steps?: unknown; day?: unknown };
   try {
     body = await req.json();
   } catch {

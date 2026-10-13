@@ -112,4 +112,6 @@ assert.equal(inContest('2026-10-12'), true);
 assert.equal(sportPoints(45), 1.5);
 assert.equal(sportPoints(14), 0);
 assert.equal(sportPoints(15), 0.5);
+assert.deepEqual(parseDays({ values: '100\n17 000', values2: '90\n8 800' }, '2026-10-14'), [{ day: '2026-10-13', steps: 100 }, { day: '2026-10-14', steps: 17000 }]);
+assert.deepEqual(parseDays({ values: '0\n0', values2: '7000\n8800' }, '2026-10-14'), [{ day: '2026-10-13', steps: 7000 }, { day: '2026-10-14', steps: 8800 }]);
 console.log('garden: ok');
