@@ -1,14 +1,13 @@
 export const EVENT_DATE = '2026-11-28T16:00:00+02:00';
 export const SPORTS = [
-  'Sali', 'Kuntopiiri', 'Crossfit', 'Ryhmäliikunta', 'Juoksu', 'Lenkkeily', 'Vaellus', 'Pyöräily', 'Spinning', 'Uinti', 'Vesijuoksu',
-  'Jooga', 'Pilates', 'Tribe', 'Venyttely', 'Tanssi', 'Zumba',
-  'Tennis', 'Padel', 'Sulkapallo', 'Squash', 'Lentopallo', 'Jalkapallo', 'Salibandy', 'Koripallo', 'Jääkiekko', 'Pesäpallo', 'Golf', 'Frisbeegolf',
-  'Laskettelu', 'Lumilautailu', 'Hiihto', 'Luistelu', 'Rullaluistelu', 'Kiipeily', 'Soutu', 'Melonta', 'Ratsastus', 'Nyrkkeily', 'Kamppailulaji', 'Muu urheilu',
+  'Sali', 'Kuntopiiri', 'Crossfit', 'Ryhmäliikunta',
+  'Juoksu', 'Vaellus', 'Pyöräily', 'Spinning', 'Uinti', 'Vesijuoksu',
+  'Jooga', 'Pilates', 'Tribe', 'Tanssi',
+  'Tennis', 'Padel', 'Sulkapallo', 'Lentopallo',
+  'Laskettelu', 'Lumilautailu', 'Hiihto', 'Kiipeily', 'Kamppailulaji', 'Muu urheilu',
 ] as const;
 export const CREATIVE = [
-  'Piirtäminen', 'Maalaus', 'Askartelu', 'Virkkaaminen', 'Neulominen', 'Ompelu', 'Kirjonta', 'Keramiikka', 'Puutyöt',
-  'Lukeminen', 'Kirjoittaminen', 'Soittaminen', 'Laulaminen', 'Sävellys', 'Valokuvaus', 'Videoeditointi',
-  'Leipominen', 'Ruoanlaitto', 'Sisustaminen', 'Palapeli', 'Puutarhanhoito', 'Muu luova',
+  'Piirtäminen', 'Maalaus', 'Askartelu', 'Virkkaaminen', 'Neulominen', 'Ompelu', 'Keramiikka', 'Lukeminen', 'Kirjoittaminen', 'Soittaminen', 'Palapeli', 'Muu luova',
 ] as const;
 export type Kind = 'urheilu' | 'luova';
 /** Laji kuuluu luoviin harrastuksiin tai (oletuksena) urheiluun. */

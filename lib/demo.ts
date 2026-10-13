@@ -22,7 +22,7 @@ export function demoRows() {
   const today = helsinkiDay();
   const steps: { fairy_id: string; day: string; steps: number; updated_at: string }[] = [];
   const workouts: { fairy_id: string; day: string; sport: string; minutes: number; created_at?: string }[] = [];
-  const sports = ['Juoksu', 'Sali', 'Jooga', 'Tanssi', 'Pyöräily', 'Lenkkeily', 'Piirtäminen', 'Lukeminen'];
+  const sports = ['Juoksu', 'Sali', 'Jooga', 'Tanssi', 'Pyöräily', 'Vaellus', 'Piirtäminen', 'Lukeminen'];
   fairies.forEach((f, i) => {
     let d = today;
     const days = 40 - i * 3;
