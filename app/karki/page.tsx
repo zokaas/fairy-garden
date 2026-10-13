@@ -27,7 +27,7 @@ export default async function Karki({ searchParams }: { searchParams: { lista?: 
   const mine = me ? score(me) : 0;
 
   const sub = (b: (typeof all)[number]) => {
-    if (key === 'kaikki') return `${fp(b.stepPts)} p askelista · ${fp(b.sportPts)} p liikunnasta${b.bonusPts ? ` · ${b.bonusPts} p viikkotavoitteista` : ''}`;
+    if (key === 'kaikki') return `${fp(b.stepPts)} p askelista · ${fp(b.sportOnlyPts)} p urheilusta · ${fp(b.creativePts)} p luovasta${b.bonusPts ? ` · ${b.bonusPts} p viikkotavoitteista` : ''}`;
     if (key === 'tanaan') return `${b.today >= b.goal.todayTarget ? '✓ päivän tavoite täynnä' : `tavoite ${fi(b.goal.todayTarget)}`} · synkattu ${ago(b.lastSync)}`;
     if (key === 'askeleet') return week ? `${b.week.activeDays} hyvää päivää` : `ka. ${fi(b.avgSteps)} / pv · paras ${fi(b.bestDay)}`;
     if (key === 'nousu') return `tällä viikolla ${fi(b.week.steps)} · viime viikon samaan aikaan ${fi(b.lastWeek.steps)}${b.lastWeek.steps > 0 ? ` (${b.week.steps >= b.lastWeek.steps ? '+' : '−'}${Math.abs(Math.round(((b.week.steps - b.lastWeek.steps) / b.lastWeek.steps) * 100))} %)` : ''}`;
