@@ -14,7 +14,10 @@ async function save(sub: PushSubscription) {
   if (!res.ok) throw new Error((await res.json().catch(() => null))?.error ?? `Palvelin vastasi ${res.status}`);
 }
 
+const withTimeout = <T,>(p: Promise<T>, ms: number, msg: string) => Promise.race([p, new Promise<T>((_, rej) => setTimeout(() => rej(new Error(msg)), ms))]);
+
 export default function PushToggle() {
+  const [diag, setDiag] = useState('');
   const [state, setState] = useState<State>('checking');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -23,16 +26,20 @@ export default function PushToggle() {
     (async () => {
       const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
       const standalone = window.matchMedia('(display-mode: standalone)').matches || (navigator as unknown as { standalone?: boolean }).standalone === true;
+      const perm0 = 'Notification' in window ? Notification.permission : 'ei tuettu';
+      setDiag(`Tila: ${standalone ? 'kotivalikon sovellus' : 'selain'} · Palvelutyöntekijä: ${'serviceWorker' in navigator ? 'tuettu' : 'ei'} · Push: ${'PushManager' in window ? 'tuettu' : 'ei'} · Lupa: ${perm0}`);
       if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) return setState(ios && !standalone ? 'needs-home-screen' : 'unsupported');
       if (Notification.permission === 'denied') return setState('denied');
       try {
         await navigator.serviceWorker.register('/sw.js');
         if (Notification.permission !== 'granted') return setState('off');
-        const sub = await (await navigator.serviceWorker.ready).pushManager.getSubscription();
+        const sub = await (await withTimeout(navigator.serviceWorker.ready, 6000, 'Palvelutyöntekijä ei käynnisty')).pushManager.getSubscription();
+        setDiag((d) => `${d} · Tilaus: ${sub ? 'on' : 'ei vielä'}`);
         if (!sub) return setState('off');
         await save(sub);
         setState('on');
-      } catch {
+      } catch (e) {
+        setDiag((d) => `${d} · Virhe: ${e instanceof Error ? e.message : String(e)}`);
         setState('off');
       }
     })();
@@ -43,10 +50,15 @@ export default function PushToggle() {
     setError('');
     try {
       const perm = await Notification.requestPermission();
-      if (perm !== 'granted') return setState(perm === 'denied' ? 'denied' : 'off');
+      setDiag((d) => d.replace(/Lupa: \S+/, `Lupa: ${perm}`));
+      if (perm !== 'granted') {
+        setError(perm === 'denied' ? '' : 'Lupaa ei annettu. Napauta nappia uudelleen ja valitse Salli.');
+        return setState(perm === 'denied' ? 'denied' : 'off');
+      }
       const key = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
       if (!key) throw new Error('NEXT_PUBLIC_VAPID_PUBLIC_KEY puuttuu Vercelistä.');
-      const reg = await navigator.serviceWorker.ready;
+      await navigator.serviceWorker.register('/sw.js');
+      const reg = await withTimeout(navigator.serviceWorker.ready, 8000, 'Palvelutyöntekijä ei käynnisty. Sulje sovellus kokonaan ja avaa se uudelleen');
       const opts = { userVisibleOnly: true, applicationServerKey: b64(key) };
       let sub: PushSubscription;
       try {
@@ -78,6 +90,7 @@ export default function PushToggle() {
         </>
       )}
       {error && <p className="err">{error}</p>}
+      {diag && <p className="muted" style={{ fontSize: '.7rem', wordBreak: 'break-word' }}>{diag}</p>}
     </div>
   );
 }
