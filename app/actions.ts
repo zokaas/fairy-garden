@@ -84,7 +84,12 @@ export async function saveAvatar(formData: FormData) {
   const acc = ACCESSORIES.find((a) => a.id === accId);
   const patch: Record<string, string> = { avatar_emoji: emoji, avatar_bg: bg, avatar_acc: acc && me && me.stageIdx >= acc.stage ? acc.id : 'none' };
   if (name) patch.name = name;
-  await db().from('fairies').update(patch).eq('id', fairy.id);
+  const supabase = db();
+  if (formData.get('mode') === 'hahmo' && fairy.avatar_path) {
+    await supabase.from('fairies').update({ avatar_path: null }).eq('id', fairy.id);
+    await supabase.storage.from('avatars').remove([fairy.avatar_path]);
+  }
+  await supabase.from('fairies').update(patch).eq('id', fairy.id);
   revalidatePath('/', 'layout');
   redirect(formData.get('uusi') ? '/' : '/profiili?ok=1');
 }

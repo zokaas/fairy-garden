@@ -481,3 +481,6 @@ code { display: inline; padding: 1px 6px; margin: 0; border-radius: 6px; font: .
 /* Puutarhan nimilappu: vaalea, napautettava (vie profiiliin) */
 .gname { background: #ffffffd9; color: #18181b; border: 1px solid #00000014; text-decoration: none; box-shadow: 0 2px 10px #0000001f; }
 a.gname { cursor: pointer; } a.gname:active { transform: scale(.97); }
+
+.ed-mode { margin: 4px 0 6px; } .ed-mode a { cursor: pointer; text-align: center; padding: 12px 8px; font-size: .9rem; }
+.ed-sec { margin-top: 18px; }

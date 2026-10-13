@@ -6,10 +6,9 @@ import PhotoPicker from './PhotoPicker';
 import { ACCESSORIES, AVATAR_BGS, AVATAR_EMOJIS } from '@/lib/avatar';
 import { GROWTH } from '@/lib/garden';
 
-type Tab = 'hahmo' | 'vari' | 'asuste' | 'kuva';
-const TABS: [Tab, string][] = [['hahmo', 'Hahmo'], ['vari', 'Väri'], ['asuste', 'Asuste'], ['kuva', 'Kuva']];
+type Mode = 'hahmo' | 'kuva';
 
-/** Avatarin muokkaus: elävä esikatselu, välilehdet, satunnaisarvonta ja tallennuspalkki, joka aktivoituu muutoksista. */
+/** Avatarin muokkaus: valitse ensin keiju-hahmo (hahmo, tausta, asuste) tai oma kuva. Elävä esikatselu pysyy näkyvissä. */
 export default function AvatarEditor({ initial, stage, photoPath, photoVer, isNew, saveAction, removeAction }: {
   initial: { name: string; emoji: string; bg: string; acc: string };
   stage: number;
@@ -23,10 +22,11 @@ export default function AvatarEditor({ initial, stage, photoPath, photoVer, isNe
   const [emoji, setEmoji] = useState(initial.emoji);
   const [bg, setBg] = useState(initial.bg);
   const [acc, setAcc] = useState(initial.acc);
-  const [tab, setTab] = useState<Tab>('hahmo');
+  const [mode, setMode] = useState<Mode>(photoPath ? 'kuva' : 'hahmo');
+  const initialMode: Mode = photoPath ? 'kuva' : 'hahmo';
 
-  const dirty = isNew || name !== initial.name || emoji !== initial.emoji || bg !== initial.bg || acc !== initial.acc;
-  const preview = useMemo(() => ({ avatarEmoji: emoji, avatarBg: bg, avatarPath: photoPath, avatarAcc: acc, avatarVer: photoVer }), [emoji, bg, acc, photoPath, photoVer]);
+  const dirty = isNew || mode !== initialMode || name !== initial.name || emoji !== initial.emoji || bg !== initial.bg || acc !== initial.acc;
+  const preview = useMemo(() => ({ avatarEmoji: emoji, avatarBg: bg, avatarPath: mode === 'kuva' ? photoPath : null, avatarAcc: acc, avatarVer: photoVer }), [emoji, bg, acc, mode, photoPath, photoVer]);
   const openAcc = ACCESSORIES.filter((a) => stage >= a.stage);
 
   function randomize() {
@@ -42,6 +42,7 @@ export default function AvatarEditor({ initial, stage, photoPath, photoVer, isNe
       <input type="hidden" name="emoji" value={emoji} />
       <input type="hidden" name="bg" value={bg} />
       <input type="hidden" name="acc" value={acc} />
+      <input type="hidden" name="mode" value={mode} />
 
       <div className="ed-preview">
         <div className="ed-big"><Avatar a={preview} size={124} stage={stage} /></div>
@@ -58,32 +59,31 @@ export default function AvatarEditor({ initial, stage, photoPath, photoVer, isNe
       <label className="ed-label" htmlFor="ed-name">Nimi</label>
       <input id="ed-name" name="name" value={name} onChange={(e) => setName(e.target.value)} maxLength={30} required />
 
-      <div className="seg four ed-tabs" role="tablist">
-        {TABS.map(([k, label]) => (
-          <a key={k} role="tab" aria-selected={tab === k} className={tab === k ? 'on' : ''} onClick={() => setTab(k)} href={`#${k}`}>{label}</a>
-        ))}
+      <p className="ed-label">Avatarin tyyppi</p>
+      <div className="seg ed-mode" role="radiogroup" aria-label="Avatarin tyyppi">
+        <a role="radio" aria-checked={mode === 'hahmo'} className={mode === 'hahmo' ? 'on' : ''} onClick={() => setMode('hahmo')}>🧚 Keiju-hahmo</a>
+        <a role="radio" aria-checked={mode === 'kuva'} className={mode === 'kuva' ? 'on' : ''} onClick={() => setMode('kuva')}>📷 Oma kuva</a>
       </div>
 
-      {tab === 'hahmo' && (
-        <div className="picker" role="radiogroup" aria-label="Hahmo">
-          {AVATAR_EMOJIS.map((e) => (
-            <button type="button" key={e} role="radio" aria-checked={emoji === e} className={`pick ${emoji === e ? 'sel' : ''}`} onClick={() => setEmoji(e)} title={e === 'fig' ? 'Piirretty keiju' : e}>
-              {e === 'fig' ? <FairyFigure stage={stage} size={36} /> : e}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {tab === 'vari' && (
-        <div className="picker colors" role="radiogroup" aria-label="Taustaväri">
-          {AVATAR_BGS.map((c) => (
-            <button type="button" key={c} role="radio" aria-checked={bg === c} aria-label="Taustaväri" className={`pick ${bg === c ? 'sel' : ''}`} onClick={() => setBg(c)}><i style={{ background: c }} /></button>
-          ))}
-        </div>
-      )}
-
-      {tab === 'asuste' && (
+      {mode === 'hahmo' && (
         <>
+          <p className="ed-label ed-sec">1. Hahmo</p>
+          <div className="picker" role="radiogroup" aria-label="Hahmo">
+            {AVATAR_EMOJIS.map((e) => (
+              <button type="button" key={e} role="radio" aria-checked={emoji === e} className={`pick ${emoji === e ? 'sel' : ''}`} onClick={() => setEmoji(e)} title={e === 'fig' ? 'Piirretty keiju' : e}>
+                {e === 'fig' ? <FairyFigure stage={stage} size={36} /> : e}
+              </button>
+            ))}
+          </div>
+
+          <p className="ed-label ed-sec">2. Taustaväri</p>
+          <div className="picker colors" role="radiogroup" aria-label="Taustaväri">
+            {AVATAR_BGS.map((c) => (
+              <button type="button" key={c} role="radio" aria-checked={bg === c} aria-label="Taustaväri" className={`pick ${bg === c ? 'sel' : ''}`} onClick={() => setBg(c)}><i style={{ background: c }} /></button>
+            ))}
+          </div>
+
+          <p className="ed-label ed-sec">3. Asuste</p>
           <div className="picker" role="radiogroup" aria-label="Asuste">
             {ACCESSORIES.map((a) => {
               const open = stage >= a.stage;
@@ -98,11 +98,11 @@ export default function AvatarEditor({ initial, stage, photoPath, photoVer, isNe
         </>
       )}
 
-      {tab === 'kuva' && (
+      {mode === 'kuva' && (
         <>
           <PhotoPicker hasPhoto={!!photoPath} />
-          {photoPath && <button type="submit" formAction={removeAction} formNoValidate className="btn ghost" style={{ marginTop: 8 }}>Poista kuva (käytä hahmoa)</button>}
-          <p className="muted">Oma kuva korvaa hahmon ja näkyy kaikille. Kuva rajataan neliöksi keskeltä.</p>
+          <p className="muted">Oma kuva korvaa hahmon ja näkyy kaikille. Kuva rajataan neliöksi keskeltä. Kuva tallentuu heti, kun valitset sen.</p>
+          {photoPath && <button type="submit" formAction={removeAction} formNoValidate className="btn ghost">Poista kuva ja käytä keiju-hahmoa</button>}
         </>
       )}
 
