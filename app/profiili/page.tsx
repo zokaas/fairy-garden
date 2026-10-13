@@ -36,7 +36,7 @@ export default async function Profiili({ searchParams }: { searchParams: { uusi?
           </section>
           <section className="card">
             <h2>Ulkoasu</h2>
-            <p className="muted">Vaalea, tumma tai laitteen asetuksen mukaan.</p>
+            <p className="muted">Oletuksena vaalea. Voit vaihtaa tumman tai laitteen asetuksen mukaan.</p>
             <ThemeToggle />
           </section>
           <section className="card">

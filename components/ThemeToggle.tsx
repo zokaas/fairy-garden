@@ -1,28 +1,28 @@
 'use client';
 import { useEffect, useState } from 'react';
 
-type Mode = 'auto' | 'light' | 'dark';
-const OPTIONS: [Mode, string][] = [['auto', 'Automaattinen'], ['light', 'Vaalea'], ['dark', 'Tumma']];
+type Mode = 'light' | 'dark' | 'auto';
+const OPTIONS: [Mode, string][] = [['light', 'Vaalea'], ['dark', 'Tumma'], ['auto', 'Laitteen mukaan']];
 const KEY = 'fg_theme';
 
 function apply(mode: Mode) {
-  if (mode === 'auto') document.documentElement.removeAttribute('data-theme');
+  if (mode === 'light') document.documentElement.removeAttribute('data-theme');
   else document.documentElement.setAttribute('data-theme', mode);
 }
 
-/** Valitsee ulkoasun: automaattinen (laitteen asetus), vaalea tai tumma. Tallennetaan laitteelle. */
+/** Ulkoasu: vaalea (oletus), tumma tai laitteen asetuksen mukaan. Tallennetaan laitteelle. */
 export default function ThemeToggle() {
-  const [mode, setMode] = useState<Mode>('auto');
+  const [mode, setMode] = useState<Mode>('light');
   useEffect(() => {
     try {
       const v = localStorage.getItem(KEY);
-      if (v === 'light' || v === 'dark') setMode(v);
+      if (v === 'dark' || v === 'auto') setMode(v);
     } catch { /* ei tallennusta */ }
   }, []);
   function pick(m: Mode) {
     setMode(m);
     apply(m);
-    try { m === 'auto' ? localStorage.removeItem(KEY) : localStorage.setItem(KEY, m); } catch { /* ei tallennusta */ }
+    try { m === 'light' ? localStorage.removeItem(KEY) : localStorage.setItem(KEY, m); } catch { /* ei tallennusta */ }
   }
   return (
     <div className="seg" role="radiogroup" aria-label="Ulkoasu">

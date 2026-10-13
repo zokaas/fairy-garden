@@ -1,36 +1,37 @@
 /* Fairy Garden: tumma, tekninen ja minimalistinen (hiusviivat, groteski + mono, gradienttikorostus) */
 :root {
+  --sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --r: 14px;
+  --ease: cubic-bezier(.22, 1, .36, 1);
+
+    --bg: #fafafa; --surface: #ffffff; --surface-2: #f4f4f5; --field: #ffffff;
+    --line: #0000001a; --line-2: #00000030;
+    --fg: #09090b; --fg-2: #52525b; --fg-3: #8a8a93;
+    --pink: #e11d74; --violet: #7c3aed; --sky: #0284c7; --green: #059669; --yellow: #ca8a04; --red: #e11d48;
+    --grad: linear-gradient(90deg, #e11d74, #7c3aed 55%, #0284c7);
+    --grad-v: linear-gradient(180deg, #e11d74, #7c3aed 55%, #0284c7);
+    color-scheme: light;
+}
+:root[data-theme="dark"] {
   --bg: #09090b; --surface: #101013; --surface-2: #17171b; --field: #0d0d10;
   --line: #ffffff17; --line-2: #ffffff2b;
   --fg: #fafafa; --fg-2: #a1a1aa; --fg-3: #71717a;
   --pink: #ff4d94; --violet: #8b5cf6; --sky: #38bdf8; --green: #34d399; --yellow: #facc15; --red: #fb7185;
   --grad: linear-gradient(90deg, #ff4d94, #8b5cf6 55%, #38bdf8);
   --grad-v: linear-gradient(180deg, #ff4d94, #8b5cf6 55%, #38bdf8);
-  --sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-  --r: 14px;
-  --ease: cubic-bezier(.22, 1, .36, 1);
   color-scheme: dark;
 }
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) {
-    --bg: #fafafa; --surface: #ffffff; --surface-2: #f4f4f5; --field: #ffffff;
-    --line: #0000001a; --line-2: #00000030;
-    --fg: #09090b; --fg-2: #52525b; --fg-3: #8a8a93;
-    --pink: #e11d74; --violet: #7c3aed; --sky: #0284c7; --green: #059669; --yellow: #ca8a04; --red: #e11d48;
-    --grad: linear-gradient(90deg, #e11d74, #7c3aed 55%, #0284c7);
-    --grad-v: linear-gradient(180deg, #e11d74, #7c3aed 55%, #0284c7);
-    color-scheme: light;
-  }
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="auto"] {
+  --bg: #09090b; --surface: #101013; --surface-2: #17171b; --field: #0d0d10;
+  --line: #ffffff17; --line-2: #ffffff2b;
+  --fg: #fafafa; --fg-2: #a1a1aa; --fg-3: #71717a;
+  --pink: #ff4d94; --violet: #8b5cf6; --sky: #38bdf8; --green: #34d399; --yellow: #facc15; --red: #fb7185;
+  --grad: linear-gradient(90deg, #ff4d94, #8b5cf6 55%, #38bdf8);
+  --grad-v: linear-gradient(180deg, #ff4d94, #8b5cf6 55%, #38bdf8);
+  color-scheme: dark;
 }
-:root[data-theme="light"] {
-    --bg: #fafafa; --surface: #ffffff; --surface-2: #f4f4f5; --field: #ffffff;
-    --line: #0000001a; --line-2: #00000030;
-    --fg: #09090b; --fg-2: #52525b; --fg-3: #8a8a93;
-    --pink: #e11d74; --violet: #7c3aed; --sky: #0284c7; --green: #059669; --yellow: #ca8a04; --red: #e11d48;
-    --grad: linear-gradient(90deg, #e11d74, #7c3aed 55%, #0284c7);
-    --grad-v: linear-gradient(180deg, #e11d74, #7c3aed 55%, #0284c7);
-    color-scheme: light;
 }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
