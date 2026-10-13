@@ -499,3 +499,12 @@ table.cmp .c-me { color: var(--pink); font-weight: 700; } table.cmp .c-gr { colo
 .autosync { display: flex; align-items: flex-start; gap: 12px; margin: 14px 0 6px; padding: 12px 14px; border: 1px solid var(--line-2); border-radius: 12px; background: var(--surface); font-size: .86rem; line-height: 1.4; cursor: pointer; }
 .autosync input[type="checkbox"] { flex: none; width: 22px; height: 22px; margin: 1px 0 0; padding: 0; accent-color: var(--pink); }
 .autosync span { flex: 1; min-width: 0; }
+
+/* Ylläpito: siistimpi asettelu */
+input[type="date"], input[type="datetime-local"], input[type="time"] { -webkit-appearance: none; appearance: none; min-width: 0; max-width: 100%; height: 46px; text-align: left; display: block; }
+input[type="date"]::-webkit-date-and-time-value, input[type="datetime-local"]::-webkit-date-and-time-value { text-align: left; }
+.card .row { display: flex; gap: 8px; align-items: stretch; flex-wrap: wrap; } .card .row input { flex: 1 1 120px; min-width: 0; }
+details.adm > summary { display: flex; align-items: center; justify-content: space-between; list-style: none; cursor: pointer; } details.adm > summary::-webkit-details-marker { display: none; }
+details.adm > summary h2 { margin: 0; } details.adm > summary::after { content: '›'; font-size: 1.4rem; color: var(--fg-3); transition: transform .2s var(--ease); } details.adm[open] > summary::after { transform: rotate(90deg); }
+details.adm[open] > summary { margin-bottom: 10px; }
+.toast.warn { background: color-mix(in srgb, var(--yellow) 16%, var(--surface)); border-color: color-mix(in srgb, var(--yellow) 45%, transparent); color: var(--fg); }

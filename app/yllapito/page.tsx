@@ -28,14 +28,15 @@ export default async function Yllapito({ searchParams }: { searchParams: { ok?: 
   return (
     <>
       <h1>Ylläpito</h1>
-      {searchParams.ok && <p className="toast">{searchParams.ok} ✓</p>}
+      {searchParams.ok && <p className={`toast ${/^(Ei|VAPID|Sinulla)/.test(searchParams.ok) ? 'warn' : ''}`}>{/^(Ei|VAPID|Sinulla)/.test(searchParams.ok) ? '⚠️' : '✓'} {searchParams.ok}</p>}
 
       <section className="card">
         <h2>Tilanne</h2>
-        <div className="chips">
-          <span className="chip">🧚🏼‍♀️ {board.length} keijua</span>
-          <span className="chip">👟 {synced} synkannut tänään</span>
-          <span className="chip">🌙 {stale} ilman eilistä</span>
+        <div className="tiles">
+          <div><b>{board.length}</b><span>keijua</span></div>
+          <div><b>{synced}</b><span>synkannut tänään</span></div>
+          <div><b>{stale}</b><span>ilman eilistä</span></div>
+          <div><b>{subscribed.size}</b><span>ilmoitukset päällä</span></div>
         </div>
       </section>
 
@@ -66,14 +67,14 @@ export default async function Yllapito({ searchParams }: { searchParams: { ok?: 
         )}
       </section>
 
-      <section className="card">
-        <h2>Jaettava komento</h2>
+      <details className="card adm">
+        <summary><h2>Jaettava komento</h2></summary>
         <p className="muted">{SHORTCUT_INSTALL_URL ? 'Asennuslinkki on asetettu.' : ''}</p>
         <Link className="btn ghost" href="/yllapito/komento">Rakennusohje</Link>
-      </section>
+      </details>
 
-      <section className="card">
-        <h2>Esikatsele näkymiä</h2>
+      <details className="card adm">
+        <summary><h2>Esikatsele näkymiä</h2></summary>
         <p className="muted">Puutarhan kasvu (kukkia):</p>
         <div className="chips" style={{ justifyContent: 'flex-start' }}>
           {GROWTH.map((g, i) => <Link key={g} className="chip" href={`/?taso=${i}`}>{g} kukkaa</Link>)}
@@ -91,32 +92,32 @@ export default async function Yllapito({ searchParams }: { searchParams: { ok?: 
           <Link className="chip" href="/profiili?uusi=1">🧚 Avatarin valinta</Link>
           <Link className="chip" href="/shortcut">Synkka-ohje</Link>
         </div>
-      </section>
+      </details>
 
-      <section className="card">
-        <h2>Kisan asetukset</h2>
+      <details className="card adm">
+        <summary><h2>Kisan asetukset</h2></summary>
         <p className="muted">Kisan päättymisaika (Suomen aikaa) ja palkinto. Tulokset näkyvät Kisa-sivulla; esikatsele: <Link href="/kisa?avaa=1">kisa päättynyt</Link>.</p>
         <form action={saveContest}>
           <input name="end" type="datetime-local" defaultValue={endLocal} required />
           <input name="prize" defaultValue={contest.prize} placeholder="Palkinto, esim. Reippaan keijun kruunu 👑" maxLength={200} />
           <button className="btn">Tallenna</button>
         </form>
-      </section>
+      </details>
 
-      <section className="card">
-        <h2>Ilmoitukset</h2>
+      <details className="card adm">
+        <summary><h2>Ilmoitukset</h2></summary>
         <p className="muted">Laita ensin ilmoitukset päälle omassa profiilissasi, ja lähetä sitten testi.</p>
         <form action={testPush}><button className="btn ghost">Lähetä testi-ilmoitus itselle</button></form>
         <form action={testWeekly}><button className="btn ghost" style={{ marginTop: 8 }}>Lähetä viikkoyhteenveto itselle (testi)</button></form>
         <p className="muted">Maanantaisin klo 9 kaikille tilaajille lähtee automaattisesti viime viikon yhteenveto.</p>
-      </section>
+      </details>
 
-      <section className="card">
-        <h2>Testidata</h2>
+      <details className="card adm">
+        <summary><h2>Testidata</h2></summary>
         <p className="muted">Luo 8 keijua ({'🧪'}-merkillä) satunnaisilla askelilla, liikunnoilla ja avatareilla, jotta kärkilista, putket ja merkit näyttävät aidoilta.</p>
         <form action={seedTest}><button className="btn">Luo testikeijut</button></form>
         <form action={clearTest}><button className="btn ghost" style={{ marginTop: 8 }}>Poista kaikki testikeijut</button></form>
-      </section>
+      </details>
 
       <section className="card">
         <h2>Keijut</h2>
