@@ -4,6 +4,7 @@ import { helsinkiDay, GROWTH, MINUTES_PER_POINT, STEPS_PER_POINT, UNLOCKS, fp, s
 import type { Fairy } from '@/lib/data';
 import { dailyQuests } from '@/lib/quests';
 import Journey from '@/components/Journey';
+import { AutoSyncEnable } from '@/components/AutoSync';
 import { forecast } from '@/lib/forecast';
 import Ticker from '@/components/Ticker';
 import Avatar from '@/components/Avatar';
@@ -107,6 +108,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
 
   return (
     <>
+      <AutoSyncEnable hasSteps={me.hasSteps} />
       <Celebrate flowers={me.flowers} force={admin && !!searchParams.juhla} />
       <Garden
         flowers={me.flowers}

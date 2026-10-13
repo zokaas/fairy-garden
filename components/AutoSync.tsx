@@ -9,25 +9,37 @@ const get = (k: string) => { try { return localStorage.getItem(k); } catch { ret
 const set = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* ei tallennusta */ } };
 
 /**
- * Käynnistää Komennon automaattisesti, kun kotivalikon sovellus avataan (puhelin on silloin auki, joten Terveys-data on luettavissa).
- * Päälle vasta kun käyttäjä on kerran synkannut napilla (paluu ?synkattu=1). Enintään kerran 5 min välein, vain kotivalikon sovelluksessa.
+ * Käynnistää Komennon automaattisesti, kun kotivalikon sovellus avataan tai tuodaan takaisin etualalle
+ * (puhelin on silloin auki, joten Terveys-data on luettavissa). Enintään kerran 5 min välein, vain kotivalikon sovelluksessa.
+ * Päälle menee itsestään, kun keijulla on jo askeleita (ks. AutoSyncEnable), ja sen voi kytkeä pois Synkka-ohjeesta.
  */
 export default function AutoSync() {
   useEffect(() => {
     const standalone = (navigator as unknown as { standalone?: boolean }).standalone === true || matchMedia('(display-mode: standalone)').matches;
     if (!standalone) return;
     const q = new URLSearchParams(location.search);
-    if (q.has('synkattu')) {
-      if (get(KEY_ON) === null) set(KEY_ON, '1');
+    if (q.has('synkattu')) set(KEY_LAST, String(Date.now()));
+
+    const run = () => {
+      if (get(KEY_ON) !== '1') return;
+      if (Date.now() - Number(get(KEY_LAST) ?? 0) < GAP) return;
       set(KEY_LAST, String(Date.now()));
-      return;
-    }
-    if (get(KEY_ON) !== '1') return;
-    if (Date.now() - Number(get(KEY_LAST) ?? 0) < GAP) return;
-    set(KEY_LAST, String(Date.now()));
-    const back = encodeURIComponent(`${location.origin}/?synkattu=1`);
-    location.href = `shortcuts://x-callback-url/run-shortcut?name=Fairy%20Garden&x-success=${back}&x-cancel=${back}&x-error=${back}`;
+      // Ilman paluulinkkiä: paluulinkki avaisi Safarin eikä sovellusta. Paluu sovellukseen onnistuu iOS:n yläkulman nuolella.
+      location.href = 'shortcuts://run-shortcut?name=Fairy%20Garden';
+    };
+    run();
+    const onVisible = () => { if (document.visibilityState === 'visible') run(); };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
   }, []);
+  return null;
+}
+
+/** Kytkee automaattisen synkan päälle, kun keijulla on jo askeleita (oikotie on silloin asennettu). Käyttäjän oma valinta (pois) säilyy. */
+export function AutoSyncEnable({ hasSteps }: { hasSteps: boolean }) {
+  useEffect(() => {
+    if (hasSteps && get(KEY_ON) === null) set(KEY_ON, '1');
+  }, [hasSteps]);
   return null;
 }
 
