@@ -143,7 +143,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
               <span className="chip">sija {myRank} / {board.length}</span>
               <span className="chip">{me.streak} pv putki</span>
             </div>
-            {searchParams.synkattu && <p className="muted">Synkkaus tehty.</p>}
+            <p className="muted">{searchParams.synkattu ? '✓ Synkkaus tehty. ' : ''}Askeleet synkattu: <b>{ago(me.lastSync)}</b></p>
             <SyncButton site={process.env.NEXT_PUBLIC_SITE_URL ?? ''} />
             <details className="how">
               <summary>Miten pisteet lasketaan?</summary>
