@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { type Phase } from '@/lib/garden';
 import Avatar, { type AvatarData } from './Avatar';
 import GardenFx from './GardenFx';
@@ -7,8 +8,8 @@ const COLORS = ['#d4527f', '#e8869f', '#9c7bd6', '#e9b44c', '#c2415f', '#7aa7e0'
 const TYPES = ['tulip', 'daisy', 'bell', 'rose'];
 
 /** Piirretty puutarhamaisema: kukkia kasvaa yksi pistettä kohti (max 40), taivas seuraa kellonaikaa, tasot tuovat mökin, sateenkaaren ja linnan. */
-export default function Garden({ flowers: count, stageIdx, name, avatar, phase = 'day', lines = [] }: {
-  flowers: number; stageIdx: number; name?: string; avatar?: AvatarData; phase?: Phase; lines?: string[];
+export default function Garden({ flowers: count, stageIdx, name, href, avatar, phase = 'day', lines = [] }: {
+  flowers: number; stageIdx: number; name?: string; href?: string; avatar?: AvatarData; phase?: Phase; lines?: string[];
 }) {
   const n = Math.min(60, count);
   const night = phase === 'night';
@@ -90,7 +91,7 @@ export default function Garden({ flowers: count, stageIdx, name, avatar, phase =
 
       <span className="bfly b1" /><span className="bfly b2" />
       {avatar ? <div className="fairy av"><Avatar a={avatar} size={76} stage={stageIdx} /></div> : <div className="fairy fig"><FairyFigure stage={stageIdx} size={84} /></div>}
-      {name && <div className="gname">{name}</div>}
+      {name && (href ? <Link href={href} className="gname">{name}<span aria-hidden> ✎</span></Link> : <div className="gname">{name}</div>)}
     </GardenFx>
   );
 }

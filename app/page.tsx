@@ -107,16 +107,12 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
   return (
     <>
       <Celebrate flowers={me.flowers} force={admin && !!searchParams.juhla} />
-      <Link href="/profiili" className="me-chip">
-        <Avatar a={me} size={36} stage={stageIdx} />
-        <span><b>{me.name}</b><small>Muokkaa avataria ja asetuksia</small></span>
-        <i aria-hidden>›</i>
-      </Link>
       <Garden
         flowers={me.flowers}
         stageIdx={stageIdx}
         phase={phase}
         name={me.name}
+        href="/profiili"
         avatar={me}
         lines={[
           me.today < me.goal.todayTarget ? `Vielä ${(me.goal.todayTarget - me.today).toLocaleString('fi-FI')} askelta päivän tavoitteeseen! 👟` : 'Päivän tavoite täynnä, mahtavaa! ✨',

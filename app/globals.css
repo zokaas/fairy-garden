@@ -477,3 +477,7 @@ code { display: inline; padding: 1px 6px; margin: 0; border-radius: 6px; font: .
 .me-chip span { display: flex; flex-direction: column; line-height: 1.25; flex: 1; min-width: 0; } .me-chip b { font-weight: 600; } .me-chip small { color: var(--fg-3); font-size: .72rem; } .me-chip i { color: var(--fg-3); font-style: normal; font-size: 1.3rem; }
 .card.danger summary.btn { list-style: none; text-align: center; cursor: pointer; } .card.danger summary.btn::-webkit-details-marker { display: none; }
 .card.danger form { display: grid; gap: 10px; margin-top: 10px; }
+
+/* Puutarhan nimilappu: vaalea, napautettava (vie profiiliin) */
+.gname { background: #ffffffd9; color: #18181b; border: 1px solid #00000014; text-decoration: none; box-shadow: 0 2px 10px #0000001f; }
+a.gname { cursor: pointer; } a.gname:active { transform: scale(.97); }
