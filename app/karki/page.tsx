@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
-import { loadGarden } from '@/lib/data';
-import { ago, fp } from '@/lib/garden';
+import { loadGarden, loadRaw } from '@/lib/data';
+import { ago, fp, helsinkiDay, kindOf, weekStart } from '@/lib/garden';
 import { LISTS, isList, type ListKey } from '@/lib/lists';
 import Avatar from '@/components/Avatar';
 
@@ -10,15 +10,30 @@ export const dynamic = 'force-dynamic';
 
 const fi = (n: number, d = 0) => n.toLocaleString('fi-FI', { maximumFractionDigits: d });
 
+const key0IsActivity = (l?: string) => l === 'urheilu' || l === 'luova';
+
 export default async function Karki({ searchParams }: { searchParams: { lista?: string; nayta?: string } }) {
   if (!cookies().get('fg_token')) redirect('/');
   const { board: all, me } = await loadGarden();
+  const raw = key0IsActivity(searchParams.lista) ? await loadRaw() : null;
   const key: ListKey = isList(searchParams.lista) ? searchParams.lista : 'kaikki';
   const week = searchParams.nayta === 'viikko';
   const L = LISTS[key];
   const score = (b: (typeof all)[number]) => (week || key === 'nousu' || key === 'tanaan' ? L.week(b) : L.total(b));
   const board = [...all].sort((a, b) => score(b) - score(a));
   const medal = ['🥇', '🥈', '🥉'];
+  // lajit nimen alle (Urheilu / Luova): valitun jakson kirjaukset lajeittain
+  const since = week ? weekStart(helsinkiDay()) : '0000-00-00';
+  const wantKind = key === 'luova' ? 'luova' : 'urheilu';
+  const acts = (id: string): string => {
+    if (!raw) return '';
+    const m = new Map<string, number>();
+    for (const w of raw.workouts) if (w.fairy_id === id && w.day >= since && kindOf(w.sport) === wantKind) m.set(w.sport, (m.get(w.sport) ?? 0) + w.minutes);
+    const list = [...m.entries()].sort((a, b) => b[1] - a[1]);
+    if (list.length === 0) return '';
+    const shown = list.slice(0, 3).map(([sp, min]) => `${sp} ${min} min`).join(' · ');
+    return list.length > 3 ? `${shown} · +${list.length - 3} muuta` : shown;
+  };
   const href = (l: ListKey, w: boolean) => `/karki?lista=${l}${w ? '&nayta=viikko' : ''}`;
 
   const vals = all.map(score);
@@ -75,7 +90,7 @@ export default async function Karki({ searchParams }: { searchParams: { lista?: 
                 <li key={b.id} className={b.mine ? 'me' : ''}>
                   <span className="pos">{medal[i] ?? i + 1}</span>
                   <span className="nm"><Avatar a={b} size={38} stage={b.stageIdx} />
-                    <span>{b.name}<small>{sub(b)}</small>{key === 'askeleet' && <small>synkattu {ago(b.lastSync)}</small>}</span>
+                    <span>{b.name}<small>{sub(b)}</small>{(key === 'urheilu' || key === 'luova') && (acts(b.id) ? <small>{key === 'luova' ? '🎨' : '💪'} {acts(b.id)}</small> : <small>ei kirjauksia</small>)}{key === 'askeleet' && <small>synkattu {ago(b.lastSync)}</small>}</span>
                   </span>
                   <span className="pt">{L.fmt(score(b))}{diff !== null && <small className={diff > 0 ? 'neg' : 'pos2'}>{diff > 0 ? '+' : diff < 0 ? '−' : ''}{fi(Math.abs(diff))}</small>}</span>
                 </li>
