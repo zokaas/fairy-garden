@@ -495,3 +495,7 @@ a.gname { cursor: pointer; } a.gname:active { transform: scale(.97); }
 table.cmp { width: 100%; border-collapse: collapse; font-size: .86rem; } table.cmp th { font: 600 .62rem var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--fg-3); text-align: right; padding: 4px 6px; } table.cmp th:first-child, table.cmp td:first-child { text-align: left; }
 table.cmp td { padding: 9px 6px; border-top: 1px solid var(--line); text-align: right; font-variant-numeric: tabular-nums; }
 table.cmp .c-me { color: var(--pink); font-weight: 700; } table.cmp .c-gr { color: var(--sky); } table.cmp .up { color: var(--green); } table.cmp .down { color: var(--red); }
+
+.autosync { display: flex; align-items: flex-start; gap: 12px; margin: 14px 0 6px; padding: 12px 14px; border: 1px solid var(--line-2); border-radius: 12px; background: var(--surface); font-size: .86rem; line-height: 1.4; cursor: pointer; }
+.autosync input[type="checkbox"] { flex: none; width: 22px; height: 22px; margin: 1px 0 0; padding: 0; accent-color: var(--pink); }
+.autosync span { flex: 1; min-width: 0; }

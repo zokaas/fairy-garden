@@ -36,7 +36,7 @@ export function AutoSyncToggle() {
   const [on, setOn] = useState(false);
   useEffect(() => setOn(get(KEY_ON) === '1'), []);
   return (
-    <label className="row" style={{ gap: 10, alignItems: 'center' }}>
+    <label className="autosync">
       <input type="checkbox" checked={on} onChange={(e) => { setOn(e.target.checked); set(KEY_ON, e.target.checked ? '1' : '0'); }} />
       <span>Synkkaa automaattisesti, kun avaan sovelluksen (enintään 5 min välein)</span>
     </label>

@@ -49,9 +49,9 @@ export default async function ShortcutGuide() {
             <li><b>Kokeile</b>: aja komento kerran.
               <SyncButton site={site} />
               <AutoSyncToggle />
-              <span className="muted"> Kun kokeilu on onnistunut, sovellus synkkaa itse aina kun avaat sen kotivalikosta.</span>
+              <span className="muted"> Sovellus synkkaa itse aina kun avaat sen kotivalikosta.</span>
             </li>
-            <li><b>Automaatio</b> (tehdään kerran): Komennot → <i>Automaatio</i> → <b>+</b> → <i>Vuorokaudenaika</i>. Tee kaksi: klo <b>07:00</b> ja klo <b>21:00</b>, molemmat joka päivä. Valitse “Fairy Garden” ja <b>Suorita heti</b>. Aamuajo viimeistelee eilisen päivän askeleet. Jos puhelin on lukossa, iOS ei välttämättä anna Terveys-dataa, mutta avatessasi sovelluksen synkka ajetaan joka tapauksessa.</li>
+            <li><b>Automaatio</b> (valinnainen): Komennot → <i>Automaatio</i> → <b>+</b> → <i>Vuorokaudenaika</i> → klo <b>07:00</b> ja <b>21:00</b> joka päivä → “Fairy Garden” → <b>Suorita heti</b>. Lukitulla puhelimella iOS ei aina anna Terveys-dataa, mutta sovelluksen avaus synkkaa joka tapauksessa.</li>
           </ol>
         </section>
       ) : (
