@@ -26,8 +26,11 @@ export const MINUTES_PER_POINT = 30;
 /** Askelpisteet: 1 piste / 2 500 askelta. */
 export const stepPoints = (steps: number) => Math.floor(steps / STEPS_PER_POINT);
 
-/** Urheilupisteet: 1 piste / 30 min. */
-export const sportPoints = (workoutMinutes: number) => Math.floor(workoutMinutes / MINUTES_PER_POINT);
+/** Liikuntapisteet: 1 piste / 30 min, puolikas piste (0,5) täydeltä 15 minuutilta. */
+export const sportPoints = (workoutMinutes: number) => Math.floor(workoutMinutes / (MINUTES_PER_POINT / 2)) / 2;
+
+/** Pistemäärä suomalaisittain: 7,5 */
+export const fp = (n: number) => n.toLocaleString('fi-FI', { maximumFractionDigits: 1 });
 
 /** Kisa alkaa maanantaina 12.10.2026. Sitä edeltävät päivät eivät kerrytä mitään. */
 export const CONTEST_START = '2026-10-12';

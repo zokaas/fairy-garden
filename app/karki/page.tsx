@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { loadGarden } from '@/lib/data';
-import { ago } from '@/lib/garden';
+import { ago, fp } from '@/lib/garden';
 import { LISTS, isList, type ListKey } from '@/lib/lists';
 import Avatar from '@/components/Avatar';
 import { leave, sendCheer } from '../actions';
@@ -28,7 +28,7 @@ export default async function Karki({ searchParams }: { searchParams: { lista?: 
   const mine = me ? score(me) : 0;
 
   const sub = (b: (typeof all)[number]) => {
-    if (key === 'kaikki') return `${b.stepPts} p askelista · ${b.sportPts} p liikunnasta${b.bonusPts ? ` · ${b.bonusPts} p viikkotavoitteista` : ''}`;
+    if (key === 'kaikki') return `${fp(b.stepPts)} p askelista · ${fp(b.sportPts)} p liikunnasta${b.bonusPts ? ` · ${b.bonusPts} p viikkotavoitteista` : ''}`;
     if (key === 'askeleet') return week ? `${b.week.activeDays} hyvää päivää` : `ka. ${fi(b.avgSteps)} / pv · paras ${fi(b.bestDay)}`;
     if (key === 'nousu') return `tällä viikolla ${fi(b.week.steps)} · viime viikon samaan aikaan ${fi(b.lastWeek.steps)}${b.lastWeek.steps > 0 ? ` (${b.week.steps >= b.lastWeek.steps ? '+' : '−'}${Math.abs(Math.round(((b.week.steps - b.lastWeek.steps) / b.lastWeek.steps) * 100))} %)` : ''}`;
     if (key === 'luova') return `${b.goal.creativeDays} luovaa päivää tällä viikolla`;
@@ -82,7 +82,7 @@ export default async function Karki({ searchParams }: { searchParams: { lista?: 
             })}
           </ol>
         )}
-        <p className="muted">Pienet luvut oikealla: ero sinuun (+ = edellä sinua). Napauta ✨ ja lähetä kimalle. Pisteet: 1 p / 2 500 askelta, 1 p / 30 min urheilua (ei rajaa) ja 1 p / 30 min luovaa harrastusta (max 2 h viikossa).</p>
+        <p className="muted">Pienet luvut oikealla: ero sinuun (+ = edellä sinua). Napauta ✨ ja lähetä kimalle. Pisteet: 1 p / 2 500 askelta, 1 p / 30 min urheilua (0,5 p / 15 min, ei rajaa) ja 1 p / 30 min luovaa harrastusta (max 2 h viikossa).</p>
       </section>
       <form action={leave}><button className="btn ghost">Poistu tältä laitteelta</button></form>
     </>

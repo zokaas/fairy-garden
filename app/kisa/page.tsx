@@ -30,13 +30,13 @@ export default async function Kisa({ searchParams }: { searchParams: { avaa?: st
           <>
             <div style={{ fontSize: 56 }}>🏆</div>
             <h2>Kisa on ohi!</h2>
-            {top[0] && <p>Reippain keiju on <b>{top[0].name}</b> {top[0].pts} pisteellä 🎉</p>}
+            {top[0] && <p>Reippain keiju on <b>{top[0].name}</b> {fp(top[0].pts)} pisteellä 🎉</p>}
           </>
         ) : (
           <>
             <div style={{ fontSize: 48 }}>🔥</div>
             <h2>Tilanne juuri nyt</h2>
-            {top[0] ? <p>Johtaa: <b>{top[0].name}</b> ({top[0].pts} p)</p> : <p className="muted">Kisa ei ole vielä alkanut.</p>}
+            {top[0] ? <p>Johtaa: <b>{top[0].name}</b> ({fp(top[0].pts)} p)</p> : <p className="muted">Kisa ei ole vielä alkanut.</p>}
           </>
         )}
         {contest.prize && <p>🎁 Palkinto: <b>{contest.prize}</b></p>}
@@ -47,7 +47,7 @@ export default async function Kisa({ searchParams }: { searchParams: { avaa?: st
                 <div key={f.id} className="step">
                   <Avatar a={f} size={i === 1 ? 64 : 52} badge={['🥈', '🥇', '🥉'][i]} stage={f.stageIdx} />
                   <b>{f.name}</b>
-                  <span>{f.pts} p</span>
+                  <span>{fp(f.pts)} p</span>
                   <div className="block" style={{ height: heights[i] }} />
                 </div>
               ) : <div key={i} className="step" />,
@@ -76,7 +76,7 @@ export default async function Kisa({ searchParams }: { searchParams: { avaa?: st
         <ol>
           <li><b>1 piste</b> jokaisesta 2 500 askeleesta.</li>
           <li><b>Puutarha:</b> jokainen päivä, jolloin saavutat askeltavoitteen (10 000, tai 7 000 jos urheilet), kasvattaa yhden kukan.</li>
-          <li><b>1 piste</b> jokaisesta 30 minuutista urheilua (ei rajaa) tai luovaa harrastusta (pisteitä enintään 2 h viikossa). Kävely ratkaisee eniten.</li>
+          <li><b>1 piste</b> jokaisesta 30 minuutista urheilua (puolikas piste 15 min välein, ei rajaa) tai luovaa harrastusta (pisteitä enintään 2 h viikossa). Kävely ratkaisee eniten.</li>
           <li><b>Viikon tavoite:</b> askeltavoite (7 000 urheilupäivänä, 10 000 muulloin) vähintään 6 päivänä, 3 urheilupäivää ja 1 luova päivä. Täysi viikko tuo <b>+10 pistettä</b>.</li>
           <li>Eniten pisteitä kisan päättyessä voittaa.</li>
           <li>Reilu peli: kirjaa vain omat askeleesi ja oma liikuntasi.</li>

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { loadGarden, loadRaw } from '@/lib/data';
-import { ACTIVE_DAY, DAILY_GOAL, creativePointsOf, helsinkiDay, kindOf, sportPoints, stepPoints, weekStart, workoutPoints } from '@/lib/garden';
+import { ACTIVE_DAY, DAILY_GOAL, creativePointsOf, fp, helsinkiDay, kindOf, sportPoints, stepPoints, weekStart, workoutPoints } from '@/lib/garden';
 import { goalHistory, WEEK_GOAL } from '@/lib/weekly';
 import { timeOfDay } from '@/lib/stats';
 import { byDay, route, routeText, daysBetween, km, series, sportStats, sum, trend, weekdayAvg, weeklyMinutes, weeklySteps, bestOf, cumulative, heatCells, monthly, movingAvg, pointsOverTime, stepBuckets, weekdayVsWeekend, weeklyTotals } from '@/lib/stats';
@@ -178,7 +178,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
           <section className="card">
             <h2>Sinun kautesi</h2>
             <Tiles items={[
-              [jakso ? 'Pisteet (jakso)' : 'Pisteet', `${jakso ? stepPoints(myTotal) + workoutPoints(myWork) : me.pts} p`, `sija ${board.findIndex((b) => b.mine) + 1} / ${board.length}`],
+              [jakso ? 'Pisteet (jakso)' : 'Pisteet', `${fp(jakso ? stepPoints(myTotal) + workoutPoints(myWork) : me.pts)} p`, `sija ${board.findIndex((b) => b.mine) + 1} / ${board.length}`],
               ['Askeleet yhteensä', fi(myTotal), `${fi(km(myTotal), 1)} km`],
               ['Paras päivä', best ? fi(best[1]) : '–', best ? dm(best[0]) : undefined],
               ['Putki nyt', `${me.streak} pv`, `ennätys ${me.bestRun} pv`],
@@ -255,7 +255,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
           </section>
           <section className="card">
             <h2>Pisteiden jakauma</h2>
-            <Donut items={[{ label: 'Askeleet', value: stepPoints(myTotal) }, { label: 'Urheilu', value: sportPoints(myMins) }, { label: 'Luova', value: creativePointsOf(myCreW) }, { label: 'Viikkotavoite', value: me.bonusPts }]} center={`${me.pts} p`} unit=" p" />
+            <Donut items={[{ label: 'Askeleet', value: stepPoints(myTotal) }, { label: 'Urheilu', value: sportPoints(myMins) }, { label: 'Luova', value: creativePointsOf(myCreW) }, { label: 'Viikkotavoite', value: me.bonusPts }]} center={`${fp(me.pts)} p`} unit=" p" />
           </section>
           {myMonths.length > 0 && (
             <section className="card">
@@ -356,7 +356,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
               ['Keskimäärin / kerta', `${fi(myWork.length ? myMins / myWork.length : 0)} min`],
               ['Keskimäärin / viikko', `${fi(myMins / weeksSpan)} min`],
               ['Lempilaji', mySports[0]?.sport ?? '–', mySports[0] ? `${mySports[0].minutes} min` : undefined],
-              ['Pisteet urheilusta ja luovasta', `${workoutPoints(myWork)} p`, `askelpisteet ${stepPoints(myTotal)} p`],
+              ['Pisteet urheilusta ja luovasta', `${fp(workoutPoints(myWork))} p`, `askelpisteet ${stepPoints(myTotal)} p`],
             ]} />
             {mySports.length > 0 && <BarChart items={mySports.slice(0, 6).map((s) => ({ label: s.sport, value: s.minutes }))} unit=" min" height={120} />}
             <h2 style={{ marginTop: 14 }}>Viikoittain (min), 8 viikkoa</h2>

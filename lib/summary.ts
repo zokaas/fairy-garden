@@ -1,6 +1,6 @@
 import 'server-only';
 import { db } from './db';
-import { dayBefore, helsinkiDay, inContest, stepPoints, weekStart, workoutPoints } from './garden';
+import { fp, dayBefore, helsinkiDay, inContest, stepPoints, weekStart, workoutPoints } from './garden';
 import { WEEK_BONUS, WEEK_GOAL, weekGoal } from './weekly';
 import { sendPush } from './push';
 
@@ -39,9 +39,9 @@ export async function sendWeeklySummary(onlyId?: string): Promise<{ targets: num
     if (!me.g.stepsDone) missing.push(`askeleet ${Math.min(me.g.stepDaysOk, WEEK_GOAL.stepDays)}/${WEEK_GOAL.stepDays}`);
     if (!me.g.sportDone) missing.push(`urheilu ${me.g.sportDays}/${WEEK_GOAL.sportDays}`);
     if (!me.g.creativeDone) missing.push(`luova ${me.g.creativeDays}/${WEEK_GOAL.creativeDays}`);
-    const leader = rows[0] && rows[0].id !== id ? ` Viikon paras: ${rows[0].name} (${rows[0].pts} p).` : ' Sinä olit viikon paras!';
+    const leader = rows[0] && rows[0].id !== id ? ` Viikon paras: ${rows[0].name} (${fp(rows[0].pts)} p).` : ' Sinä olit viikon paras!';
     const goal = me.g.done ? `Tavoite täynnä, +${WEEK_BONUS} p!` : `Tavoitteesta puuttui: ${missing.join(', ')}.`;
-    sent += await sendPush({ title: 'Viime viikko 🌸', body: `${me.pts} p, sija ${i + 1}/${rows.length}. ${goal}${leader} Uusi viikko alkaa nyt!`, url: '/' }, [id]);
+    sent += await sendPush({ title: 'Viime viikko 🌸', body: `${fp(me.pts)} p, sija ${i + 1}/${rows.length}. ${goal}${leader} Uusi viikko alkaa nyt!`, url: '/' }, [id]);
   }
   return { targets: targets.length, sent };
 }

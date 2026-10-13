@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
-import { points, creativeCountedMins, workoutPoints, inContest, growthIdx, helsinkiDay, isDay, streak, bestStreak, dayBefore, ago, phaseOf, fairyName, weekStart } from './garden.ts';
+import { sportPoints, points, creativeCountedMins, workoutPoints, inContest, growthIdx, helsinkiDay, isDay, streak, bestStreak, dayBefore, ago, phaseOf, fairyName, weekStart } from './garden.ts';
 
-assert.equal(points(12_345, [{ day: '2026-10-13', sport: 'Sali', minutes: 25 }]), 4); // 4 askelpistettä, alle 30 min = 0
+assert.equal(points(12_345, [{ day: '2026-10-13', sport: 'Sali', minutes: 25 }]), 4.5); // 4 askelpistettä, alle 30 min = 0
 assert.equal(points(12_345, [{ day: '2026-10-13', sport: 'Sali', minutes: 60 }]), 6); // 4 + 2
 assert.equal(points(10_000, [{ day: '2026-10-13', sport: 'Sali', minutes: 90 }]), 7); // 4 + 3
 assert.equal(points(0, [{ day: '2026-10-13', sport: 'Sali', minutes: 600 }]), 20); // urheilu yksinään antaa pisteitä
@@ -109,4 +109,7 @@ assert.equal(creativeCountedMins([cr('2026-10-12', 100), cr('2026-10-19', 100)])
 assert.equal(workoutPoints([cr('2026-10-12', 300), { day: '2026-10-13', sport: 'Sali', minutes: 300 }]), 4 + 10);
 assert.equal(inContest('2026-10-11'), false);
 assert.equal(inContest('2026-10-12'), true);
+assert.equal(sportPoints(45), 1.5);
+assert.equal(sportPoints(14), 0);
+assert.equal(sportPoints(15), 0.5);
 console.log('garden: ok');

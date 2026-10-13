@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { loadGarden } from '@/lib/data';
-import { GROWTH, MINUTES_PER_POINT, STEPS_PER_POINT, UNLOCKS, stepPoints, ago, phaseOf, type Phase } from '@/lib/garden';
+import { GROWTH, MINUTES_PER_POINT, STEPS_PER_POINT, UNLOCKS, fp, stepPoints, ago, phaseOf, type Phase } from '@/lib/garden';
 import type { Fairy } from '@/lib/data';
 import { dailyQuests } from '@/lib/quests';
 import Journey from '@/components/Journey';
@@ -74,7 +74,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
           <ol>
             <li><b>Liity</b> nimellä, joka näkyy kärkilistalla.</li>
             <li><b>Yhdistä askeleet</b> iPhonen Terveydestä (5 min, kerran).</li>
-            <li><b>Kävele</b>: jokainen 2 500 askelta on 1 piste. Urheilu 1 p / 30 min, luova harrastus 1 p / 30 min (enintään 2 h viikossa).</li>
+            <li><b>Kävele</b>: jokainen 2 500 askelta on 1 piste. Urheilu ja luova harrastus 1 p / 30 min (0,5 p / 15 min). Luovasta enintään 2 h viikossa.</li>
           </ol>
         </section>
       </>
@@ -100,7 +100,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         ))}
       </ol>
       {!me.hasSteps && <Link className="btn" href="/shortcut">Yhdistä askeleet nyt</Link>}
-      <p className="muted">Pisteet: 1 p / 2 500 askelta, 1 p / 30 min urheilua, 1 p / 30 min luovaa (max 2 h / vko), +10 p täydestä viikosta.</p>
+      <p className="muted">Pisteet: 1 p / 2 500 askelta, 1 p / 30 min urheilua, 1 p / 30 min luovaa (max 2 h / vko; 0,5 p / 15 min), +10 p täydestä viikosta.</p>
     </section>
   ) : null;
 
@@ -136,10 +136,10 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         return (
           <section className="card center">
             <Ring value={me.today} goal={me.goal.todayTarget} />
-            <p className="todaypts"><b>Tänään +{dSteps + dMins} p</b><span>{dSteps} askelista · {dMins} urheilusta tai luovasta</span></p>
-            <p className="muted">Seuraava piste: {(STEPS_PER_POINT - (me.totalSteps % STEPS_PER_POINT)).toLocaleString('fi-FI')} askelta tai {MINUTES_PER_POINT - (me.sportMins % MINUTES_PER_POINT)} min urheilua</p>
+            <p className="todaypts"><b>Tänään +{fp(dSteps + dMins)} p</b><span>{fp(dSteps)} askelista · {fp(dMins)} urheilusta tai luovasta</span></p>
+            <p className="muted">Seuraava piste: {(STEPS_PER_POINT - (me.totalSteps % STEPS_PER_POINT)).toLocaleString('fi-FI')} askelta tai {MINUTES_PER_POINT / 2 - (me.sportMins % (MINUTES_PER_POINT / 2))} min urheilua (+0,5 p)</p>
             <div className="chips" style={{ justifyContent: 'center' }}>
-              <span className="chip">{me.pts} p yhteensä</span>
+              <span className="chip">{fp(me.pts)} p yhteensä</span>
               <span className="chip">sija {myRank} / {board.length}</span>
               <span className="chip">{me.streak} pv putki</span>
             </div>
@@ -150,7 +150,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
               <ul>
                 <li><b>Kukka</b> jokaisesta päivästä, jolloin saavutat askeltavoitteen (10 000, tai 7 000 jos urheilet).</li>
                 <li><b>1 piste</b> jokaisesta 2 500 askeleesta.</li>
-                <li><b>1 piste</b> jokaisesta 30 minuutista urheilua (ei rajaa) tai luovaa harrastusta (pisteitä enintään 2 h viikossa).</li>
+                <li><b>1 piste</b> jokaisesta 30 minuutista urheilua (ei rajaa) tai luovaa harrastusta (pisteitä enintään 2 h viikossa). Puolikas piste jokaisesta 15 minuutista.</li>
                 <li><b>+{WEEK_BONUS} pistettä</b> jokaisesta viikosta, jolloin täytät koko viikon tavoitteen.</li>
               </ul>
             </details>
@@ -209,7 +209,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         const rows = [above, me, below].filter(Boolean) as typeof board;
         const hint = above
           ? `Noin ${((above.pts - me.pts + 1) * STEPS_PER_POINT).toLocaleString('fi-FI')} askelta, niin ohitat keijun ${above.name}.`
-          : below ? `Johdat! Keiju ${below.name} on ${me.pts - below.pts} pisteen päässä.` : '';
+          : below ? `Johdat! Keiju ${below.name} on ${fp(me.pts - below.pts)} pisteen päässä.` : '';
         return (
           <section className="card duel">
             <h2>Taistelu kärjestä</h2>
@@ -217,8 +217,8 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
               {rows.map((b) => (
                 <li key={b.id} className={b.mine ? 'me' : ''}>
                   <span className="pos">{board.indexOf(b) + 1}</span>
-                  <span className="nm"><Avatar a={b} size={34} stage={b.stageIdx} /><span>{b.name}<small>{b.mine ? 'sinä' : b.pts > me.pts ? `+${b.pts - me.pts} p edellä` : `${me.pts - b.pts} p perässä`}</small></span></span>
-                  <span className="pt">{b.pts} p</span>
+                  <span className="nm"><Avatar a={b} size={34} stage={b.stageIdx} /><span>{b.name}<small>{b.mine ? 'sinä' : b.pts > me.pts ? `+${fp(b.pts - me.pts)} p edellä` : `${fp(me.pts - b.pts)} p perässä`}</small></span></span>
+                  <span className="pt">{fp(b.pts)} p</span>
                 </li>
               ))}
             </ol>
@@ -277,7 +277,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
           <div style={{ marginTop: 12 }}>
             <Ticker items={[
         `Ryhmä tänään ${board.reduce((a, b) => a + b.today, 0).toLocaleString('fi-FI')} askelta`,
-        board[0] ? `Johtaa ${board[0].name} ${board[0].pts} p` : '',
+        board[0] ? `Johtaa ${board[0].name} ${fp(board[0].pts)} p` : '',
         board.some((b) => b.streak > 1) ? `Pisin putki ${Math.max(...board.map((b) => b.streak))} pv` : '',
         `Viikon tavoite: 3× urheilu, 1× luova`,
         `${board.filter((b) => b.today >= b.goal.todayTarget).length} / ${board.length} on täyttänyt päivän tavoitteen`,

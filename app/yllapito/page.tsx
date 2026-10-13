@@ -123,7 +123,7 @@ export default async function Yllapito({ searchParams }: { searchParams: { ok?: 
           <details key={b.id} className="fairy-row">
             <summary>
               <Avatar a={b} size={34} />
-              <span className="nmx">{b.name}{b.isAdmin ? ' 🛠' : ''}<small>{b.pts} p · tänään {b.today.toLocaleString('fi-FI')} · synkattu {ago(b.lastSync)}</small></span>
+              <span className="nmx">{b.name}{b.isAdmin ? ' 🛠' : ''}<small>{fp(b.pts)} p · tänään {b.today.toLocaleString('fi-FI')} · synkattu {ago(b.lastSync)}</small></span>
             </summary>
             <form action={adminSetSteps} className="row" style={{ marginTop: 8 }}>
               <input type="hidden" name="id" value={b.id} />
