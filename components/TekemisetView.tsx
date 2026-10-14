@@ -10,7 +10,7 @@ const dm = (d: string) => `${Number(d.slice(8))}.${Number(d.slice(5, 7))}.`;
 const clock = (iso?: string) => (iso ? new Intl.DateTimeFormat('fi-FI', { timeZone: 'Europe/Helsinki', hour: '2-digit', minute: '2-digit' }).format(new Date(iso)) : '');
 const fi = (n: number) => n.toLocaleString('fi-FI');
 
-const FILTERS = [['kaikki', 'Kaikki'], ['urheilu', '💪 Urheilu'], ['luova', '🎨 Luova'], ['kukat', '🌸 Kukat']] as const;
+const FILTERS = [['kaikki', 'Kaikki'], ['askeleet', '👟 Askeleet'], ['urheilu', '💪 Urheilu'], ['luova', '🎨 Luova'], ['kukat', '🌸 Kukat']] as const;
 type Filter = (typeof FILTERS)[number][0];
 const PAGE = 7;
 
@@ -47,7 +47,7 @@ export default async function TekemisetView({ rajaa, paivia }: { rajaa?: string;
   for (const r of raw.steps) {
     if (!who.has(r.fairy_id)) continue;
     const n = dayFlowers(r.steps, sportDays.has(`${r.fairy_id}|${r.day}`) ? WEEK_GOAL.stepsSportDay : WEEK_GOAL.stepsRestDay);
-    if (n > 0) Object.assign(get(r.fairy_id, r.day), { steps: r.steps, flowers: n });
+    if (r.steps > 0) Object.assign(get(r.fairy_id, r.day), { steps: r.steps, flowers: n });
   }
   for (const w of raw.workouts) {
     if (!who.has(w.fairy_id)) continue;
@@ -67,12 +67,12 @@ export default async function TekemisetView({ rajaa, paivia }: { rajaa?: string;
   const list = (m: Map<string, number>) => [...m.entries()].sort((a, b) => b[1] - a[1]).map(([s, min]) => `${s} ${min} min`).join(', ');
   const href = (f: Filter, n?: number) => `/paivat?nakyma=kaikki${f !== 'kaikki' ? `&rajaa=${f}` : ''}${n && n > PAGE ? `&paivia=${n}` : ''}`;
 
-  const visible = (p: Person) => (filter === 'urheilu' ? p.sport.size > 0 : filter === 'luova' ? p.creative.size > 0 : filter === 'kukat' ? p.flowers > 0 : p.flowers > 0 || p.sport.size > 0 || p.creative.size > 0);
-  const order = (a: Person, b: Person) => (a.latest || '').localeCompare(b.latest || '') * -1 || b.steps - a.steps;
+  const visible = (p: Person) => (filter === 'urheilu' ? p.sport.size > 0 : filter === 'luova' ? p.creative.size > 0 : filter === 'kukat' ? p.flowers > 0 : filter === 'askeleet' ? p.steps > 0 : p.steps > 0 || p.sport.size > 0 || p.creative.size > 0);
+  const order = (a: Person, b: Person) => (filter === 'askeleet' || filter === 'kukat' ? 0 : (a.latest || '').localeCompare(b.latest || '') * -1) || b.steps - a.steps;
 
   return (
     <>
-      <p className="sub">Kaikkien keijujen päivät: kukat, urheilu ja luovat harrastukset. Yksi rivi per keiju per päivä.</p>
+      <p className="sub">Kaikkien keijujen päivät: askeleet, urheilu ja luovat harrastukset. 🌸 = päivän tavoite täyttyi. Yksi rivi per keiju per päivä.</p>
 
       <section className="card">
         <div className="tiles">
@@ -93,18 +93,18 @@ export default async function TekemisetView({ rajaa, paivia }: { rajaa?: string;
         const rows = all.filter(visible).sort(order);
         const movers = all.filter((p) => p.sport.size > 0 || p.creative.size > 0).length;
         const fl = all.reduce((a, p) => a + p.flowers, 0);
-        const ent = all.reduce((a, p) => a + p.count, 0);
+        const stepsAll = all.reduce((a, p) => a + p.steps, 0);
         return (
           <details key={d} className="card dayfold" open={d === today || d === yesterday}>
             <summary>
               <b>{label(d)}</b>
-              <small>{movers > 0 ? `${movers} keijua liikkui · ` : ''}{fl} 🌸{ent > 0 ? ` · ${ent} kirjausta` : ''}</small>
+              <small>{fi(stepsAll)} askelta · {fl} 🌸{movers > 0 ? ` · ${movers} liikkui` : ''}</small>
             </summary>
             {rows.length === 0 ? <p className="muted">Ei tämän suodattimen kohteita.</p> : (
               <ul className="plain feed">
                 {rows.map((p) => {
                   const f = who.get(p.id)!;
-                  const showFl = (filter === 'kaikki' || filter === 'kukat') && p.flowers > 0;
+                  const showSt = (filter === 'kaikki' || filter === 'askeleet' || filter === 'kukat') && p.steps > 0;
                   const showSp = (filter === 'kaikki' || filter === 'urheilu') && p.sport.size > 0;
                   const showCr = (filter === 'kaikki' || filter === 'luova') && p.creative.size > 0;
                   return (
@@ -112,7 +112,7 @@ export default async function TekemisetView({ rajaa, paivia }: { rajaa?: string;
                       <Link href={`/keiju/${f.id}`} aria-label={`Avaa ${f.name}`}><Avatar a={f} size={36} stage={f.stageIdx} /></Link>
                       <span className="fd-t">
                         <Link href={`/keiju/${f.id}`}><b>{f.name}{f.mine ? ' (sinä)' : ''}</b></Link>
-                        {showFl && <small>{'🌸'.repeat(Math.min(p.flowers, 4))} {fi(p.steps)} askelta</small>}
+                        {showSt && <small>{p.flowers > 0 ? '🌸'.repeat(Math.min(p.flowers, 4)) : '👟'} {fi(p.steps)} askelta</small>}
                         {showSp && <small>💪 {list(p.sport)}</small>}
                         {showCr && <small>🎨 {list(p.creative)}</small>}
                       </span>
