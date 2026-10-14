@@ -15,3 +15,6 @@ export const IconStats = () => (
 export const IconFlag = () => (
   <svg {...p}><path d="M5 22V3M5 4c4-2 7 2 11 0 1.4-.7 2.6-.6 3 0v8c-.4-.6-1.6-.7-3 0-4 2-7-2-11 0" /></svg>
 );
+export const IconCalendar = () => (
+  <svg {...p}><rect x="4" y="5" width="16" height="15" rx="2.5" /><path d="M4 10h16M8.5 3v4M15.5 3v4" /><circle cx="9" cy="14.5" r=".7" /><circle cx="12" cy="14.5" r=".7" /><circle cx="15" cy="14.5" r=".7" /></svg>
+);

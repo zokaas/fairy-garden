@@ -1,14 +1,14 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { IconFlag, IconGarden, IconLog, IconStats, IconTrophy } from './Icons';
+import { IconCalendar, IconGarden, IconLog, IconStats, IconTrophy } from './Icons';
 
 const TABS = [
   { href: '/', Icon: IconGarden, label: 'Puutarha' },
   { href: '/kirjaa', Icon: IconLog, label: 'Kirjaa' },
-  { href: '/karki', Icon: IconTrophy, label: 'Kärki' },
+  { href: '/paivat', Icon: IconCalendar, label: 'Päivät' },
+  { href: '/kisa', Icon: IconTrophy, label: 'Kisa' },
   { href: '/tilastot', Icon: IconStats, label: 'Tilastot' },
-  { href: '/kisa', Icon: IconFlag, label: 'Kisa' },
 ];
 
 export default function BottomNav() {
