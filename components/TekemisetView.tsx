@@ -10,18 +10,15 @@ const dm = (d: string) => `${Number(d.slice(8))}.${Number(d.slice(5, 7))}.`;
 const clock = (iso?: string) => (iso ? new Intl.DateTimeFormat('fi-FI', { timeZone: 'Europe/Helsinki', hour: '2-digit', minute: '2-digit' }).format(new Date(iso)) : '');
 const fi = (n: number) => n.toLocaleString('fi-FI');
 
-const FILTERS = [['kaikki', 'Kaikki'], ['askeleet', '👟 Askeleet'], ['urheilu', '💪 Urheilu'], ['luova', '🎨 Luova'], ['kukat', '🌸 Kukat']] as const;
-type Filter = (typeof FILTERS)[number][0];
 const PAGE = 7;
 
 /**
  * Kaikkien keijujen päivät (Päivät-sivun Kaikki-välilehti): yksi rivi per keiju per päivä,
  * tuoreimmat päivät auki ja vanhemmat kokoon taitettuna, suodattimena kaikki / urheilu / luova / kukat.
  */
-export default async function TekemisetView({ rajaa, paivia }: { rajaa?: string; paivia?: string }) {
+export default async function TekemisetView({ paivia }: { paivia?: string }) {
   const [{ board, me }, raw] = await Promise.all([loadGarden(), loadRaw()]);
   if (!me) redirect('/');
-  const filter: Filter = FILTERS.some(([k]) => k === rajaa) ? (rajaa as Filter) : 'kaikki';
   const shown = Math.min(60, Math.max(PAGE, Number(paivia) || PAGE));
   const who = new Map(board.map((b) => [b.id, b]));
   const today = helsinkiDay();
@@ -65,10 +62,10 @@ export default async function TekemisetView({ rajaa, paivia }: { rajaa?: string;
   const days = allDays.slice(0, shown);
   const label = (d: string) => (d === today ? 'Tänään' : d === yesterday ? 'Eilen' : `${WD[new Date(`${d}T12:00:00Z`).getUTCDay()]} ${dm(d)}`);
   const list = (m: Map<string, number>) => [...m.entries()].sort((a, b) => b[1] - a[1]).map(([s, min]) => `${s} ${min} min`).join(', ');
-  const href = (f: Filter, n?: number) => `/paivat?nakyma=kaikki${f !== 'kaikki' ? `&rajaa=${f}` : ''}${n && n > PAGE ? `&paivia=${n}` : ''}`;
+  const href = (n: number) => `/paivat?nakyma=kaikki&paivia=${n}`;
 
-  const visible = (p: Person) => (filter === 'urheilu' ? p.sport.size > 0 : filter === 'luova' ? p.creative.size > 0 : filter === 'kukat' ? p.flowers > 0 : filter === 'askeleet' ? p.steps > 0 : p.steps > 0 || p.sport.size > 0 || p.creative.size > 0);
-  const order = (a: Person, b: Person) => (filter === 'askeleet' || filter === 'kukat' ? 0 : (a.latest || '').localeCompare(b.latest || '') * -1) || b.steps - a.steps;
+  const visible = (p: Person) => p.steps > 0 || p.sport.size > 0 || p.creative.size > 0;
+  const order = (a: Person, b: Person) => (a.latest || '').localeCompare(b.latest || '') * -1 || b.steps - a.steps;
 
   return (
     <>
@@ -81,10 +78,6 @@ export default async function TekemisetView({ rajaa, paivia }: { rajaa?: string;
           <div><b>{topSport ? topSport[0] : '–'}</b><span>suosituin laji tällä viikolla</span>{topSport && <small>{topSport[1]} kertaa</small>}</div>
         </div>
       </section>
-
-      <div className="chips" role="tablist" aria-label="Suodata">
-        {FILTERS.map(([k, name]) => <Link key={k} role="tab" aria-selected={filter === k} className={`chip${filter === k ? ' on' : ''}`} href={href(k)}>{name}</Link>)}
-      </div>
 
       {days.length === 0 ? (
         <section className="card"><p className="muted">Ei vielä kirjauksia. Ensimmäinen kirjaus tulee tähän näkyviin.</p></section>
@@ -100,13 +93,13 @@ export default async function TekemisetView({ rajaa, paivia }: { rajaa?: string;
               <b>{label(d)}</b>
               <small>{fi(stepsAll)} askelta · {fl} 🌸{movers > 0 ? ` · ${movers} liikkui` : ''}</small>
             </summary>
-            {rows.length === 0 ? <p className="muted">Ei tämän suodattimen kohteita.</p> : (
+            {rows.length === 0 ? <p className="muted">Ei kirjauksia.</p> : (
               <ul className="plain feed">
                 {rows.map((p) => {
                   const f = who.get(p.id)!;
-                  const showSt = (filter === 'kaikki' || filter === 'askeleet' || filter === 'kukat') && p.steps > 0;
-                  const showSp = (filter === 'kaikki' || filter === 'urheilu') && p.sport.size > 0;
-                  const showCr = (filter === 'kaikki' || filter === 'luova') && p.creative.size > 0;
+                  const showSt = p.steps > 0;
+                  const showSp = p.sport.size > 0;
+                  const showCr = p.creative.size > 0;
                   return (
                     <li key={p.id} className={f.mine ? 'me' : ''}>
                       <Link href={`/keiju/${f.id}`} aria-label={`Avaa ${f.name}`}><Avatar a={f} size={36} stage={f.stageIdx} /></Link>
@@ -127,7 +120,7 @@ export default async function TekemisetView({ rajaa, paivia }: { rajaa?: string;
       })}
 
       {allDays.length > shown && (
-        <Link className="btn ghost" href={href(filter, shown + PAGE)}>Näytä {Math.min(PAGE, allDays.length - shown)} päivää lisää</Link>
+        <Link className="btn ghost" href={href(shown + PAGE)}>Näytä {Math.min(PAGE, allDays.length - shown)} päivää lisää</Link>
       )}
       <Link className="btn ghost" href="/kirjaa">Kirjaa oma liikunta</Link>
     </>

@@ -14,7 +14,7 @@ const fi = (n: number) => n.toLocaleString('fi-FI');
 const dm = (d: string) => `${Number(d.slice(8))}.${Number(d.slice(5, 7))}.`;
 const wdOf = (d: string) => WD[new Date(`${d}T12:00:00Z`).getUTCDay()];
 
-export default async function Paivat({ searchParams }: { searchParams: { nakyma?: string; rajaa?: string; paivia?: string } }) {
+export default async function Paivat({ searchParams }: { searchParams: { nakyma?: string; paivia?: string } }) {
   if (!cookies().get('fg_token')) redirect('/');
   const all = searchParams.nakyma === 'kaikki';
   const tabs = (
@@ -23,7 +23,7 @@ export default async function Paivat({ searchParams }: { searchParams: { nakyma?
       <Link role="tab" aria-selected={all} className={all ? 'on' : ''} href="/paivat?nakyma=kaikki">Kaikki</Link>
     </div>
   );
-  if (all) return <><h1>Päivät</h1>{tabs}<TekemisetView rajaa={searchParams.rajaa} paivia={searchParams.paivia} /></>;
+  if (all) return <><h1>Päivät</h1>{tabs}<TekemisetView paivia={searchParams.paivia} /></>;
   const [{ me }, raw] = await Promise.all([loadGarden(), loadRaw()]);
   if (!me) redirect('/');
   const mySteps = byDay(raw.steps.filter((r) => r.fairy_id === me.id));
