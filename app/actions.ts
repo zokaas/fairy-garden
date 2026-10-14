@@ -74,7 +74,7 @@ export async function logWorkout(formData: FormData) {
         supabase.from('fairies').select('id').neq('id', fairy.id),
       ]);
       const icon = (CREATIVE as readonly string[]).includes(sport) ? '🎨' : '💪';
-      await sendPush({ title: `${icon} ${me?.name ?? 'Joku'} kirjasi ${sport.toLowerCase()}`, body: `${minutes} min. Käy kehumassa 👏`, url: '/tekemiset' }, (others ?? []).map((o) => o.id as string));
+      await sendPush({ title: `${icon} ${me?.name ?? 'Joku'} kirjasi ${sport.toLowerCase()}`, body: `${minutes} min. Käy lähettämässä kimallusta ✨`, url: '/tekemiset' }, (others ?? []).map((o) => o.id as string));
     } catch {}
   }
   revalidatePath('/', 'layout');
@@ -96,38 +96,57 @@ export async function deleteWorkout(formData: FormData) {
   redirect('/kirjaa?ok=poistettu');
 }
 
-/** 👏-reaktio tekemiseen: napautus lisää, toinen napautus poistaa. Omaan tekemiseen ei voi reagoida. */
+/** Selvittää tekemisen omistajan ja lyhyen kuvauksen ilmoitusta varten (liikuntakirjaus tai päivän askeltavoite). */
+async function resolveTarget(target: string): Promise<{ toId: string; what: string } | null> {
+  const wm = /^w:([0-9a-f-]{36})$/i.exec(target);
+  const sm = /^s:([0-9a-f-]{36}):(\d{4}-\d{2}-\d{2})$/i.exec(target);
+  if (wm) {
+    const { data: w } = await db().from('workouts').select('fairy_id, sport, minutes').eq('id', wm[1]).maybeSingle();
+    return w ? { toId: w.fairy_id as string, what: `${String(w.sport).toLowerCase()} ${w.minutes} min` } : null;
+  }
+  if (sm) return { toId: sm[1], what: 'päivän askeltavoite' };
+  return null;
+}
+
+/** Kimalle-reaktio tekemiseen: napautus lisää, toinen napautus poistaa. Omaan tekemiseen ei voi reagoida. */
 export async function react(formData: FormData) {
   if (DEMO) return;
   const target = String(formData.get('target') ?? '');
-  const wm = /^w:([0-9a-f-]{36})$/i.exec(target);
-  const sm = /^s:([0-9a-f-]{36}):(\d{4}-\d{2}-\d{2})$/i.exec(target);
-  if (!wm && !sm) return;
   const me = await myFairy();
-  if (!me) return;
+  const t = me ? await resolveTarget(target) : null;
+  if (!me || !t || t.toId === me.id) return;
   const supabase = db();
-  let toId: string | undefined;
-  let what = '';
-  if (wm) {
-    const { data: w } = await supabase.from('workouts').select('fairy_id, sport, minutes').eq('id', wm[1]).maybeSingle();
-    toId = w?.fairy_id as string | undefined;
-    what = w ? `${String(w.sport).toLowerCase()} ${w.minutes} min` : '';
-  } else if (sm) {
-    toId = sm[1];
-    what = 'päivän askeltavoitteen';
-  }
-  if (!toId || toId === me.id) return;
   const { data: had } = await supabase.from('reactions').select('id').eq('from_id', me.id).eq('target', target).maybeSingle();
   if (had) {
     await supabase.from('reactions').delete().eq('id', had.id);
   } else {
-    const { error } = await supabase.from('reactions').insert({ from_id: me.id, to_id: toId, target });
+    const { error } = await supabase.from('reactions').insert({ from_id: me.id, to_id: t.toId, target });
     if (!error) {
       try {
         const { data: who } = await supabase.from('fairies').select('name').eq('id', me.id).single();
-        await sendPush({ title: `👏 ${who?.name ?? 'Joku'} kehui sinua`, body: what ? `Kohteena ${what}` : 'Hienoa työtä!', url: '/tekemiset' }, [toId]);
+        await sendPush({ title: `✨ ${who?.name ?? 'Joku'} lähetti sinulle kimallusta`, body: `Kohteena ${t.what}`, url: '/tekemiset' }, [t.toId]);
       } catch {}
     }
+  }
+  revalidatePath('/tekemiset');
+}
+
+/** Lyhyt kommentti (enintään 140 merkkiä) tekemiseen. Omaan tekemiseen voi vastata, ilmoitus menee omistajalle. */
+export async function comment(formData: FormData) {
+  if (DEMO) return;
+  const target = String(formData.get('target') ?? '');
+  const body = String(formData.get('body') ?? '').trim().slice(0, 140);
+  if (!body) return;
+  const me = await myFairy();
+  const t = me ? await resolveTarget(target) : null;
+  if (!me || !t) return;
+  const supabase = db();
+  const { error } = await supabase.from('comments').insert({ from_id: me.id, to_id: t.toId, target, body });
+  if (!error && t.toId !== me.id) {
+    try {
+      const { data: who } = await supabase.from('fairies').select('name').eq('id', me.id).single();
+      await sendPush({ title: `💬 ${who?.name ?? 'Joku'} kommentoi`, body, url: '/tekemiset' }, [t.toId]);
+    } catch {}
   }
   revalidatePath('/tekemiset');
 }

@@ -9,6 +9,7 @@ const CHECKS: Record<string, string> = {
   workouts: 'id, fairy_id, day, sport, minutes',
   cheers: 'id, from_id, to_id, day',
   reactions: 'id, from_id, to_id, target',
+  comments: 'id, from_id, to_id, target, body, created_at',
   settings: 'key, value',
   push_subscriptions: 'endpoint, fairy_id, p256dh, auth',
 };

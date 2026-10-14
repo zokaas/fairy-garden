@@ -5,7 +5,7 @@ import { loadGarden, loadRaw } from '@/lib/data';
 import { dayBefore, helsinkiDay, kindOf, weekStart } from '@/lib/garden';
 import Avatar from '@/components/Avatar';
 import ReactButton from '@/components/ReactButton';
-import { loadReactions, stepsTarget, workoutTarget } from '@/lib/reactions';
+import { loadComments, loadReactions, stepsTarget, workoutTarget } from '@/lib/reactions';
 import { WEEK_GOAL, dayFlowers } from '@/lib/weekly';
 
 export const dynamic = 'force-dynamic';
@@ -16,7 +16,7 @@ const clock = (iso?: string) => (iso ? new Intl.DateTimeFormat('fi-FI', { timeZo
 
 export default async function Tekemiset() {
   if (!cookies().get('fg_token')) redirect('/');
-  const [{ board, me }, raw, reactions] = await Promise.all([loadGarden(), loadRaw(), loadReactions()]);
+  const [{ board, me }, raw, reactions, allComments] = await Promise.all([loadGarden(), loadRaw(), loadReactions(), loadComments()]);
   if (!me) redirect('/');
   const who = new Map(board.map((b) => [b.id, b]));
   const today = helsinkiDay();
@@ -36,6 +36,7 @@ export default async function Tekemiset() {
   const doers = new Set(thisWeek.map((w) => w.fairy_id)).size;
 
   const names = (target: string) => reactions.filter((r) => r.target === target).map((r) => who.get(r.from_id)?.name ?? '').filter(Boolean);
+  const commentsOf = (target: string) => allComments.filter((c) => c.target === target).map((c) => ({ id: c.id, name: who.get(c.from_id)?.name ?? 'Keiju', body: c.body }));
   const reacted = (target: string) => reactions.some((r) => r.target === target && who.get(r.from_id)?.mine);
 
   // Päivän kukat viimeisen 7 päivän ajalta näkyvät syötteessä omina kohtinaan.
@@ -62,7 +63,7 @@ export default async function Tekemiset() {
   return (
     <>
       <h1>Kuka teki mitä</h1>
-      <p className="sub">Tässä näkyvät kaikkien keijujen urheilu- ja luovuuskirjaukset sekä päivän kukat. 💪 = urheilu, 🎨 = luova, 🌸 = päivän askeltavoite. Kehu muita 👏-napilla, ja saat ilmoituksen, kun joku kehuu sinua.</p>
+      <p className="sub">Tässä näkyvät kaikkien keijujen urheilu- ja luovuuskirjaukset sekä päivän kukat. 💪 = urheilu, 🎨 = luova, 🌸 = päivän askeltavoite. Lähetä muille kimallusta ✨ tai kommentti 💬, ja saat ilmoituksen, kun joku tekee saman sinulle.</p>
 
       <section className="card">
         <div className="tiles">
@@ -86,7 +87,7 @@ export default async function Tekemiset() {
                   <li key={`s-${f.id}-${it.b.day}`} className={f.mine ? 'me' : ''}>
                     <Link href={`/keiju/${f.id}`} aria-label={`Avaa ${f.name}`}><Avatar a={f} size={36} stage={f.stageIdx} /></Link>
                     <span className="fd-t"><Link href={`/keiju/${f.id}`}><b>{f.name}{f.mine ? ' (sinä)' : ''}</b></Link><small>{'🌸'.repeat(Math.min(it.b.n, 4))} päivän askeltavoite täyttyi · {it.b.steps.toLocaleString('fi-FI')} askelta</small></span>
-                    <ReactButton target={t} names={names(t)} mine={reacted(t)} own={f.mine} />
+                    <ReactButton target={t} names={names(t)} mine={reacted(t)} own={f.mine} comments={commentsOf(t)} />
                   </li>
                 );
               }
@@ -98,7 +99,7 @@ export default async function Tekemiset() {
                 <li key={`${e.fairy_id}-${e.day}-${i}`} className={f.mine ? 'me' : ''}>
                   <Link href={`/keiju/${f.id}`} aria-label={`Avaa ${f.name}`}><Avatar a={f} size={36} stage={f.stageIdx} /></Link>
                   <span className="fd-t"><Link href={`/keiju/${f.id}`}><b>{f.name}{f.mine ? ' (sinä)' : ''}</b></Link><small>{luova ? '🎨' : '💪'} {e.sport} · {e.minutes} min{e.created ? ` · klo ${clock(e.created)}` : ''}</small></span>
-                  {t && <ReactButton target={t} names={names(t)} mine={reacted(t)} own={f.mine} />}
+                  {t && <ReactButton target={t} names={names(t)} mine={reacted(t)} own={f.mine} comments={commentsOf(t)} />}
                 </li>
               );
             })}

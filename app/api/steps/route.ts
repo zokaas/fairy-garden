@@ -47,7 +47,7 @@ export async function POST(req: Request) {
       }).sort((a, b) => b.steps - a.steps)[0];
       if (bloomed) {
         const { data: others } = await supabase.from('fairies').select('id').neq('id', fairy.id);
-        await sendPush({ title: `🌸 ${fairy.name}: päivän kukka puhkesi`, body: `${bloomed.steps.toLocaleString('fi-FI')} askelta. Käy kehumassa 👏`, url: '/tekemiset' }, (others ?? []).map((o) => o.id as string));
+        await sendPush({ title: `🌸 ${fairy.name}: päivän kukka puhkesi`, body: `${bloomed.steps.toLocaleString('fi-FI')} askelta. Käy lähettämässä kimallusta ✨`, url: '/tekemiset' }, (others ?? []).map((o) => o.id as string));
       }
     }
   } catch {}
