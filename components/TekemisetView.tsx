@@ -7,7 +7,6 @@ import { WEEK_GOAL, dayFlowers } from '@/lib/weekly';
 
 const WD = ['sunnuntai', 'maanantai', 'tiistai', 'keskiviikko', 'torstai', 'perjantai', 'lauantai'];
 const dm = (d: string) => `${Number(d.slice(8))}.${Number(d.slice(5, 7))}.`;
-const clock = (iso?: string) => (iso ? new Intl.DateTimeFormat('fi-FI', { timeZone: 'Europe/Helsinki', hour: '2-digit', minute: '2-digit' }).format(new Date(iso)) : '');
 const fi = (n: number) => n.toLocaleString('fi-FI');
 
 const PAGE = 7;
@@ -65,7 +64,7 @@ export default async function TekemisetView({ paivia }: { paivia?: string }) {
   const href = (n: number) => `/paivat?nakyma=kaikki&paivia=${n}`;
 
   const visible = (p: Person) => p.steps > 0 || p.sport.size > 0 || p.creative.size > 0;
-  const order = (a: Person, b: Person) => (a.latest || '').localeCompare(b.latest || '') * -1 || b.steps - a.steps;
+  const order = (a: Person, b: Person) => b.steps - a.steps;
 
   return (
     <>
@@ -109,7 +108,6 @@ export default async function TekemisetView({ paivia }: { paivia?: string }) {
                         {showSp && <small>💪 {list(p.sport)}</small>}
                         {showCr && <small>🎨 {list(p.creative)}</small>}
                       </span>
-                      {p.latest && <span className="fd-time">klo {clock(p.latest)}</span>}
                     </li>
                   );
                 })}
