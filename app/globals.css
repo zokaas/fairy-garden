@@ -626,3 +626,4 @@ details.dayfold[open] > summary { margin-bottom: 8px; }
 .feed .fd-time { margin-left: auto; font: 500 .72rem var(--mono); color: var(--fg-3); white-space: nowrap; }
 .chips .chip.on { background: var(--fg); color: var(--bg); border-color: transparent; }
 ol.rank .pt small.diff { color: var(--fg-3); font-weight: 500; }
+.ed-grp { margin: 12px 0 6px; font-size: .78rem; color: var(--fg-3); }
