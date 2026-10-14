@@ -46,7 +46,6 @@ export default async function ShortcutGuide() {
             <li><b>Asenna oikotie</b>: napauta alla, valitse <i>Lisää komento</i>. Kun komento kysyy <b>Avain</b>, liitä kopioimasi avain. Salli pääsy Terveyteen.
               <a className="btn" href={install}>Asenna oikotie</a>
             </li>
-            <li><b>Valitse askelten lähde</b> (tärkeä): Komennot → <b>Fairy Garden</b> → napauta toimintoa <b>Find Health Samples</b> → suodatin <b>Source is …</b> → valitse <b>oma laitteesi</b> (iPhonesi tai Apple Watchisi nimi). Näin askeleet eivät lasketa kahteen kertaan.</li>
             <li><b>Kokeile</b>: aja komento kerran ja vertaa lukua Terveys-sovelluksen lukuun.
               <SyncButton site={site} />
               <AutoSyncToggle />
@@ -61,19 +60,6 @@ export default async function ShortcutGuide() {
           <p>Ylläpitäjä ei ole vielä lisännyt valmista oikotietä. Pyydä häntä tekemään se (ohje ylläpidossa), tai tee oikotie käsin alla olevan ohjeen mukaan.</p>
         </section>
       )}
-
-      <details className="card">
-        <summary><b>Askeleet näyttävät liian suurilta?</b></summary>
-        <div style={{ marginTop: 12 }}>
-          <p className="muted">Jos sinulla on <b>sekä iPhone että Apple Watch</b>, komento voi laskea molempien askeleet yhteen, jolloin luku on lähes tuplat. Vertaa sovelluksen lukua Terveys-sovelluksen lukuun. Jos ne eroavat, tee näin:</p>
-          <ol className="steps-list">
-            <li>Komennot → <b>Fairy Garden</b> → avaa komento muokattavaksi.</li>
-            <li>Napauta toimintoa <b>Find Health Samples</b> → <b>Add Filter</b> → <b>Source</b>.</li>
-            <li>Valitse lähteeksi <b>oma laitteesi</b>: Apple Watch, jos käytät kelloa, muuten iPhone.</li>
-            <li>Aja komento ja tarkista, että luku vastaa Terveyttä. Jos et pääse korjaamaan lukua, kerro ylläpitäjälle.</li>
-          </ol>
-        </div>
-      </details>
 
       <details className="card manual" open={!install}>
         <summary><b>Tee oikotie käsin</b>{install ? ' (jos asennuslinkki ei toimi)' : ''}</summary>
