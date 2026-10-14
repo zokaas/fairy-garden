@@ -120,14 +120,13 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         avatar={me}
         lines={[
           me.today < me.goal.todayTarget ? `Vielä ${(me.goal.todayTarget - me.today).toLocaleString('fi-FI')} askelta päivän tavoitteeseen! 👟` : 'Päivän tavoite täynnä, mahtavaa! ✨',
-          'Tavoitepäivä kasvattaa kukan, ja jokainen 10 000 askelta lisää toisen 🌷',
           'Muista juoda vettä, keiju 💧',
           `${me.name}, sinä loistat! 🌸`,
         ]}
       />
       <p className="muted" style={{ textAlign: 'center', marginTop: -6 }}>
         {me.hasSteps ? (
-          <>🌸 {me.flowers} {me.flowers === 1 ? 'kukka' : 'kukkaa'} puutarhassa<br />{me.today >= me.goal.todayTarget ? 'Tämän päivän kukka on puhjennut ✓' : `Vielä ${(me.goal.todayTarget - me.today).toLocaleString('fi-FI')} askelta, niin tämän päivän kukka puhkeaa`}</>
+          <>🌸 {me.flowers} {me.flowers === 1 ? 'kukka' : 'kukkaa'} puutarhassa{me.today >= me.goal.todayTarget && <><br />Tämän päivän kukka on puhjennut ✓</>}</>
         ) : 'Jokainen päivä, jolloin saavutat askeltavoitteen, kasvattaa puutarhaasi kukan.'}
       </p>
       {!me.hasSteps ? (
@@ -140,14 +139,13 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
             <Ring value={me.today} goal={me.goal.todayTarget} />
             <p className="todaypts"><b>Pisteet tänään: +{fp(dSteps + dMins)} p</b><span>askelista {fp(dSteps)} p · urheilusta ja luovasta {fp(dMins)} p</span></p>
             <div className="chips" style={{ justifyContent: 'center' }}>
-              <span className="chip">Pisteet {fp(me.pts)} p</span>
-              <span className="chip">Sijoitus {myRank}. / {board.length}</span>
+              <span className="chip">Yhteensä {fp(me.pts)} p</span>
+              <span className="chip">Sija {myRank} / {board.length}</span>
               {me.streak > 0 && <span className="chip">Putki {me.streak} pv</span>}
             </div>
             <p className="muted">{searchParams.synkattu ? '✓ Synkkaus tehty. ' : ''}Askeleet synkattu: <b>{ago(me.lastSync)}</b></p>
             <SyncButton site={process.env.NEXT_PUBLIC_SITE_URL ?? ''} />
-            <p className="muted" style={{ margin: '0 0 6px' }}><Link href="/paivat">Päivät: omat →</Link> · <Link href="/paivat?nakyma=kaikki">kaikkien tekemiset →</Link></p>
-            <p className="muted" style={{ margin: '4px 0 0' }}>Miten pisteet lasketaan? <Link href="/ohje">Näin kisa toimii →</Link></p>
+            <p className="muted" style={{ margin: '4px 0 0' }}><Link href="/paivat">Päivät →</Link> · <Link href="/ohje">Näin kisa toimii →</Link></p>
           </section>
         );
       })()}
@@ -174,7 +172,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         }).sort((a, c) => c.b.today - a.b.today);
         return (
           <section className="card">
-            <h2>Tänään kaikilla <small className="muted">(napauta nimeä: profiili)</small></h2>
+            <h2>Tänään kaikilla</h2>
             <ul className="plain todaylist">
               {rows.map(({ b, sport, creative }) => (
                 <li key={b.id} className={b.mine ? 'me' : ''}>
