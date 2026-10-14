@@ -48,7 +48,7 @@ export default async function Keiju({ params }: { params: { id: string } }) {
 
   return (
     <>
-      <p className="muted" style={{ margin: '0 0 6px' }}><Link href="/karki">← Kärki</Link></p>
+      <p className="muted" style={{ margin: '0 0 6px' }}><Link href="/kisa">← Kisa</Link></p>
       <h1>{f.name}{f.mine ? ' (sinä)' : ''}</h1>
       <p className="sub">Sija {rank} / {board.length} · {fp(f.pts)} p · {f.flowers} {f.flowers === 1 ? 'kukka' : 'kukkaa'}{f.streak > 0 ? ` · putki ${f.streak} pv` : ''}</p>
 
