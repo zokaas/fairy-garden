@@ -1,4 +1,5 @@
 import { BADGES } from '@/lib/badges';
+import { UNLOCKS } from '@/lib/garden';
 import { redirect } from 'next/navigation';
 import { loadGarden } from '@/lib/data';
 import { AVATAR_BGS } from '@/lib/avatar';
@@ -34,6 +35,18 @@ export default async function Profiili({ searchParams }: { searchParams: { uusi?
             <h2>Profiilisi</h2>
             <p className="muted">Näin muut näkevät sinut: puutarha, tavoitteet, päivät ja merkit.</p>
             <a className="btn ghost" href={`/keiju/${me.id}`}>Katso profiilisi</a>
+          </section>
+          <section className="card" id="palkinnot">
+            <h2>Puutarhan palkinnot</h2>
+            <ul className="plain unlocks">
+              {UNLOCKS.map((u) => (
+                <li key={u.at} className={me.flowers >= u.at ? 'done' : ''}>
+                  <span className="ob-check">{me.flowers >= u.at ? '✓' : ''}</span>
+                  <span><b>{u.at} kukkaa</b><small>{u.text}</small></span>
+                </li>
+              ))}
+            </ul>
+            <p className="muted">Päivän askeltavoite on yksi kukka, ja jokainen täysi 10 000 askelta sen yli tuo lisäkukan. Sinulla on nyt {me.flowers}.</p>
           </section>
           <section className="card" id="merkit">
             <h2>Merkit {me.badges.length}/{BADGES.length}</h2>

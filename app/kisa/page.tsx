@@ -9,7 +9,6 @@ import Avatar from '@/components/Avatar';
 import { GroupJourney } from '@/components/Journey';
 import Countdown from '@/components/Countdown';
 import KarkiView from '@/components/KarkiView';
-import { UNLOCKS } from '@/lib/garden';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,7 +27,7 @@ export default async function Kisa({ searchParams }: { searchParams: { avaa?: st
       <p className="sub">Päättyy {endDate} Eniten pisteitä kerännyt on <b>Reippain keiju</b>.</p>
       <Countdown to={contest.end} />
       <div className="seg" role="tablist">
-        {([['karki', 'Kärki'], ['matka', 'Matka ja palkinnot']] as const).map(([k2, label]) => (
+        {([['karki', 'Kärki'], ['matka', 'Matka ja kategoriat']] as const).map(([k2, label]) => (
           <Link key={k2} role="tab" aria-selected={view === k2} className={view === k2 ? 'on' : ''} href={k2 === 'karki' ? '/kisa' : `/kisa?nakyma=${k2}`}>{label}</Link>
         ))}
       </div>
@@ -64,18 +63,6 @@ export default async function Kisa({ searchParams }: { searchParams: { avaa?: st
           )}
         </section>
 
-        <section className="card">
-          <h2>Puutarhan palkinnot</h2>
-          <ul className="plain unlocks">
-            {UNLOCKS.map((u) => (
-              <li key={u.at} className={me && me.flowers >= u.at ? 'done' : ''}>
-                <span className="ob-check">{me && me.flowers >= u.at ? '✓' : ''}</span>
-                <span><b>{u.at} kukkaa</b><small>{u.text}</small></span>
-              </li>
-            ))}
-          </ul>
-          <p className="muted">Päivän askeltavoite on yksi kukka, ja jokainen täysi 10 000 askelta sen yli tuo lisäkukan.{me ? ` Sinulla on nyt ${me.flowers}.` : ''}</p>
-        </section>
 
         </>
       )}

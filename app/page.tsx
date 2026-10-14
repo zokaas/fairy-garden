@@ -126,7 +126,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
       />
       <p className="muted" style={{ textAlign: 'center', marginTop: -6 }}>
         {me.hasSteps ? (
-          <>🌸 {me.flowers} {me.flowers === 1 ? 'kukka' : 'kukkaa'} puutarhassa{me.today >= me.goal.todayTarget && <><br />Tämän päivän kukka on puhjennut ✓</>}</>
+          <>🌸 {me.flowers} {me.flowers === 1 ? 'kukka' : 'kukkaa'} puutarhassa{me.today >= me.goal.todayTarget && <><br />Tämän päivän kukka on puhjennut ✓</>}{(() => { const n = UNLOCKS.find((u) => me.flowers < u.at); return n ? <><br /><Link href="/profiili#palkinnot">Seuraava palkinto: {n.text} ({n.at - me.flowers} kukan päästä) →</Link></> : null; })()}</>
         ) : 'Jokainen päivä, jolloin saavutat askeltavoitteen, kasvattaa puutarhaasi kukan.'}
       </p>
       {!me.hasSteps ? (
