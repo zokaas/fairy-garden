@@ -70,3 +70,8 @@ alter table public.push_subscriptions enable row level security;
 
 -- Tee itsestäsi ylläpitäjä (vaihda nimi omaksesi ja poista kommentti):
 -- update public.fairies set is_admin = true where lower(name) = lower('NIMESI');
+create table if not exists public.announced (
+  key text primary key,
+  created_at timestamptz not null default now()
+);
+alter table public.announced enable row level security;

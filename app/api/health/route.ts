@@ -8,6 +8,7 @@ const CHECKS: Record<string, string> = {
   steps: 'fairy_id, day, steps, updated_at',
   workouts: 'id, fairy_id, day, sport, minutes',
   cheers: 'id, from_id, to_id, day',
+  announced: 'key, created_at',
   settings: 'key, value',
   push_subscriptions: 'endpoint, fairy_id, p256dh, auth',
 };

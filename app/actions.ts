@@ -8,7 +8,7 @@ import { CREATIVE, SPORTS, dayBefore, helsinkiDay, isDay, loggableDays } from '@
 import { AVATAR_BGS, AVATAR_EMOJIS } from '@/lib/avatar';
 import { loadGarden } from '@/lib/data';
 import { hashPin, verifyPin } from '@/lib/pin';
-import { sendPush } from '@/lib/push';
+import { announceAchievements } from '@/lib/announce';
 
 const COOKIE = 'fg_token';
 
@@ -65,6 +65,7 @@ export async function logWorkout(formData: FormData) {
   const { data: fairy } = await supabase.from('fairies').select('id').eq('token', token).maybeSingle();
   if (!fairy) return;
   await supabase.from('workouts').insert({ fairy_id: fairy.id, day, sport, minutes });
+  await announceAchievements();
   revalidatePath('/', 'layout');
   redirect('/kirjaa?ok=liikunta');
 }

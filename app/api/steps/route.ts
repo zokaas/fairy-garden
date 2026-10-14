@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { parseDays } from '@/lib/sync';
+import { dayBefore, helsinkiDay, kindOf } from '@/lib/garden';
+import { WEEK_GOAL, dayFlowers } from '@/lib/weekly';
+import { sendPush } from '@/lib/push';
+import { announceAchievements } from '@/lib/announce';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,5 +35,23 @@ export async function POST(req: Request) {
   const rows = entries.map((e) => ({ fairy_id: fairy.id, day: e.day, steps: Math.max(e.steps, had.get(e.day) ?? 0), updated_at: now }));
   const { error } = await supabase.from('steps').upsert(rows);
   if (error) return NextResponse.json({ error: 'Tallennus epäonnistui' }, { status: 500 });
+
+  // Ilmoitus muille, kun tämän tai eilisen päivän kukka (tai lisäkukka) puhkeaa. Takautuvista päivistä ei pingata.
+  try {
+    const recent = rows.filter((r) => r.day >= dayBefore(helsinkiDay()));
+    if (recent.length) {
+      const { data: work } = await supabase.from('workouts').select('day, sport').eq('fairy_id', fairy.id).in('day', recent.map((r) => r.day));
+      const sportOn = new Set((work ?? []).filter((w) => kindOf(w.sport as string) === 'urheilu').map((w) => w.day as string));
+      const bloomed = recent.filter((r) => {
+        const target = sportOn.has(r.day) ? WEEK_GOAL.stepsSportDay : WEEK_GOAL.stepsRestDay;
+        return dayFlowers(r.steps, target) > dayFlowers(had.get(r.day) ?? 0, target);
+      }).sort((a, b) => b.steps - a.steps)[0];
+      if (bloomed) {
+        const { data: others } = await supabase.from('fairies').select('id').neq('id', fairy.id);
+        await sendPush({ title: `🌸 ${fairy.name}: Kasvatti puutarhaansa kukan`, body: `${bloomed.steps.toLocaleString('fi-FI')} askelta. Hienoa työtä!`, url: '/tekemiset' }, (others ?? []).map((o) => o.id as string));
+      }
+    }
+  } catch {}
+  await announceAchievements();
   return NextResponse.json({ ok: true, name: fairy.name, saved: rows.length, days: rows.map((r) => ({ day: r.day, steps: r.steps })) });
 }
