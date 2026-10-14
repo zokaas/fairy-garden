@@ -30,7 +30,7 @@ export default async function Kirjaa({ searchParams }: { searchParams: { ok?: st
   }));
   return (
     <>
-      <h1>Liikunta ja luovuus</h1>
+      <h1>Kirjaa</h1>
       {searchParams.ok && <p className="toast">{searchParams.ok === 'poistettu' ? 'Kirjaus poistettu' : 'Kirjattu'}</p>}
 
       <section className="card">
