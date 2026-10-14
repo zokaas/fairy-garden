@@ -221,9 +221,6 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
       })()}
 
 
-      {me.hasSteps && (
-        <details className="more">
-          <summary>Lisää: taistelu, polku ja merkit</summary>
       {me.hasSteps && board.length > 1 && (() => {
         const above = myRank > 1 ? board[myRank - 2] : null;
         const below = myRank < board.length ? board[myRank] : null;
@@ -273,6 +270,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         {me.badges.length === 0 && <p className="muted">Ensimmäinen merkki tulee ensimmäisistä askelista.</p>}
         <p className="muted"><Link href="/kisa">Kaikki merkit ja kisan tilanne →</Link></p>
       </section>
+      {me.hasSteps && (
           <div style={{ marginTop: 12 }}>
             <Ticker items={[
         `Ryhmä tänään ${board.reduce((a, b) => a + b.today, 0).toLocaleString('fi-FI')} askelta`,
@@ -283,7 +281,6 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
       ].filter(Boolean)} />
 
           </div>
-        </details>
       )}
       {admin && <p className="muted" style={{ textAlign: 'center' }}><Link href="/yllapito">Ylläpito ja esikatselut</Link></p>}
     </>
