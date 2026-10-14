@@ -7,8 +7,8 @@ assert.equal(points([{ steps: 10_000 }], [{ day: '2026-10-13', sport: 'Sali', mi
 assert.equal(points([], [{ day: '2026-10-13', sport: 'Sali', minutes: 600 }]), 20); // urheilu yksinään antaa pisteitä
 assert.equal(growthIdx(0), 0);
 assert.equal(growthIdx(3), 1);
-assert.equal(growthIdx(31), 3);
-assert.equal(growthIdx(42), 5);
+assert.equal(growthIdx(35), 3);
+assert.equal(growthIdx(50), 5);
 assert.equal(helsinkiDay(new Date('2026-11-28T22:30:00Z')), '2026-11-29');
 assert.ok(isDay('2026-10-09'));
 assert.ok(!isDay('9.10.2026'));
@@ -27,7 +27,7 @@ assert.equal(weekStart('2026-10-18'), '2026-10-12');
 assert.equal(weekStart('2026-10-12'), '2026-10-12');
 import { series, weekdayAvg, sportStats, trend, route, routeText, weeklyMinutes, daysBetween, weeklySteps, dayRange, cumulative, movingAvg, stepBuckets, weekdayVsWeekend, weeklyTotals, bestOf, heatCells, pointsOverTime } from './stats.ts';
 import { challengeFor, groupTarget } from './challenge.ts';
-import { weekGoal, weeksDone, goalHistory, flowerDays } from './weekly.ts';
+import { weekGoal, weeksDone, goalHistory, flowerDays, dayFlowers } from './weekly.ts';
 import { parseDays } from './sync.ts';
 import { syncWatch } from './watch.ts';
 import { kindOf } from './garden.ts';
@@ -126,3 +126,11 @@ assert.equal(forecast(400_000, '2026-10-19', '2026-11-27')!.onTrack, true);
 assert.equal(stepPointsOf([{ steps: 2_400 }, { steps: 2_400 }]), 0);
 assert.equal(stepPointsOf([{ steps: 5_000 }, { steps: 2_600 }]), 3);
 console.log('garden: ok');
+
+assert.equal(dayFlowers(9999, 10000), 0);
+assert.equal(dayFlowers(10000, 10000), 1);
+assert.equal(dayFlowers(19999, 10000), 1);
+assert.equal(dayFlowers(20000, 10000), 2);
+assert.equal(dayFlowers(30000, 10000), 3);
+assert.equal(dayFlowers(17000, 7000), 2);
+assert.equal(flowerDays([{ day: '2026-10-12', steps: 30000 }], []), 3);

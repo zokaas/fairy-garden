@@ -14,13 +14,13 @@ export type Kind = 'urheilu' | 'luova';
 export const kindOf = (sport: string): Kind => ((CREATIVE as readonly string[]).includes(sport) ? 'luova' : 'urheilu');
 
 /** Puutarhan palkinnot aukeavat kukkamäärän mukaan (ei erillisiä tasoja). Indeksi 0..5 kertoo montako porrasta on avattu. */
-export const GROWTH = [0, 3, 10, 20, 32, 42] as const;
+export const GROWTH = [0, 3, 10, 22, 36, 50] as const;
 export const UNLOCKS = [
   { at: 3, text: 'Keijusi kasvaa 🌱' },
   { at: 10, text: 'Sienet puutarhaan 🍄' },
-  { at: 20, text: 'Mökki puutarhaan 🏡' },
-  { at: 32, text: 'Sateenkaari 🌈' },
-  { at: 42, text: 'Linna ja kruunu 🏰👑' },
+  { at: 22, text: 'Mökki puutarhaan 🏡' },
+  { at: 36, text: 'Sateenkaari 🌈' },
+  { at: 50, text: 'Linna ja kruunu 🏰👑' },
 ] as const;
 export function growthIdx(flowers: number): number {
   let idx = 0;

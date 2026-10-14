@@ -261,7 +261,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
             </li>
           ))}
         </ul>
-        <p className="muted">Jokainen päivä, jolloin saavutat askeltavoitteen, on yksi kukka. Sinulla on nyt {me.flowers}.</p>
+        <p className="muted">Päivän askeltavoite on yksi kukka, ja jokainen täysi 10 000 askelta sen yli tuo lisäkukan. Sinulla on nyt {me.flowers}.</p>
       </section>
       {me.hasSteps && <Journey steps={me.totalSteps} avatar={me} stageIdx={stageIdx} note={forecast(me.totalSteps, helsinkiDay(), new Date(contest.end).toLocaleDateString('sv-SE', { timeZone: 'Europe/Helsinki' }))?.text} />}
 
