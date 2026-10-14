@@ -127,7 +127,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
       />
       <p className="muted" style={{ textAlign: 'center', marginTop: -6 }}>
         {me.hasSteps ? (
-          <>🌸 {me.flowers} {me.flowers === 1 ? 'kukka' : 'kukkaa'} puutarhassa{me.today >= me.goal.todayTarget && <><br />Tämän päivän kukka on puhjennut ✓</>}{(() => { const n = UNLOCKS.find((u) => me.flowers < u.at); return n ? <><br /><Link href="/profiili#palkinnot">Seuraava palkinto: {n.text} ({n.at - me.flowers} kukan päästä) →</Link></> : null; })()}</>
+          <>🌸 {me.flowers} {me.flowers === 1 ? 'kukka' : 'kukkaa'} puutarhassa{me.today >= me.goal.todayTarget && <><br />Tämän päivän kukka on puhjennut ✓</>}{(() => { const n = UNLOCKS.find((u) => me.flowers < u.at); return n ? <><br /><Link href={`/keiju/${me.id}#palkinnot`}>Seuraava palkinto: {n.text} ({n.at - me.flowers} kukan päästä) →</Link></> : null; })()}</>
         ) : 'Jokainen päivä, jolloin saavutat askeltavoitteen, kasvattaa puutarhaasi kukan.'}
       </p>
       {!me.hasSteps ? (
@@ -228,7 +228,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
           {BADGES.filter((b) => me.badges.includes(b.id)).map((b) => <span key={b.id} title={b.name}>{b.emoji}</span>)}
         </div>
         {me.badges.length === 0 && <p className="muted">Ensimmäinen merkki tulee ensimmäisistä askelista.</p>}
-        <p className="muted"><Link href="/profiili#merkit">Kaikki merkit →</Link></p>
+        <p className="muted"><Link href={`/keiju/${me.id}#merkit`}>Kaikki merkit →</Link></p>
       </section>
       {me.hasSteps && (
           <div style={{ marginTop: 12 }}>
