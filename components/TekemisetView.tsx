@@ -64,11 +64,12 @@ export default async function TekemisetView({ paivia }: { paivia?: string }) {
   const href = (n: number) => `/paivat?nakyma=kaikki&paivia=${n}`;
 
   const visible = (p: Person) => p.steps > 0 || p.sport.size > 0 || p.creative.size > 0;
-  const order = (a: Person, b: Person) => b.steps - a.steps;
+  const rankOf = new Map(board.map((b, i) => [b.id, i]));
+  const order = (a: Person, b: Person) => (rankOf.get(a.id) ?? 0) - (rankOf.get(b.id) ?? 0);
 
   return (
     <>
-      <p className="sub">Kaikkien keijujen päivät: askeleet, urheilu ja luovat harrastukset. 🌸 = päivän tavoite täyttyi. Yksi rivi per keiju per päivä.</p>
+      <p className="sub">Kaikkien keijujen päivät: askeleet, urheilu ja luovat harrastukset. 🌸 = päivän tavoite täyttyi. Yksi rivi per keiju per päivä, keijut aina kisan sijajärjestyksessä.</p>
 
       <section className="card">
         <div className="tiles">
