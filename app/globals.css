@@ -299,18 +299,12 @@ h1 { animation: h1in 1s var(--ease) both; }
 /* Latausluuranka */
 .skel { background: linear-gradient(90deg, var(--surface) 0%, var(--surface-2) 50%, var(--surface) 100%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; border: 1px solid var(--line); border-radius: 14px; margin-bottom: 12px; }
 
-/* Sivunsiirtymät (Safari 18.2+, muualla ei vaikutusta) */
-@view-transition { navigation: auto; }
-.tabs { view-transition-name: tabs; }
-::view-transition-old(root) { animation: vt-out .18s ease both; }
-::view-transition-new(root) { animation: vt-in .4s var(--ease) both; }
-@keyframes vt-out { to { opacity: 0; transform: translateY(-6px); } }
-@keyframes vt-in { from { opacity: 0; transform: translateY(10px); } }
+/* Alapalkki pysyy kiinni näkymän alareunassa myös iOS-sovelluksessa (oma kerros). */
+.tabs { transform: translateZ(0); -webkit-transform: translateZ(0); will-change: transform; }
 
 @media (prefers-reduced-motion: reduce) {
   h1, .ticker-track, .btn:not(.ghost)::after, .card.setup, .secret.open, .quests.all, .skel { animation: none !important; }
   .rv { opacity: 1; transform: none; filter: none; }
-  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
 }
 
 /* Kärki: ero sinuun */
