@@ -36,7 +36,7 @@ export default async function Kisa({ searchParams }: { searchParams: { avaa?: st
         <>
           {(over || contest.prize) && (
             <section className={`card secret ${over ? 'open' : ''}`}>
-              {over && top[0] && <p>🏆 <b>Kisa on ohi!</b> Reippain keiju on <b>{top[0].name}</b> {fp(top[0].pts)} pisteellä 🎉</p>}
+              {over && top[0] && <p>🏆 <b>Kisa on ohi!</b> Reippain keiju on <b>{top[0].name}</b> {fp(top[0].pts)} pisteellä 🎉 <Link href={contest.over ? '/loppu' : '/loppu?avaa=1'}>Loppukatsaus →</Link></p>}
               {contest.prize && <p>🎁 Palkinto: <b>{contest.prize}</b></p>}
             </section>
           )}
