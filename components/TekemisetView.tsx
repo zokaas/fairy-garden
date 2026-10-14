@@ -8,21 +8,25 @@ import { WEEK_GOAL, dayFlowers } from '@/lib/weekly';
 const WD = ['sunnuntai', 'maanantai', 'tiistai', 'keskiviikko', 'torstai', 'perjantai', 'lauantai'];
 const dm = (d: string) => `${Number(d.slice(8))}.${Number(d.slice(5, 7))}.`;
 const clock = (iso?: string) => (iso ? new Intl.DateTimeFormat('fi-FI', { timeZone: 'Europe/Helsinki', hour: '2-digit', minute: '2-digit' }).format(new Date(iso)) : '');
+const fi = (n: number) => n.toLocaleString('fi-FI');
 
-/** Kaikkien keijujen kirjaukset ja päivän kukat päivittäin ryhmiteltynä (Päivät-sivun Kaikki-välilehti). */
-export default async function TekemisetView() {
+const FILTERS = [['kaikki', 'Kaikki'], ['urheilu', '💪 Urheilu'], ['luova', '🎨 Luova'], ['kukat', '🌸 Kukat']] as const;
+type Filter = (typeof FILTERS)[number][0];
+const PAGE = 7;
+
+/**
+ * Kaikkien keijujen päivät (Päivät-sivun Kaikki-välilehti): yksi rivi per keiju per päivä,
+ * tuoreimmat päivät auki ja vanhemmat kokoon taitettuna, suodattimena kaikki / urheilu / luova / kukat.
+ */
+export default async function TekemisetView({ rajaa, paivia }: { rajaa?: string; paivia?: string }) {
   const [{ board, me }, raw] = await Promise.all([loadGarden(), loadRaw()]);
   if (!me) redirect('/');
+  const filter: Filter = FILTERS.some(([k]) => k === rajaa) ? (rajaa as Filter) : 'kaikki';
+  const shown = Math.min(60, Math.max(PAGE, Number(paivia) || PAGE));
   const who = new Map(board.map((b) => [b.id, b]));
   const today = helsinkiDay();
   const yesterday = dayBefore(today);
   const wk = weekStart(today);
-
-  const entries = raw.workouts
-    .map((w) => ({ ...w, created: (w as { created_at?: string }).created_at ?? '' }))
-    .filter((w) => who.has(w.fairy_id))
-    .sort((a, b) => (a.day === b.day ? b.created.localeCompare(a.created) : b.day.localeCompare(a.day)))
-    .slice(0, 80);
 
   const thisWeek = raw.workouts.filter((w) => w.day >= wk && who.has(w.fairy_id));
   const counts = new Map<string, number>();
@@ -30,31 +34,45 @@ export default async function TekemisetView() {
   const topSport = [...counts.entries()].sort((a, b) => b[1] - a[1])[0];
   const doers = new Set(thisWeek.map((w) => w.fairy_id)).size;
 
-  // Päivän kukat viimeisen 7 päivän ajalta näkyvät syötteessä omina kohtinaan.
+  // Yksi merkintä per keiju per päivä: kukat, askeleet ja lajit koottuna.
+  type Person = { id: string; day: string; steps: number; flowers: number; sport: Map<string, number>; creative: Map<string, number>; latest: string; count: number };
   const sportDays = new Set(raw.workouts.filter((w) => kindOf(w.sport) === 'urheilu').map((w) => `${w.fairy_id}|${w.day}`));
-  let oldest = today;
-  for (let i = 0; i < 7; i++) oldest = dayBefore(oldest);
-  const blooms = raw.steps
-    .filter((r) => r.day >= oldest && who.has(r.fairy_id))
-    .map((r) => ({ fairy_id: r.fairy_id, day: r.day, steps: r.steps, n: dayFlowers(r.steps, sportDays.has(`${r.fairy_id}|${r.day}`) ? WEEK_GOAL.stepsSportDay : WEEK_GOAL.stepsRestDay) }))
-    .filter((r) => r.n > 0);
-
-  type Item = { kind: 'w'; e: (typeof entries)[number] } | { kind: 's'; b: (typeof blooms)[number] };
-  const groups: { day: string; items: Item[] }[] = [];
-  const put = (day: string, it: Item) => {
-    let g = groups.find((x) => x.day === day);
-    if (!g) groups.push((g = { day, items: [] }));
-    g.items.push(it);
+  const people = new Map<string, Person>();
+  const get = (id: string, day: string) => {
+    const k = `${id}|${day}`;
+    let p = people.get(k);
+    if (!p) people.set(k, (p = { id, day, steps: 0, flowers: 0, sport: new Map(), creative: new Map(), latest: '', count: 0 }));
+    return p;
   };
-  // Päivän sisällä: ensin päivän kukat (eniten askelia ensin), sitten kirjaukset uusimmasta vanhimpaan.
-  for (const b of [...blooms].sort((x, y) => y.steps - x.steps)) put(b.day, { kind: 's', b });
-  for (const e of entries) put(e.day, { kind: 'w', e });
-  groups.sort((a, b) => b.day.localeCompare(a.day));
+  for (const r of raw.steps) {
+    if (!who.has(r.fairy_id)) continue;
+    const n = dayFlowers(r.steps, sportDays.has(`${r.fairy_id}|${r.day}`) ? WEEK_GOAL.stepsSportDay : WEEK_GOAL.stepsRestDay);
+    if (n > 0) Object.assign(get(r.fairy_id, r.day), { steps: r.steps, flowers: n });
+  }
+  for (const w of raw.workouts) {
+    if (!who.has(w.fairy_id)) continue;
+    const p = get(w.fairy_id, w.day);
+    const m = kindOf(w.sport) === 'luova' ? p.creative : p.sport;
+    m.set(w.sport, (m.get(w.sport) ?? 0) + w.minutes);
+    const created = (w as { created_at?: string }).created_at ?? '';
+    if (created > p.latest) p.latest = created;
+    p.count++;
+  }
+
+  const byDay = new Map<string, Person[]>();
+  for (const p of people.values()) byDay.set(p.day, [...(byDay.get(p.day) ?? []), p]);
+  const allDays = [...byDay.keys()].sort((a, b) => b.localeCompare(a));
+  const days = allDays.slice(0, shown);
   const label = (d: string) => (d === today ? 'Tänään' : d === yesterday ? 'Eilen' : `${WD[new Date(`${d}T12:00:00Z`).getUTCDay()]} ${dm(d)}`);
+  const list = (m: Map<string, number>) => [...m.entries()].sort((a, b) => b[1] - a[1]).map(([s, min]) => `${s} ${min} min`).join(', ');
+  const href = (f: Filter, n?: number) => `/paivat?nakyma=kaikki${f !== 'kaikki' ? `&rajaa=${f}` : ''}${n && n > PAGE ? `&paivia=${n}` : ''}`;
+
+  const visible = (p: Person) => (filter === 'urheilu' ? p.sport.size > 0 : filter === 'luova' ? p.creative.size > 0 : filter === 'kukat' ? p.flowers > 0 : p.flowers > 0 || p.sport.size > 0 || p.creative.size > 0);
+  const order = (a: Person, b: Person) => (a.latest || '').localeCompare(b.latest || '') * -1 || b.steps - a.steps;
 
   return (
     <>
-      <p className="sub">Tässä näkyvät kaikkien keijujen urheilu- ja luovuuskirjaukset sekä päivän kukat. 💪 = urheilu, 🎨 = luova, 🌸 = päivän askeltavoite.</p>
+      <p className="sub">Kaikkien keijujen päivät: kukat, urheilu ja luovat harrastukset. Yksi rivi per keiju per päivä.</p>
 
       <section className="card">
         <div className="tiles">
@@ -64,35 +82,53 @@ export default async function TekemisetView() {
         </div>
       </section>
 
-      {groups.length === 0 ? (
+      <div className="chips" role="tablist" aria-label="Suodata">
+        {FILTERS.map(([k, name]) => <Link key={k} role="tab" aria-selected={filter === k} className={`chip${filter === k ? ' on' : ''}`} href={href(k)}>{name}</Link>)}
+      </div>
+
+      {days.length === 0 ? (
         <section className="card"><p className="muted">Ei vielä kirjauksia. Ensimmäinen kirjaus tulee tähän näkyviin.</p></section>
-      ) : groups.map((g) => (
-        <section key={g.day} className="card">
-          <h2>{label(g.day)}</h2>
-          <ul className="plain feed">
-            {g.items.map((it, i) => {
-              if (it.kind === 's') {
-                const f = who.get(it.b.fairy_id)!;
-                return (
-                  <li key={`s-${f.id}-${it.b.day}`} className={f.mine ? 'me' : ''}>
-                    <Link href={`/keiju/${f.id}`} aria-label={`Avaa ${f.name}`}><Avatar a={f} size={36} stage={f.stageIdx} /></Link>
-                    <span className="fd-t"><Link href={`/keiju/${f.id}`}><b>{f.name}{f.mine ? ' (sinä)' : ''}</b></Link><small>{'🌸'.repeat(Math.min(it.b.n, 4))} päivän askeltavoite täyttyi · {it.b.steps.toLocaleString('fi-FI')} askelta</small></span>
-                  </li>
-                );
-              }
-              const e = it.e;
-              const f = who.get(e.fairy_id)!;
-              const luova = kindOf(e.sport) === 'luova';
-              return (
-                <li key={`${e.fairy_id}-${e.day}-${i}`} className={f.mine ? 'me' : ''}>
-                  <Link href={`/keiju/${f.id}`} aria-label={`Avaa ${f.name}`}><Avatar a={f} size={36} stage={f.stageIdx} /></Link>
-                  <span className="fd-t"><Link href={`/keiju/${f.id}`}><b>{f.name}{f.mine ? ' (sinä)' : ''}</b></Link><small>{luova ? '🎨' : '💪'} {e.sport} · {e.minutes} min{e.created ? ` · klo ${clock(e.created)}` : ''}</small></span>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-      ))}
+      ) : days.map((d) => {
+        const all = byDay.get(d)!;
+        const rows = all.filter(visible).sort(order);
+        const movers = all.filter((p) => p.sport.size > 0 || p.creative.size > 0).length;
+        const fl = all.reduce((a, p) => a + p.flowers, 0);
+        const ent = all.reduce((a, p) => a + p.count, 0);
+        return (
+          <details key={d} className="card dayfold" open={d === today || d === yesterday}>
+            <summary>
+              <b>{label(d)}</b>
+              <small>{movers > 0 ? `${movers} keijua liikkui · ` : ''}{fl} 🌸{ent > 0 ? ` · ${ent} kirjausta` : ''}</small>
+            </summary>
+            {rows.length === 0 ? <p className="muted">Ei tämän suodattimen kohteita.</p> : (
+              <ul className="plain feed">
+                {rows.map((p) => {
+                  const f = who.get(p.id)!;
+                  const showFl = (filter === 'kaikki' || filter === 'kukat') && p.flowers > 0;
+                  const showSp = (filter === 'kaikki' || filter === 'urheilu') && p.sport.size > 0;
+                  const showCr = (filter === 'kaikki' || filter === 'luova') && p.creative.size > 0;
+                  return (
+                    <li key={p.id} className={f.mine ? 'me' : ''}>
+                      <Link href={`/keiju/${f.id}`} aria-label={`Avaa ${f.name}`}><Avatar a={f} size={36} stage={f.stageIdx} /></Link>
+                      <span className="fd-t">
+                        <Link href={`/keiju/${f.id}`}><b>{f.name}{f.mine ? ' (sinä)' : ''}</b></Link>
+                        {showFl && <small>{'🌸'.repeat(Math.min(p.flowers, 4))} {fi(p.steps)} askelta</small>}
+                        {showSp && <small>💪 {list(p.sport)}</small>}
+                        {showCr && <small>🎨 {list(p.creative)}</small>}
+                      </span>
+                      {p.latest && <span className="fd-time">klo {clock(p.latest)}</span>}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </details>
+        );
+      })}
+
+      {allDays.length > shown && (
+        <Link className="btn ghost" href={href(filter, shown + PAGE)}>Näytä {Math.min(PAGE, allDays.length - shown)} päivää lisää</Link>
+      )}
       <Link className="btn ghost" href="/kirjaa">Kirjaa oma liikunta</Link>
     </>
   );

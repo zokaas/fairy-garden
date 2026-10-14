@@ -620,3 +620,14 @@ ul.nextlist li { line-height: 1.4; }
 .mini-seg { display: inline-flex; border: 1px solid var(--line-2); border-radius: 999px; padding: 2px; }
 .mini-seg a { padding: 4px 12px; border-radius: 999px; font: 600 .78rem var(--sans); text-decoration: none; color: var(--fg-3); }
 .mini-seg a.on { background: var(--fg); color: var(--bg); }
+
+/* Päivät › Kaikki: taitettavat päivät ja kellonaika */
+details.dayfold > summary { list-style: none; cursor: pointer; display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+details.dayfold > summary::-webkit-details-marker { display: none; }
+details.dayfold > summary b { font: 600 1.05rem var(--sans); }
+details.dayfold > summary small { color: var(--fg-2); font-size: .78rem; text-align: right; }
+details.dayfold > summary::after { content: '▸'; color: var(--fg-3); margin-left: 4px; transition: transform .15s; }
+details.dayfold[open] > summary::after { transform: rotate(90deg); }
+details.dayfold[open] > summary { margin-bottom: 8px; }
+.feed .fd-time { margin-left: auto; font: 500 .72rem var(--mono); color: var(--fg-3); white-space: nowrap; }
+.chips .chip.on { background: var(--fg); color: var(--bg); border-color: transparent; }
