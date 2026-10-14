@@ -56,13 +56,7 @@ export default async function Ohje() {
 
       <section className="card">
         <h2>👟 Miten askeleet päivittyvät?</h2>
-        <ul className="plain">
-          <li>Askeleet siirtyvät <b>Fairy Garden -oikotiellä</b> (Komennot-sovellus). Asennus kestää noin 5 min ja tehdään kerran.</li>
-          <li>Kun avaat sovelluksen <b>Koti-valikon kuvakkeesta</b>, askeleet synkataan itsestään (enintään 2 tunnin välein).</li>
-          <li>Voit synkata myös käsin etusivun napista <b>Synkkaa askeleet nyt</b>.</li>
-          <li>Etusivun rivi <b>"Askeleet synkattu"</b> kertoo, milloin luku on viimeksi päivitetty.</li>
-          <li>Jos lukusi on selvästi suurempi kuin Terveys-sovelluksessa, ks. <Link href="/shortcut">Synkka-ohje</Link>.</li>
-        </ul>
+        <p>Askeleet siirtyvät iPhonesta <b>Fairy Garden -oikotiellä</b> itsestään, kun avaat sovelluksen Koti-valikosta (enintään 2 tunnin välein), tai etusivun napista. Asennus tehdään kerran. Vaiheet, tilan tarkistus ja ongelmanratkaisu: <Link href="/shortcut">Askelten synkka →</Link></p>
       </section>
 
       <section className="card">
@@ -71,7 +65,7 @@ export default async function Ohje() {
       </section>
 
       <div className="row">
-        <Link className="btn" href="/shortcut">Synkka-ohje</Link>
+        <Link className="btn" href="/shortcut">Askelten synkka</Link>
         <Link className="btn ghost" href="/kisa">Takaisin kisaan</Link>
       </div>
     </>

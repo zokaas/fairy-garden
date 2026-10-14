@@ -41,8 +41,8 @@ export default async function Profiili({ searchParams }: { searchParams: { uusi?
           </section>
           <section className="card">
             <h2>Askelten synkka</h2>
-            <p className="muted">Oikotie, jolla iPhone lähettää askeleesi automaattisesti.</p>
-            <a className="btn ghost" href="/shortcut">Avaa Synkka-ohje</a>
+            <p className="muted">Asennus, tila ja ongelmanratkaisu: kaikki askelten siirrosta yhdessä paikassa.</p>
+            <a className="btn ghost" href="/shortcut">Avaa Askelten synkka</a>
           </section>
           <section className="card">
             <h2>Ulkoasu</h2>
