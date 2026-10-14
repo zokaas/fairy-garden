@@ -7,6 +7,9 @@ import { dayBefore, fp, helsinkiDay, kindOf, phaseOf } from '@/lib/garden';
 import { WEEK_GOAL } from '@/lib/weekly';
 import { byDay } from '@/lib/stats';
 import Garden from '@/components/Garden';
+import Journey from '@/components/Journey';
+import { forecast } from '@/lib/forecast';
+import { getContest } from '@/lib/contest';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,7 +19,7 @@ const dm = (d: string) => `${Number(d.slice(8))}.${Number(d.slice(5, 7))}.`;
 
 export default async function Keiju({ params }: { params: { id: string } }) {
   if (!cookies().get('fg_token')) redirect('/');
-  const [{ board, me }, raw] = await Promise.all([loadGarden(), loadRaw()]);
+  const [{ board, me }, raw, contest] = await Promise.all([loadGarden(), loadRaw(), getContest()]);
   if (!me) redirect('/');
   const f = board.find((b) => b.id === params.id);
   if (!f) notFound();
@@ -61,6 +64,8 @@ export default async function Keiju({ params }: { params: { id: string } }) {
           <div><b>{f.creativeToday > 0 ? `${f.creativeToday} min` : '–'}</b><span>luovaa tänään</span></div>
         </div>
       </section>
+
+      <Journey steps={f.totalSteps} avatar={f} stageIdx={f.stageIdx} note={!f.mine ? undefined : forecast(f.totalSteps, helsinkiDay(), new Date(contest.end).toLocaleDateString('sv-SE', { timeZone: 'Europe/Helsinki' }))?.text} />
 
       <section className="card">
         <h2>Viikon tavoite</h2>
