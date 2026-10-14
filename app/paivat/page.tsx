@@ -101,7 +101,7 @@ export default async function Paivat({ searchParams }: { searchParams: { nakyma?
         );
       })}
       <p className="muted">Palkki täyttyy päivän tavoitteeseen (10 000 askelta, urheilupäivänä 7 000). 🌸 = päivän kukka, ja jokainen täysi 10 000 askelta tavoitteen yli tuo lisäkukan.</p>
-      <Link className="btn ghost" href="/tilastot">Lisää tilastoja</Link>
+      <Link className="btn ghost" href="/tilastot">Tilastot</Link>
     </>
   );
 }

@@ -191,19 +191,14 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
   return (
     <>
       <h1>Tilastot</h1>
-      <div className="seg">
-        <Link href={jakso ? `/tilastot?jakso=${jakso}` : '/tilastot'} className={tab === 'yhteenveto' ? 'on' : ''}>Yhteenveto</Link>
-        <Link href={`/tilastot?nayta=mina${J}`} className={tab !== 'yhteenveto' ? 'on' : ''}>Lisää tilastoja</Link>
+      <div className="seg six" role="tablist">
+        <Link href={jakso ? `/tilastot?jakso=${jakso}` : '/tilastot'} className={tab === 'yhteenveto' ? 'on' : ''}>Koonti</Link>
+        <Link href={`/tilastot?nayta=mina${J}`} className={tab === 'mina' ? 'on' : ''}>Minä</Link>
+        <Link href={`/tilastot?nayta=ryhma${J}`} className={tab === 'ryhma' ? 'on' : ''}>Ryhmä</Link>
+        <Link href={`/tilastot?nayta=urheilu${J}`} className={tab === 'urheilu' ? 'on' : ''}>Urheilu</Link>
+        <Link href={`/tilastot?nayta=vertailu${J}`} className={tab === 'vertailu' ? 'on' : ''}>Vertailu</Link>
+        <Link href={`/tilastot?nayta=ennatykset${J}`} className={tab === 'ennatykset' ? 'on' : ''}>Ennätys</Link>
       </div>
-      {tab !== 'yhteenveto' && (
-        <div className="seg five">
-          <Link href={`/tilastot?nayta=mina${J}`} className={tab === 'mina' ? 'on' : ''}>Minä</Link>
-          <Link href={`/tilastot?nayta=ryhma${J}`} className={tab === 'ryhma' ? 'on' : ''}>Ryhmä</Link>
-          <Link href={`/tilastot?nayta=urheilu${J}`} className={tab === 'urheilu' ? 'on' : ''}>Urheilu</Link>
-          <Link href={`/tilastot?nayta=vertailu${J}`} className={tab === 'vertailu' ? 'on' : ''}>Vertailu</Link>
-          <Link href={`/tilastot?nayta=ennatykset${J}`} className={tab === 'ennatykset' ? 'on' : ''}>Ennätys</Link>
-        </div>
-      )}
 
       {['yhteenveto', 'mina', 'ryhma', 'urheilu'].includes(tab) && (
         <div className="seg">
@@ -213,7 +208,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
         </div>
       )}
       <p className="muted" style={{ margin: '0 0 8px' }}>{({
-        yhteenveto: 'Omat luvut lyhyesti ja vertailu ryhmään.',
+        yhteenveto: 'Koonti: omat luvut lyhyesti ja vertailu ryhmään.',
         mina: 'Omat askeleesi ja pisteesi tarkemmin: päivät, viikot ja kehitys.',
         ryhma: 'Koko ryhmän luvut: yhteensä ja keskiarvot.',
         urheilu: 'Urheilu ja luovat harrastukset: omat ja ryhmän minuutit sekä lajit.',
@@ -255,7 +250,6 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
           <section className="card">
             <h2>Sinä ja ryhmä<Scope who="mix" /></h2>
             <Compare rows={cmpRows} />
-            <Link className="btn ghost" href={`/tilastot?nayta=mina${J}`} style={{ marginTop: 12 }}>Lisää tilastoja</Link>
           </section>
         </>
       )}
@@ -272,12 +266,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
               [`Tavoitepäivät (${fi(DAILY_GOAL)}+)`, String(goalDays), activeDays.length ? `${Math.round((goalDays / activeDays.length) * 100)} % päivistä` : undefined],
               ['Putki nyt / ennätys', `${me.streak} / ${me.bestRun}`, `hyvä päivä = ${fi(ACTIVE_DAY)}+`],
             ]} />
-          </section>
-          <section className="card">
-            <h2>Viimeiset 14 päivää<Scope who="me" /></h2>
-            <p className="muted" style={{ marginTop: -4 }}><Link href="/paivat">Selaa kaikkia päiviä →</Link></p>
-            <BarChart items={series(mySteps, 14, today).map((d) => ({ label: String(Number(d.day.slice(8))), value: d.steps }))} highlight={13} />
-            <p className="muted">Viikkotrendi: viimeiset 7 pv <b>{fi(tr.last)}</b> askelta vs edelliset 7 pv <b>{fi(tr.prev)}</b> ({trendTxt(tr)}).</p>
+            <p className="muted">Viikkotrendi: viimeiset 7 pv <b>{fi(tr.last)}</b> askelta vs edelliset 7 pv <b>{fi(tr.prev)}</b> ({trendTxt(tr)}). <Link href="/paivat">Päivät →</Link></p>
           </section>
           <section className="card">
             <h2>Askelten kertymä (60 pv)<Scope who="mix" /></h2>
