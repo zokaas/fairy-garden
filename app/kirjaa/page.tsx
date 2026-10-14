@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { loadGarden } from '@/lib/data';
@@ -29,7 +30,7 @@ export default async function Kirjaa({ searchParams }: { searchParams: { ok?: st
       <section className="card">
         <h2>Lisää kirjaus</h2>
         <WorkoutForm action={logWorkout} />
-        <p className="muted">1 piste / 30 min (0,5 p / 15 min). Urheilu on rajatonta, luovasta saa pisteitä enintään 2 h viikossa (kirjata voi enemmänkin). Kävely ratkaisee silti eniten: se kirjautuu itsestään askelista.</p>
+        <p className="muted">Luovasta saa pisteitä enintään 2 h viikossa (kirjata voi enemmänkin). Kaikki säännöt: <Link href="/ohje">Näin kisa toimii →</Link></p>
       </section>
 
       {me && (

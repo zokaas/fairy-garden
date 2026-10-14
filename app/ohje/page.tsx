@@ -45,6 +45,11 @@ export default async function Ohje() {
       </section>
 
       <section className="card">
+        <h2>🔥 Putki</h2>
+        <p>Putki on peräkkäisten päivien määrä, joina kävelit vähintään <b>5 000 askelta</b>. Kesken oleva päivä ei katkaise putkea. Putki ei vaikuta kukkiin, mutta se avaa merkkejä.</p>
+      </section>
+
+      <section className="card">
         <h2>🥂 Matka Albertinkadulle</h2>
         <p>Haltijasi kulkee polkua omilla askelillasi. Perillä olet, kun olet kävellyt <b>{fi(JOURNEY_GOAL)} askelta</b>. Polku on etusivun Lisää-osiossa.</p>
       </section>
