@@ -55,8 +55,8 @@ export default async function Kirjaa({ searchParams }: { searchParams: { ok?: st
         <section className="card">
           <h2>Tämän viikon tavoite</h2>
           <ul className="plain">
-            <li>Urheilupäiviä <b>{me.goal.sportDays} / {WEEK_GOAL.sportDays}</b> (sali, lenkkeily, laskettelu, hiihto, lentopallo, tribe, pilates, tennis…)</li>
-            <li>Luova päivä <b>{me.goal.creativeDays} / {WEEK_GOAL.creativeDays}</b> (piirtäminen, virkkaaminen, lukeminen, soittaminen, ompelu…)</li>
+            <li>Urheilupäiviä <b>{me.goal.sportDays} / {WEEK_GOAL.sportDays}</b> (esim. sali, juoksu, jooga, tanssi, tennis, hiihto, uinti…)</li>
+            <li>Luova päivä <b>{me.goal.creativeDays} / {WEEK_GOAL.creativeDays}</b> (esim. piirtäminen, lukeminen, sudoku, ristikot, virkkaaminen, soittaminen…)</li>
           </ul>
         </section>
       )}

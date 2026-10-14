@@ -585,3 +585,8 @@ ul.todaylist li.me { background: color-mix(in srgb, var(--violet) 6%, transparen
 a.nm, .tl-n a, .fd-t a { color: inherit; text-decoration: none; } a.nm { display: flex; align-items: center; gap: 12px; min-width: 0; } a.nm:active, .tl-n a:active { opacity: .7; }
 .tl-av { display: block; flex: none; }
 .feed .fd-t small { display: block; }
+
+/* Saavutettavuus: näkyvä kohdistus näppäimistölle ja ruudunlukijalle */
+a:focus-visible, button:focus-visible, summary:focus-visible, select:focus-visible { outline: 2px solid var(--violet); outline-offset: 2px; border-radius: 8px; }
+.sync-btn:focus-visible, .profile-btn:focus-visible { outline-offset: 3px; }
+@media (hover: none) { .btn:hover, .sync-btn:hover { filter: none; } }
