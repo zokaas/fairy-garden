@@ -1,3 +1,4 @@
+import { BADGES } from '@/lib/badges';
 import { redirect } from 'next/navigation';
 import { loadGarden } from '@/lib/data';
 import { AVATAR_BGS } from '@/lib/avatar';
@@ -33,6 +34,21 @@ export default async function Profiili({ searchParams }: { searchParams: { uusi?
             <h2>Profiilisi</h2>
             <p className="muted">Näin muut näkevät sinut: puutarha, tavoitteet, päivät ja merkit.</p>
             <a className="btn ghost" href={`/keiju/${me.id}`}>Katso profiilisi</a>
+          </section>
+          <section className="card" id="merkit">
+            <h2>Merkit {me.badges.length}/{BADGES.length}</h2>
+            <div className="badges">
+              {BADGES.map((b) => {
+                const got = me.badges.includes(b.id);
+                return (
+                  <div key={b.id} className={got ? 'badge on' : 'badge'}>
+                    <span>{got ? b.emoji : '🔒'}</span>
+                    <b>{b.name}</b>
+                    <small>{b.desc}</small>
+                  </div>
+                );
+              })}
+            </div>
           </section>
           <section className="card">
             <h2>Ohjeet</h2>

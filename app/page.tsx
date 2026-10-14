@@ -227,7 +227,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
           {BADGES.filter((b) => me.badges.includes(b.id)).map((b) => <span key={b.id} title={b.name}>{b.emoji}</span>)}
         </div>
         {me.badges.length === 0 && <p className="muted">Ensimmäinen merkki tulee ensimmäisistä askelista.</p>}
-        <p className="muted"><Link href="/kisa?nakyma=merkit">Kaikki merkit →</Link></p>
+        <p className="muted"><Link href="/profiili#merkit">Kaikki merkit →</Link></p>
       </section>
       {me.hasSteps && (
           <div style={{ marginTop: 12 }}>

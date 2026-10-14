@@ -50,12 +50,6 @@ export default async function KarkiView({ all, me, lista, nayta }: { all: Fairy[
       <div className="seg six">
         {(Object.keys(LISTS) as ListKey[]).map((k) => <Link key={k} href={href(k, week)} className={k === key ? 'on' : ''}>{LISTS[k].label}</Link>)}
       </div>
-      {key !== 'nousu' && key !== 'tanaan' && (
-        <div className="seg">
-          <Link href={href(key, false)} className={!week ? 'on' : ''}>Koko kausi</Link>
-          <Link href={href(key, true)} className={week ? 'on' : ''}>Tämä viikko</Link>
-        </div>
-      )}
       {key !== 'tanaan' && key !== 'nousu' && <p className="muted" style={{ margin: '-6px 0 12px' }}>{{
         kaikki: 'Kaikki pisteet yhteensä: askeleet, urheilu, luova ja viikkobonukset.',
         askeleet: 'Kisan askeleet yhteensä. Valitse Tämä viikko nähdäksesi viikon askeleet.',
@@ -65,17 +59,17 @@ export default async function KarkiView({ all, me, lista, nayta }: { all: Fairy[
       {key === 'tanaan' && <p className="muted" style={{ margin: '-6px 0 12px' }}>Askeleet tänään. Luvut päivittyvät, kun keiju synkkaa askeleensa.</p>}
       {key === 'nousu' && <p className="muted" style={{ margin: '-6px 0 12px' }}>Kuka on kasvattanut askeleitaan eniten: tämä viikko verrattuna viime viikon samaan ajankohtaan. Tässä voi voittaa kuka tahansa.</p>}
 
-      <section className="card">
-        <h2>Vertailu</h2>
-        <div className="tiles">
-          <div><b>{L.fmt(best)}</b><span>Paras</span></div>
-          <div><b>{L.fmt(Math.round(avg))}</b><span>Ryhmän keskiarvo</span></div>
-          <div><b>{L.fmt(mine)}</b><span>Sinä</span><small>{avg > 0 ? `${mine >= avg ? '+' : '−'}${fi(Math.abs(Math.round(((mine - avg) / avg) * 100)))} % keskiarvoon` : ''}</small></div>
-        </div>
-      </section>
 
       <section className="card">
-        <h2>{key === 'nousu' ? 'Nousu viime viikkoon verrattuna' : key === 'tanaan' ? 'Askeleet tänään' : `${L.label}${week ? ' · viikko' : ' · kausi'}`}</h2>
+        <div className="rank-head">
+          <h2>{key === 'nousu' ? 'Nousu viime viikkoon verrattuna' : key === 'tanaan' ? 'Askeleet tänään' : L.label}</h2>
+          {key !== 'nousu' && key !== 'tanaan' && (
+            <span className="mini-seg">
+              <Link href={href(key, false)} className={!week ? 'on' : ''}>Kausi</Link>
+              <Link href={href(key, true)} className={week ? 'on' : ''}>Viikko</Link>
+            </span>
+          )}
+        </div>
         {board.length === 0 ? <p className="muted">Ei vielä keijuja.</p> : (
           <ol className="rank">
             {board.map((b, i) => {
@@ -93,6 +87,15 @@ export default async function KarkiView({ all, me, lista, nayta }: { all: Fairy[
           </ol>
         )}
         <p className="muted">Pienet luvut oikealla: ero sinuun (+ = edellä sinua). Pisteiden säännöt: <Link href="/ohje">Näin kisa toimii →</Link></p>
+      </section>
+
+      <section className="card">
+        <h2>Sinä ja ryhmä</h2>
+        <div className="tiles">
+          <div><b>{L.fmt(best)}</b><span>Paras</span></div>
+          <div><b>{L.fmt(Math.round(avg))}</b><span>Ryhmän keskiarvo</span></div>
+          <div><b>{L.fmt(mine)}</b><span>Sinä</span><small>{avg > 0 ? `${mine >= avg ? '+' : '−'}${fi(Math.abs(Math.round(((mine - avg) / avg) * 100)))} % keskiarvoon` : ''}</small></div>
+        </div>
       </section>
     </>
   );
