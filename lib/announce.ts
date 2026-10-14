@@ -3,7 +3,7 @@ import { db } from './db';
 import { DEMO } from './demo';
 import { loadGarden } from './data';
 import { BADGES } from './badges';
-import { STOPS, UNLOCKS, weekStart, helsinkiDay } from './garden';
+import { UNLOCKS, weekStart, helsinkiDay } from './garden';
 import { sendPush } from './push';
 
 type Ach = { key: string; title: string; body: string };
@@ -21,15 +21,11 @@ async function achievements(): Promise<Ach[]> {
     if (f.goal.done) out.push({ key: `w:${f.id}:${wk}`, title: `🎯 ${f.name} täytti viikkotavoitteen`, body: `+10 pistettä! Hienoa työtä.` });
     for (const u of UNLOCKS) if (f.flowers >= u.at) out.push({ key: `g:${f.id}:${u.at}`, title: `🌸 ${f.name}: puutarha kasvoi`, body: `${u.at} kukkaa: ${u.text}` });
   }
-  const total = board.reduce((a, f) => a + f.totalSteps, 0);
-  STOPS.forEach((s, i) => {
-    if (s.at > 0 && total >= s.at) out.push({ key: `j:${i}`, title: `${s.emoji} Yhteinen matka: ${s.name}`, body: `Ryhmä on kävellyt ${s.at.toLocaleString('fi-FI')} askelta yhdessä!` });
-  });
   return out;
 }
 
 /**
- * Ilmoittaa kaikille uusista saavutuksista (merkit, viikkotavoite, puutarhan palkinnot, matkan etapit).
+ * Ilmoittaa kaikille uusista saavutuksista (merkit, viikkotavoite, puutarhan palkinnot).
  * Ensimmäisellä ajolla nykyiset saavutukset vain merkitään ilmoitetuiksi, jotta vanhoista ei tule ilmoitusryöppyä.
  * Virheet eivät kaada kutsujaa; jos taulua ei ole (migraatio 007), ei tehdä mitään.
  */

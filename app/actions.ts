@@ -8,7 +8,6 @@ import { CREATIVE, SPORTS, dayBefore, helsinkiDay, isDay, loggableDays } from '@
 import { AVATAR_BGS, AVATAR_EMOJIS } from '@/lib/avatar';
 import { loadGarden } from '@/lib/data';
 import { hashPin, verifyPin } from '@/lib/pin';
-import { sendPush } from '@/lib/push';
 import { announceAchievements } from '@/lib/announce';
 
 const COOKIE = 'fg_token';
@@ -66,17 +65,6 @@ export async function logWorkout(formData: FormData) {
   const { data: fairy } = await supabase.from('fairies').select('id').eq('token', token).maybeSingle();
   if (!fairy) return;
   await supabase.from('workouts').insert({ fairy_id: fairy.id, day, sport, minutes });
-  // Ilmoitus muille, kun kirjaus on tältä tai eiliseltä päivältä (takautuvista ei pingata).
-  if (day >= dayBefore(helsinkiDay())) {
-    try {
-      const [{ data: me }, { data: others }] = await Promise.all([
-        supabase.from('fairies').select('name').eq('id', fairy.id).single(),
-        supabase.from('fairies').select('id').neq('id', fairy.id),
-      ]);
-      const icon = (CREATIVE as readonly string[]).includes(sport) ? '🎨' : '💪';
-      await sendPush({ title: `${icon} ${me?.name ?? 'Joku'} kirjasi ${sport.toLowerCase()}`, body: `${minutes} min. Hienoa työtä!`, url: '/tekemiset' }, (others ?? []).map((o) => o.id as string));
-    } catch {}
-  }
   await announceAchievements();
   revalidatePath('/', 'layout');
   redirect('/kirjaa?ok=liikunta');
