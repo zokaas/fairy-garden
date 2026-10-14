@@ -14,7 +14,7 @@ export default async function KarkiView({ all, me, lista, nayta }: { all: Fairy[
   const key: ListKey = isList(lista) ? lista : 'kaikki';
   const week = nayta === 'viikko';
   const L = LISTS[key];
-  const score = (b: (typeof all)[number]) => (week || key === 'nousu' || key === 'tanaan' ? L.week(b) : L.total(b));
+  const score = (b: (typeof all)[number]) => (week || key === 'nousu' ? L.week(b) : L.total(b));
   const board = [...all].sort((a, b) => score(b) - score(a));
   const medal = ['🥇', '🥈', '🥉'];
   // lajit nimen alle (Urheilu / Luova): valitun jakson kirjaukset lajeittain
@@ -38,7 +38,6 @@ export default async function KarkiView({ all, me, lista, nayta }: { all: Fairy[
 
   const sub = (b: (typeof all)[number]) => {
     if (key === 'kaikki') return `${fp(b.stepPts)} p askelista · ${fp(b.sportOnlyPts)} p urheilusta · ${fp(b.creativePts)} p luovasta${b.bonusPts ? ` · ${b.bonusPts} p viikkotavoitteista` : ''}`;
-    if (key === 'tanaan') return `${b.today >= b.goal.todayTarget ? '✓ päivän tavoite täynnä' : `tavoite ${fi(b.goal.todayTarget)}`} · synkattu ${ago(b.lastSync)}`;
     if (key === 'askeleet') return week ? `${b.week.activeDays} hyvää päivää` : `ka. ${fi(b.avgSteps)} / pv · paras ${fi(b.bestDay)}`;
     if (key === 'nousu') return `tällä viikolla ${fi(b.week.steps)} · viime viikon samaan aikaan ${fi(b.lastWeek.steps)}${b.lastWeek.steps > 0 ? ` (${b.week.steps >= b.lastWeek.steps ? '+' : '−'}${Math.abs(Math.round(((b.week.steps - b.lastWeek.steps) / b.lastWeek.steps) * 100))} %)` : ''}`;
     if (key === 'luova') return `${b.goal.creativeDays} luovaa päivää tällä viikolla`;
@@ -50,20 +49,19 @@ export default async function KarkiView({ all, me, lista, nayta }: { all: Fairy[
       <div className="seg six">
         {(Object.keys(LISTS) as ListKey[]).map((k) => <Link key={k} href={href(k, week)} className={k === key ? 'on' : ''}>{LISTS[k].label}</Link>)}
       </div>
-      {key !== 'tanaan' && key !== 'nousu' && <p className="muted" style={{ margin: '-6px 0 12px' }}>{{
+      {key !== 'nousu' && <p className="muted" style={{ margin: '-6px 0 12px' }}>{{
         kaikki: 'Kaikki pisteet yhteensä: askeleet, urheilu, luova ja viikkobonukset.',
         askeleet: 'Kisan askeleet yhteensä. Valitse Tämä viikko nähdäksesi viikon askeleet.',
         urheilu: 'Urheilun minuutit. Pieni teksti kertoo urheilupäivät tällä viikolla (tavoite 3).',
         luova: 'Luovien harrastusten minuutit. Pisteitä luovasta saa enintään 2 h viikossa.',
       }[key]}{(key === 'urheilu' || key === 'luova') && <> <Link href="/paivat?nakyma=kaikki">Katso kaikkien kirjaukset →</Link></>}</p>}
-      {key === 'tanaan' && <p className="muted" style={{ margin: '-6px 0 12px' }}>Askeleet tänään. Luvut päivittyvät, kun keiju synkkaa askeleensa.</p>}
       {key === 'nousu' && <p className="muted" style={{ margin: '-6px 0 12px' }}>Kuka on kasvattanut askeleitaan eniten: tämä viikko verrattuna viime viikon samaan ajankohtaan. Tässä voi voittaa kuka tahansa.</p>}
 
 
       <section className="card">
         <div className="rank-head">
-          <h2>{key === 'nousu' ? 'Nousu viime viikkoon verrattuna' : key === 'tanaan' ? 'Askeleet tänään' : L.label}</h2>
-          {key !== 'nousu' && key !== 'tanaan' && (
+          <h2>{key === 'nousu' ? 'Nousu viime viikkoon verrattuna' : L.label}</h2>
+          {key !== 'nousu' && (
             <span className="mini-seg">
               <Link href={href(key, false)} className={!week ? 'on' : ''}>Kausi</Link>
               <Link href={href(key, true)} className={week ? 'on' : ''}>Viikko</Link>
@@ -80,13 +78,13 @@ export default async function KarkiView({ all, me, lista, nayta }: { all: Fairy[
                   <Link href={`/keiju/${b.id}`} className="nm"><Avatar a={b} size={38} stage={b.stageIdx} />
                     <span>{b.name}<small>{sub(b)}</small>{(key === 'urheilu' || key === 'luova') && (acts(b.id) ? <small>{key === 'luova' ? '🎨' : '💪'} {acts(b.id)}</small> : <small>ei kirjauksia</small>)}{key === 'askeleet' && <small>synkattu {ago(b.lastSync)}</small>}</span>
                   </Link>
-                  <span className="pt">{L.fmt(score(b))}{diff !== null && <small className={diff > 0 ? 'neg' : 'pos2'}>{diff > 0 ? '+' : diff < 0 ? '−' : ''}{fi(Math.abs(diff))}</small>}</span>
+                  <span className="pt">{L.fmt(score(b))}{diff !== null && <small className="diff">{diff > 0 ? '▲' : diff < 0 ? '▼' : '='} {fi(Math.abs(diff))}</small>}</span>
                 </li>
               );
             })}
           </ol>
         )}
-        <p className="muted">Pienet luvut oikealla: ero sinuun (+ = edellä sinua). Pisteiden säännöt: <Link href="/ohje">Näin kisa toimii →</Link></p>
+        <p className="muted">Pienet luvut oikealla: ▲ = edellä sinua, ▼ = perässä sinua. Pisteiden säännöt: <Link href="/ohje">Näin kisa toimii →</Link></p>
       </section>
 
       <section className="card">
