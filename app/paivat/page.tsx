@@ -35,7 +35,7 @@ export default async function Paivat() {
     const creativeNames = [...new Set(creative.map((x) => x.sport))].join(', ');
     const parts: string[] = [];
     if (!(steps >= target) && day === today) parts.push(`Vielä ${fi(target - steps)} askelta kukkaan`);
-    else if (!(steps >= target) && steps > 0) parts.push(`kukkaan ${fi(target - steps)} askelta`);
+    else if (!(steps >= target) && steps > 0) parts.push(`kukka jäi ${fi(target - steps)} askeleen päähän`);
     if (stepPoints(steps) > 0) parts.push(`${stepPoints(steps)} p askelista`);
     if (sportMins > 0) parts.push(`💪 ${sportNames} ${sportMins} min · ${String(sportPoints(sportMins)).replace('.', ',')} p`);
     const cMins = creative.reduce((a, x) => a + x.minutes, 0);
