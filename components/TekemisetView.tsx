@@ -74,7 +74,7 @@ export default async function TekemisetView({ paivia }: { paivia?: string }) {
       <section className="card">
         <div className="tiles">
           <div><b>{thisWeek.length}</b><span>kirjausta tällä viikolla (kaikki yhteensä)</span></div>
-          <div><b>{doers} / {board.length}</b><span>keijua on kirjannut liikuntaa tällä viikolla</span></div>
+          <div><b>{doers} / {board.length}</b><span>keijua on kirjannut urheilua tai luovaa tällä viikolla</span></div>
           <div><b>{topSport ? topSport[0] : '–'}</b><span>suosituin laji tällä viikolla</span>{topSport && <small>{topSport[1]} kertaa</small>}</div>
         </div>
       </section>
@@ -84,14 +84,15 @@ export default async function TekemisetView({ paivia }: { paivia?: string }) {
       ) : days.map((d) => {
         const all = byDay.get(d)!;
         const rows = all.filter(visible).sort(order);
-        const movers = all.filter((p) => p.sport.size > 0 || p.creative.size > 0).length;
+        const sporters = all.filter((p) => p.sport.size > 0).length;
+        const creators = all.filter((p) => p.creative.size > 0).length;
         const fl = all.reduce((a, p) => a + p.flowers, 0);
         const stepsAll = all.reduce((a, p) => a + p.steps, 0);
         return (
           <details key={d} className="card dayfold" open={d === today || d === yesterday}>
             <summary>
               <b>{label(d)}</b>
-              <small>{fi(stepsAll)} askelta · {fl} 🌸{movers > 0 ? ` · ${movers} liikkui` : ''}</small>
+              <small>{fi(stepsAll)} askelta · {fl} 🌸{sporters > 0 ? ` · 💪 ${sporters}` : ''}{creators > 0 ? ` · 🎨 ${creators}` : ''}</small>
             </summary>
             {rows.length === 0 ? <p className="muted">Ei kirjauksia.</p> : (
               <ul className="plain feed">
