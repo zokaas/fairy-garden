@@ -605,3 +605,7 @@ ol.trail-list a { color: inherit; text-decoration: none; overflow: hidden; text-
 
 /* Puutarhan puhekupla: vaalea ja pehmeä, ei musta vaaleassa tilassa */
 .bubble { background: #ffffffeb; color: #18181b; border: 1px solid #00000014; box-shadow: 0 4px 16px #0000001f; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+
+/* Etusivun "Seuraavaksi" */
+ul.nextlist { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+ul.nextlist li { line-height: 1.4; }

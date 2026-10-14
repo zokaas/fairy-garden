@@ -224,42 +224,21 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
       {me.hasSteps && board.length > 1 && (() => {
         const above = myRank > 1 ? board[myRank - 2] : null;
         const below = myRank < board.length ? board[myRank] : null;
-        const rows = [above, me, below].filter(Boolean) as typeof board;
-        const hint = above
-          ? `Keijuun ${above.name} on ${fp(above.pts - me.pts)} pistettä. Jokainen 2 500 askelta päivässä tuo 1 pisteen.`
-          : below ? `Johdat! Keiju ${below.name} on ${fp(me.pts - below.pts)} pisteen päässä.` : '';
+        const line = above
+          ? `Keijuun ${above.name} on ${fp(above.pts - me.pts)} pistettä.`
+          : below ? `Johdat! ${below.name} on ${fp(me.pts - below.pts)} pisteen päässä.` : '';
+        const next = UNLOCKS.find((u) => me.flowers < u.at);
         return (
-          <section className="card duel">
-            <h2>Taistelu kärjestä</h2>
-            <ol className="rank">
-              {rows.map((b) => (
-                <li key={b.id} className={b.mine ? 'me' : ''}>
-                  <span className="pos">{board.indexOf(b) + 1}</span>
-                  <span className="nm"><Avatar a={b} size={34} stage={b.stageIdx} /><span>{b.name}<small>{b.mine ? 'sinä' : b.pts > me.pts ? `+${fp(b.pts - me.pts)} p edellä` : `${fp(me.pts - b.pts)} p perässä`}</small></span></span>
-                  <span className="pt">{fp(b.pts)} p</span>
-                </li>
-              ))}
-            </ol>
-            <p className="muted">{hint}</p>
+          <section className="card">
+            <h2>Seuraavaksi</h2>
+            <ul className="plain nextlist">
+              {line && <li>🏁 <b>Sijoitus {myRank} / {board.length}.</b> {line} <Link href="/kisa">Kärki →</Link></li>}
+              {next && <li>🌸 <b>{next.at - me.flowers} kukan päästä:</b> {next.text} <Link href="/kisa?nakyma=matka">Kaikki palkinnot →</Link></li>}
+            </ul>
           </section>
         );
       })()}
 
-
-
-
-      <section className="card">
-        <h2>Puutarhan palkinnot</h2>
-        <ul className="plain unlocks">
-          {UNLOCKS.map((u) => (
-            <li key={u.at} className={me.flowers >= u.at ? 'done' : ''}>
-              <span className="ob-check">{me.flowers >= u.at ? '✓' : ''}</span>
-              <span><b>{u.at} kukkaa</b><small>{u.text}</small></span>
-            </li>
-          ))}
-        </ul>
-        <p className="muted">Päivän askeltavoite on yksi kukka, ja jokainen täysi 10 000 askelta sen yli tuo lisäkukan. Sinulla on nyt {me.flowers}.</p>
-      </section>
       {me.hasSteps && <Journey steps={me.totalSteps} avatar={me} stageIdx={stageIdx} note={forecast(me.totalSteps, helsinkiDay(), new Date(contest.end).toLocaleDateString('sv-SE', { timeZone: 'Europe/Helsinki' }))?.text} />}
 
       <section className="card">
@@ -268,7 +247,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
           {BADGES.filter((b) => me.badges.includes(b.id)).map((b) => <span key={b.id} title={b.name}>{b.emoji}</span>)}
         </div>
         {me.badges.length === 0 && <p className="muted">Ensimmäinen merkki tulee ensimmäisistä askelista.</p>}
-        <p className="muted"><Link href="/kisa">Kaikki merkit ja kisan tilanne →</Link></p>
+        <p className="muted"><Link href="/kisa?nakyma=merkit">Kaikki merkit →</Link></p>
       </section>
       {me.hasSteps && (
           <div style={{ marginTop: 12 }}>
