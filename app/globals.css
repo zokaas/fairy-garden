@@ -602,3 +602,6 @@ ol.trail-list a { color: inherit; text-decoration: none; overflow: hidden; text-
 
 /* Nimi taivaalle vasempaan yläkulmaan, ettei se peitä puutarhan kukkia */
 .gname { bottom: auto; top: 12px; left: 12px; }
+
+/* Puutarhan puhekupla: vaalea ja pehmeä, ei musta vaaleassa tilassa */
+.bubble { background: #ffffffeb; color: #18181b; border: 1px solid #00000014; box-shadow: 0 4px 16px #0000001f; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
