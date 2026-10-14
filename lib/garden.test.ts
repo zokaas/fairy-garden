@@ -125,4 +125,9 @@ assert.equal(forecast(400_000, '2026-10-19', '2026-11-27')!.onTrack, true);
 // askelpisteet lasketaan päivittäin: 2 400 + 2 400 = 0 p, 5 000 + 2 600 = 2 + 1 = 3 p
 assert.equal(stepPointsOf([{ steps: 2_400 }, { steps: 2_400 }]), 0);
 assert.equal(stepPointsOf([{ steps: 5_000 }, { steps: 2_600 }]), 3);
+import { loggableDays } from './garden.ts';
+assert.equal(loggableDays('2026-10-14').length, 3); // 14., 13., 12.10. (kisa alkaa 12.10.)
+assert.equal(loggableDays('2026-10-14')[0], '2026-10-14');
+assert.equal(loggableDays('2026-10-25').length, 8); // tänään + 7 päivää taaksepäin
+assert.equal(loggableDays('2026-10-25')[7], '2026-10-18');
 console.log('garden: ok');
