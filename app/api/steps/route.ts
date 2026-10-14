@@ -48,7 +48,7 @@ export async function POST(req: Request) {
       }).sort((a, b) => b.steps - a.steps)[0];
       if (bloomed) {
         const { data: others } = await supabase.from('fairies').select('id').neq('id', fairy.id);
-        await sendPush({ title: `🌸 ${fairy.name}: Kasvatti puutarhaansa kukan`, body: `${bloomed.steps.toLocaleString('fi-FI')} askelta. Hienoa työtä!`, url: '/tekemiset' }, (others ?? []).map((o) => o.id as string));
+        await sendPush({ title: `🌸 ${fairy.name}: Kasvatti puutarhaansa kukan`, body: `${bloomed.steps.toLocaleString('fi-FI')} askelta. Hienoa työtä!`, url: '/paivat?nakyma=kaikki' }, (others ?? []).map((o) => o.id as string));
       }
     }
   } catch {}

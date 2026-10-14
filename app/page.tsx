@@ -146,7 +146,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
             </div>
             <p className="muted">{searchParams.synkattu ? '✓ Synkkaus tehty. ' : ''}Askeleet synkattu: <b>{ago(me.lastSync)}</b></p>
             <SyncButton site={process.env.NEXT_PUBLIC_SITE_URL ?? ''} />
-            <p className="muted" style={{ margin: '0 0 6px' }}><Link href="/paivat">Selaa edellisiä päiviä →</Link> · <Link href="/tekemiset">Kuka teki mitä →</Link></p>
+            <p className="muted" style={{ margin: '0 0 6px' }}><Link href="/paivat">Päivät: omat →</Link> · <Link href="/paivat?nakyma=kaikki">kaikkien tekemiset →</Link></p>
             <p className="muted" style={{ margin: '4px 0 0' }}>Miten pisteet lasketaan? <Link href="/ohje">Näin kisa toimii →</Link></p>
           </section>
         );
@@ -188,7 +188,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
                 </li>
               ))}
             </ul>
-            <p className="muted" style={{ margin: '8px 0 0' }}><Link href="/karki?lista=tanaan">Askeleet tänään →</Link> · <Link href="/tekemiset">Kuka teki mitä →</Link></p>
+            <p className="muted" style={{ margin: '8px 0 0' }}><Link href="/karki?lista=tanaan">Askeleet tänään →</Link> · <Link href="/paivat?nakyma=kaikki">Kaikkien tekemiset →</Link></p>
           </section>
         );
       })()}
