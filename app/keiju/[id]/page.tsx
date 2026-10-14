@@ -3,7 +3,7 @@ import { notFound, redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { loadGarden, loadRaw } from '@/lib/data';
 import { BADGES } from '@/lib/badges';
-import { dayBefore, fp, helsinkiDay, kindOf, phaseOf } from '@/lib/garden';
+import { UNLOCKS, dayBefore, fp, helsinkiDay, kindOf, phaseOf } from '@/lib/garden';
 import { WEEK_GOAL } from '@/lib/weekly';
 import { byDay } from '@/lib/stats';
 import Garden from '@/components/Garden';
@@ -116,11 +116,33 @@ export default async function Keiju({ params }: { params: { id: string } }) {
         )}
       </section>
 
-      <section className="card">
+      <section className="card" id="palkinnot">
+        <h2>Puutarhan palkinnot</h2>
+        <ul className="plain unlocks">
+          {UNLOCKS.map((u) => (
+            <li key={u.at} className={f.flowers >= u.at ? 'done' : ''}>
+              <span className="ob-check">{f.flowers >= u.at ? '✓' : ''}</span>
+              <span><b>{u.at} kukkaa</b><small>{u.text}</small></span>
+            </li>
+          ))}
+        </ul>
+        <p className="muted">Päivän askeltavoite on yksi kukka, ja jokainen täysi 10 000 askelta sen yli tuo lisäkukan. {f.mine ? "Sinulla on nyt" : `Puutarhassa on nyt`} {f.flowers} kukkaa.</p>
+      </section>
+
+      <section className="card" id="merkit">
         <h2>Merkit {earned.length}/{BADGES.length}</h2>
-        {earned.length === 0 ? <p className="muted">Ei vielä merkkejä.</p> : (
-          <div className="chips" style={{ justifyContent: 'flex-start' }}>{earned.map((b) => <span key={b.id} className="chip" title={b.desc}>{b.emoji} {b.name}</span>)}</div>
-        )}
+        <div className="badges">
+          {BADGES.map((b) => {
+            const got = f.badges.includes(b.id);
+            return (
+              <div key={b.id} className={got ? 'badge on' : 'badge'}>
+                <span>{got ? b.emoji : '🔒'}</span>
+                <b>{b.name}</b>
+                <small>{b.desc}</small>
+              </div>
+            );
+          })}
+        </div>
       </section>
     </>
   );
