@@ -4,6 +4,7 @@ import { parseDays } from '@/lib/sync';
 import { dayBefore, helsinkiDay, kindOf } from '@/lib/garden';
 import { WEEK_GOAL, dayFlowers } from '@/lib/weekly';
 import { sendPush } from '@/lib/push';
+import { announceAchievements } from '@/lib/announce';
 
 export const dynamic = 'force-dynamic';
 
@@ -47,9 +48,10 @@ export async function POST(req: Request) {
       }).sort((a, b) => b.steps - a.steps)[0];
       if (bloomed) {
         const { data: others } = await supabase.from('fairies').select('id').neq('id', fairy.id);
-        await sendPush({ title: `🌸 ${fairy.name}: päivän kukka puhkesi`, body: `${bloomed.steps.toLocaleString('fi-FI')} askelta. Käy lähettämässä kimallusta ✨`, url: '/tekemiset' }, (others ?? []).map((o) => o.id as string));
+        await sendPush({ title: `🌸 ${fairy.name}: päivän kukka puhkesi`, body: `${bloomed.steps.toLocaleString('fi-FI')} askelta. Hienoa työtä!`, url: '/tekemiset' }, (others ?? []).map((o) => o.id as string));
       }
     }
   } catch {}
+  await announceAchievements();
   return NextResponse.json({ ok: true, name: fairy.name, saved: rows.length, days: rows.map((r) => ({ day: r.day, steps: r.steps })) });
 }

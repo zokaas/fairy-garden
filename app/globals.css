@@ -599,20 +599,3 @@ ol.trail-list { list-style: none; margin: 8px 0 10px; padding: 0; } ol.trail-lis
 ol.trail-list a { color: inherit; text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tl-pos { color: var(--fg-3); font: 500 .72rem var(--mono); } .tl-pct { text-align: right; color: var(--fg-2); font-variant-numeric: tabular-nums; font-size: .78rem; }
 .tl-bar { height: 6px; border-radius: 999px; background: var(--surface-2); overflow: hidden; } .tl-bar i { display: block; height: 100%; border-radius: 999px; background: var(--grad); opacity: .8; }
-
-/* Reaktiot (✨) ja kommentit (💬) syötteessä */
-ul.feed li { flex-wrap: wrap; }
-.feed .rx-row { margin-left: auto; display: flex; align-items: center; gap: 6px; position: relative; }
-.feed .rx { display: flex; }
-.feed .rx button, .feed .cm-open > summary { border: 1px solid var(--line-2); background: transparent; color: var(--fg-2); border-radius: 999px; padding: 6px 12px; font-size: 15px; font-weight: 600; cursor: pointer; list-style: none; }
-.feed .cm-open > summary::-webkit-details-marker { display: none; }
-.feed .rx button.on { background: color-mix(in srgb, var(--violet) 18%, transparent); border-color: var(--violet); color: var(--fg); }
-.feed .rx-own { font-size: 14px; color: var(--fg-2); padding: 0 6px; }
-.feed .cm-form { flex-basis: 100%; display: flex; gap: 8px; position: absolute; right: 0; top: 44px; z-index: 5; width: min(300px, 80vw); padding: 8px; background: var(--card, #fff); border: 1px solid var(--line-2); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,.15); }
-.feed .cm-form input[name=body] { flex: 1; min-width: 0; font-size: 16px; padding: 8px 10px; border: 1px solid var(--line-2); border-radius: 8px; background: transparent; color: var(--fg); }
-.feed .cm-form button { border: 0; background: var(--violet); color: #fff; border-radius: 8px; padding: 8px 12px; font-weight: 600; }
-.feed .cm { flex-basis: 100%; padding: 0 0 2px 48px; }
-.feed .cm small { display: block; color: var(--fg-2); }
-.feed .cm p { margin: 2px 0 0; font-size: 14px; color: var(--fg); }
-ul.feed li .fd-t { flex: 1 1 0; min-width: 0; }
-.feed .rx-row { flex-shrink: 0; }

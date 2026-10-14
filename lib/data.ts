@@ -162,7 +162,7 @@ export async function loadRaw() {
   const supabase = db();
   const [{ data: steps }, { data: workouts }, { data: cheers }] = await Promise.all([
     supabase.from('steps').select('fairy_id, day, steps'),
-    supabase.from('workouts').select('id, fairy_id, day, sport, minutes, created_at'),
+    supabase.from('workouts').select('fairy_id, day, sport, minutes, created_at'),
     supabase.from('cheers').select('from_id, to_id, day'),
   ]);
   return { steps: ((steps ?? []) as import('./stats').StepRow[]).filter((r) => inContest(r.day)), workouts: ((workouts ?? []) as import('./stats').WorkRow[]).filter((r) => inContest(r.day)), cheers: (cheers ?? []) as { from_id: string; to_id: string; day: string }[] };
