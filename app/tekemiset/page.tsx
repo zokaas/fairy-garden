@@ -49,8 +49,9 @@ export default async function Tekemiset() {
     if (!g) groups.push((g = { day, items: [] }));
     g.items.push(it);
   };
+  // Päivän sisällä: ensin päivän kukat (eniten askelia ensin), sitten kirjaukset uusimmasta vanhimpaan.
+  for (const b of [...blooms].sort((x, y) => y.steps - x.steps)) put(b.day, { kind: 's', b });
   for (const e of entries) put(e.day, { kind: 'w', e });
-  for (const b of blooms) put(b.day, { kind: 's', b });
   groups.sort((a, b) => b.day.localeCompare(a.day));
   const label = (d: string) => (d === today ? 'Tänään' : d === yesterday ? 'Eilen' : `${WD[new Date(`${d}T12:00:00Z`).getUTCDay()]} ${dm(d)}`);
 
