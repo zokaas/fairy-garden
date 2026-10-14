@@ -2,8 +2,8 @@
 import { useState } from 'react';
 import { CREATIVE, SPORTS } from '@/lib/garden';
 
-/** Liikunnan ja luovan harrastuksen kirjaus: valitaan laji, kesto ja päivä (tänään tai eilen). */
-export default function WorkoutForm({ action }: { action: (fd: FormData) => void | Promise<void> }) {
+/** Liikunnan ja luovan harrastuksen kirjaus: valitaan laji, kesto ja päivä (tänään tai jollekin viimeisen 7 päivän päivälle). */
+export default function WorkoutForm({ action, days }: { action: (fd: FormData) => void | Promise<void>; days: { value: string; label: string }[] }) {
   const [kind, setKind] = useState<'urheilu' | 'luova'>('urheilu');
   const list = kind === 'urheilu' ? SPORTS : CREATIVE;
   return (
@@ -15,7 +15,7 @@ export default function WorkoutForm({ action }: { action: (fd: FormData) => void
       <select name="sport" key={kind} aria-label="Laji">{list.map((s) => <option key={s}>{s}</option>)}</select>
       <div className="row">
         <input name="minutes" type="number" inputMode="numeric" min={1} max={600} placeholder="Minuuttia" required />
-        <select name="when" aria-label="Päivä"><option value="tanaan">Tänään</option><option value="eilen">Eilen</option></select>
+        <select name="when" aria-label="Päivä">{days.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}</select>
       </div>
       <button className="btn">{kind === 'urheilu' ? 'Lisää urheilu' : 'Lisää luova hetki'}</button>
     </form>

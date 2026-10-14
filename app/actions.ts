@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/lib/db';
-import { CREATIVE, SPORTS, dayBefore, helsinkiDay, isDay } from '@/lib/garden';
+import { CREATIVE, SPORTS, dayBefore, helsinkiDay, isDay, loggableDays } from '@/lib/garden';
 import { AVATAR_BGS, AVATAR_EMOJIS } from '@/lib/avatar';
 import { loadGarden } from '@/lib/data';
 import { hashPin, verifyPin } from '@/lib/pin';
@@ -57,7 +57,10 @@ export async function logWorkout(formData: FormData) {
   const minutes = Math.round(Number(formData.get('minutes')));
   const known = [...SPORTS, ...CREATIVE] as readonly string[];
   if (!token || !known.includes(sport) || !(minutes > 0 && minutes <= 600)) return;
-  const day = formData.get('when') === 'eilen' ? dayBefore(helsinkiDay()) : helsinkiDay();
+  const when = String(formData.get('when') ?? '');
+  const allowed = loggableDays();
+  // vanhat arvot 'tanaan' / 'eilen' toimivat edelleen; muuten odotetaan päivämäärää (vain sallituista päivistä)
+  const day = when === 'eilen' ? dayBefore(helsinkiDay()) : isDay(when) && allowed.includes(when) ? when : helsinkiDay();
   const supabase = db();
   const { data: fairy } = await supabase.from('fairies').select('id').eq('token', token).maybeSingle();
   if (!fairy) return;

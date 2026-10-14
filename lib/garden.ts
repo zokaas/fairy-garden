@@ -158,3 +158,15 @@ export function weekStart(day = helsinkiDay()): string {
   return d.toISOString().slice(0, 10);
 }
 
+
+/** Päivät, joille liikunnan voi kirjata: tänään ja enintään 7 päivää taaksepäin (ei ennen kisan alkua). Uusin ensin. */
+export const LOG_BACK_DAYS = 7;
+export function loggableDays(today = helsinkiDay()): string[] {
+  const days: string[] = [];
+  let d = today;
+  for (let i = 0; i <= LOG_BACK_DAYS; i++) {
+    if (d >= CONTEST_START) days.push(d);
+    d = dayBefore(d);
+  }
+  return days;
+}

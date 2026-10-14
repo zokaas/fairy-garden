@@ -6,7 +6,7 @@ import { WEEK_GOAL } from '@/lib/weekly';
 import WorkoutForm from '@/components/WorkoutForm';
 import { db } from '@/lib/db';
 import { DEMO } from '@/lib/demo';
-import { CREATIVE_WEEK_CAP, dayBefore, helsinkiDay, inContest, kindOf } from '@/lib/garden';
+import { CREATIVE_WEEK_CAP, dayBefore, helsinkiDay, inContest, kindOf, loggableDays } from '@/lib/garden';
 import { deleteWorkout, logWorkout } from '../actions';
 
 export const dynamic = 'force-dynamic';
@@ -22,6 +22,12 @@ export default async function Kirjaa({ searchParams }: { searchParams: { ok?: st
     mine = (data ?? []).filter((w) => inContest(w.day)) as typeof mine;
   }
   const dm = (d: string) => `${Number(d.slice(8))}.${Number(d.slice(5, 7))}.`;
+  const WDN = ['su', 'ma', 'ti', 'ke', 'to', 'pe', 'la'];
+  const todayD = helsinkiDay();
+  const dayOptions = loggableDays().map((d) => ({
+    value: d,
+    label: d === todayD ? 'Tänään' : d === dayBefore(todayD) ? 'Eilen' : `${WDN[new Date(`${d}T12:00:00Z`).getUTCDay()]} ${dm(d)}`,
+  }));
   return (
     <>
       <h1>Liikunta ja luovuus</h1>
@@ -29,7 +35,8 @@ export default async function Kirjaa({ searchParams }: { searchParams: { ok?: st
 
       <section className="card">
         <h2>Lisää kirjaus</h2>
-        <WorkoutForm action={logWorkout} />
+        <WorkoutForm action={logWorkout} days={dayOptions} />
+        <p className="muted" style={{ margin: '6px 0 0' }}>Voit kirjata tähän päivään tai enintään 7 päivää taaksepäin.</p>
         <p className="muted">Luovasta saa pisteitä enintään 2 h viikossa (kirjata voi enemmänkin). Kaikki säännöt: <Link href="/ohje">Näin kisa toimii →</Link></p>
       </section>
 
