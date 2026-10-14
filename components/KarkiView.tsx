@@ -71,14 +71,13 @@ export default async function KarkiView({ all, me, lista, nayta }: { all: Fairy[
         {board.length === 0 ? <p className="muted">Ei vielä keijuja.</p> : (
           <ol className="rank">
             {board.map((b, i) => {
-              const diff = me && !b.mine ? score(b) - mine : null;
               return (
                 <li key={b.id} className={b.mine ? 'me' : ''}>
                   <span className="pos">{medal[i] ?? i + 1}</span>
                   <Link href={`/keiju/${b.id}`} className="nm"><Avatar a={b} size={38} stage={b.stageIdx} />
                     <span>{b.name}<small>{sub(b)}</small>{(key === 'urheilu' || key === 'luova') && (acts(b.id) ? <small>{key === 'luova' ? '🎨' : '💪'} {acts(b.id)}</small> : <small>ei kirjauksia</small>)}{key === 'askeleet' && <small>synkattu {ago(b.lastSync)}</small>}</span>
                   </Link>
-                  <span className="pt">{L.fmt(score(b))}{diff !== null && <small className="diff">{diff > 0 ? '▲' : diff < 0 ? '▼' : '='} {fi(Math.abs(diff))}</small>}</span>
+                  <span className="pt">{L.fmt(score(b))}</span>
                 </li>
               );
             })}
