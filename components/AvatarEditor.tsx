@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import Avatar from './Avatar';
 import FairyFigure from './FairyFigure';
 import PhotoPicker from './PhotoPicker';
-import { AVATAR_BGS, AVATAR_EMOJIS } from '@/lib/avatar';
+import { AVATAR_BGS, AVATAR_EMOJIS, AVATAR_GROUPS } from '@/lib/avatar';
 
 type Mode = 'hahmo' | 'kuva';
 
@@ -63,13 +63,18 @@ export default function AvatarEditor({ initial, stage, photoPath, photoVer, isNe
       {mode === 'hahmo' && (
         <>
           <p className="ed-label ed-sec">1. Hahmo</p>
-          <div className="picker" role="radiogroup" aria-label="Hahmo">
-            {AVATAR_EMOJIS.map((e) => (
-              <button type="button" key={e} role="radio" aria-checked={emoji === e} className={`pick ${emoji === e ? 'sel' : ''}`} onClick={() => setEmoji(e)} title={e === 'fig' ? 'Piirretty keiju' : e}>
-                {e === 'fig' ? <FairyFigure stage={stage} size={36} /> : e}
-              </button>
-            ))}
-          </div>
+          {AVATAR_GROUPS.map((g) => (
+            <div key={g.title}>
+              <p className="ed-label ed-grp">{g.title}</p>
+              <div className="picker" role="radiogroup" aria-label={g.title}>
+                {g.items.map((e) => (
+                  <button type="button" key={e} role="radio" aria-checked={emoji === e} className={`pick ${emoji === e ? 'sel' : ''}`} onClick={() => setEmoji(e)} title={e === 'fig' ? 'Piirretty keiju' : e}>
+                    {e === 'fig' ? <FairyFigure stage={stage} size={36} /> : e}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
 
           <p className="ed-label ed-sec">2. Taustaväri</p>
           <div className="picker colors" role="radiogroup" aria-label="Taustaväri">

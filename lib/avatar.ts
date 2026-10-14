@@ -1,5 +1,12 @@
 /** 'fig' = piirretty keiju, jonka asu kehittyy tason mukana. */
-export const AVATAR_EMOJIS = ['fig', '🧚🏻‍♀️', '🧚🏼‍♀️', '🧚🏽‍♀️', '🧚🏾‍♀️', '🧚🏿‍♀️', '🧚🏼‍♂️', '🦋', '🐰', '🦄', '🍄', '🌸', '🦊', '🐸', '🐝', '🦉', '🐞', '🌙'];
+/** Hahmot ryhmiteltyinä valitsinta varten. Vanhat valinnat säilyvät kelvollisina. */
+export const AVATAR_GROUPS: { title: string; items: string[] }[] = [
+  { title: 'Keijut', items: ['fig', '🧚🏻‍♀️', '🧚🏼‍♀️', '🧚🏽‍♀️', '🧚🏾‍♀️', '🧚🏿‍♀️', '🧚🏻‍♂️', '🧚🏼‍♂️', '🧚🏽‍♂️', '🧚🏾‍♂️', '🧚🏿‍♂️', '🧚'] },
+  { title: 'Taruhahmot', items: ['🧝🏼‍♀️', '🧝🏽‍♂️', '🧙🏼‍♀️', '🧙🏽‍♂️', '🧜🏼‍♀️', '🧜🏽‍♂️', '🧞‍♀️', '🦄', '🐉', '🐲'] },
+  { title: 'Eläimet', items: ['🦋', '🐰', '🦊', '🐸', '🐝', '🦉', '🐞', '🐱', '🐶', '🐢', '🦔', '🐙', '🐧', '🐼', '🦁', '🦜'] },
+  { title: 'Luonto ja taika', items: ['🍄', '🌸', '🌷', '🌻', '🌼', '🍀', '🌙', '⭐', '☀️', '❄️', '🌈', '🔮', '🪄'] },
+];
+export const AVATAR_EMOJIS: string[] = AVATAR_GROUPS.flatMap((g) => g.items);
 export const AVATAR_BGS = [
   '#f8d7ec', '#d7f2e3', '#e4d9fb', '#fde8c4', '#d4ecfb', '#ffd9d2', '#f3f0b8', '#ffe0f4',
   'linear-gradient(135deg,#ff4d94,#8b5cf6)', 'linear-gradient(135deg,#8b5cf6,#38bdf8)', 'linear-gradient(135deg,#fbbf24,#fb7185)', 'linear-gradient(135deg,#34d399,#38bdf8)',
