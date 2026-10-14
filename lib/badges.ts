@@ -14,7 +14,7 @@ export const BADGES: { id: string; emoji: string; name: string; desc: string; te
   { id: 'keiju', emoji: '🧚🏼‍♀️', name: 'Keijupuutarha', desc: '32 kukkaa puutarhassa', test: (s) => s.stageIdx >= 4 },
   { id: 'viikko', emoji: '🎯', name: 'Viikon tavoite täynnä', desc: 'Täytit koko viikon tavoitteen', test: (s) => (s.weeksDone ?? 0) >= 1 },
   { id: 'viikko3', emoji: '🏅', name: 'Kolme täyttä viikkoa', desc: 'Kolme viikkoa tavoitteen', test: (s) => (s.weeksDone ?? 0) >= 3 },
-  { id: 'kunk', emoji: '👑', name: 'Puutarhan kuningatar', desc: '42 kukkaa puutarhassa', test: (s) => s.stageIdx >= 5 },
+  { id: 'kunk', emoji: '👑', name: 'Puutarhan kuningatar', desc: '50 kukkaa puutarhassa', test: (s) => s.stageIdx >= 5 },
   { id: 'kukka3', emoji: '🌷', name: 'Ensimmäiset kukat', desc: '3 kukkaa puutarhassa', test: (s) => (s.flowers ?? 0) >= 3 },
   { id: 'kukka10', emoji: '🌼', name: 'Kymmenen kukkaa', desc: '10 kukkaa puutarhassa', test: (s) => (s.flowers ?? 0) >= 10 },
   { id: '30k', emoji: '🏃‍♀️', name: 'Maratoonari', desc: '30 000 askelta yhdessä päivässä', test: (s) => s.bestDay >= 30_000 },

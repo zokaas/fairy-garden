@@ -78,12 +78,17 @@ export function goalHistory(steps: { day: string; steps: number }[], work: { day
   return out;
 }
 
-/** Puutarhan kukat: jokainen päivä, jolloin askeltavoite täyttyy (7 000 urheilupäivänä, muuten 10 000), on yksi kukka. */
+/** Päivän kukat: tavoite (7 000 urheilupäivänä, muuten 10 000) antaa yhden kukan, ja jokainen täysi 10 000 askelta sen yli antaa lisäkukan. */
+export function dayFlowers(steps: number, target: number): number {
+  return steps >= target ? 1 + Math.floor((steps - target) / 10000) : 0;
+}
+
+/** Puutarhan kukat: päivien kukat yhteensä (ks. dayFlowers). */
 export function flowerDays(steps: { day: string; steps: number }[], work: { day: string; sport: string }[]): number {
   const sportOn = new Set(work.filter((w) => kindOf(w.sport) === 'urheilu').map((w) => w.day));
   const byDay = new Map<string, number>();
   for (const r of steps) byDay.set(r.day, (byDay.get(r.day) ?? 0) + r.steps);
   let n = 0;
-  for (const [day, v] of byDay) if (v >= (sportOn.has(day) ? WEEK_GOAL.stepsSportDay : WEEK_GOAL.stepsRestDay)) n++;
+  for (const [day, v] of byDay) n += dayFlowers(v, sportOn.has(day) ? WEEK_GOAL.stepsSportDay : WEEK_GOAL.stepsRestDay);
   return n;
 }

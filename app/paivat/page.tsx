@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { loadGarden, loadRaw } from '@/lib/data';
 import { CONTEST_START, dayBefore, helsinkiDay, kindOf, sportPoints, stepPoints, weekStart } from '@/lib/garden';
-import { WEEK_GOAL } from '@/lib/weekly';
+import { WEEK_GOAL, dayFlowers } from '@/lib/weekly';
 import { byDay } from '@/lib/stats';
 
 export const dynamic = 'force-dynamic';
@@ -31,10 +31,10 @@ export default async function Paivat() {
     const creative = w.filter((x) => kindOf(x.sport) === 'luova');
     const sportMins = sport.reduce((a, x) => a + x.minutes, 0);
     const target = sportMins > 0 ? WEEK_GOAL.stepsSportDay : WEEK_GOAL.stepsRestDay;
-    return { day, steps, target, flower: steps >= target, stepPts: stepPoints(steps), sportMins, sportPts: sportPoints(sportMins), creativeMins: creative.reduce((a, x) => a + x.minutes, 0), names: w.map((x) => x.sport) };
+    return { day, steps, target, flowerN: dayFlowers(steps, target), flower: steps >= target, stepPts: stepPoints(steps), sportMins, sportPts: sportPoints(sportMins), creativeMins: creative.reduce((a, x) => a + x.minutes, 0), names: w.map((x) => x.sport) };
   });
   const totalSteps = rows.reduce((a, r) => a + r.steps, 0);
-  const flowers = rows.filter((r) => r.flower).length;
+  const flowers = rows.reduce((a, r) => a + r.flowerN, 0);
   const done = rows.filter((r) => r.day < today);
   const avg = done.length ? Math.round(done.reduce((a, r) => a + r.steps, 0) / done.length) : 0;
   const best = rows.reduce((a, r) => (r.steps > a.steps ? r : a), rows[0] ?? { steps: 0, day: today });
@@ -73,7 +73,7 @@ export default async function Paivat() {
                 <li key={r.day} className={r.day === today ? 'today' : ''}>
                   <span className="dl-d"><b>{wdOf(r.day)}</b> {dm(r.day)}{r.day === today && <small> tänään</small>}</span>
                   <span className="dl-bar" aria-hidden="true"><i style={{ width: `${Math.min(100, (r.steps / maxSteps) * 100)}%` }} className={r.flower ? 'ok' : ''} /><u style={{ left: `${Math.min(100, (r.target / maxSteps) * 100)}%` }} /></span>
-                  <span className="dl-s"><b>{fi(r.steps)}</b>{r.flower ? ' 🌸' : ''}</span>
+                  <span className="dl-s"><b>{fi(r.steps)}</b>{r.flowerN > 0 ? ` ${'🌸'.repeat(Math.min(r.flowerN, 4))}${r.flowerN > 4 ? `×${r.flowerN}` : ''}` : ''}</span>
                   <span className="dl-x">
                     {r.stepPts > 0 && <>{r.stepPts} p askelista</>}
                     {r.sportMins > 0 && <>{r.stepPts > 0 ? ' · ' : ''}💪 {r.sportMins} min</>}
@@ -86,7 +86,7 @@ export default async function Paivat() {
           </section>
         );
       })}
-      <p className="muted">Pystyviiva palkissa on päivän tavoite (10 000, urheilupäivänä 7 000). 🌸 = päivän kukka.</p>
+      <p className="muted">Pystyviiva palkissa on päivän tavoite (10 000, urheilupäivänä 7 000). 🌸 = päivän kukka. Jokainen täysi 10 000 askelta tavoitteen yli tuo lisäkukan.</p>
       <Link className="btn ghost" href="/tilastot">Lisää tilastoja</Link>
     </>
   );
