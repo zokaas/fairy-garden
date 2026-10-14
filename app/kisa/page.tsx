@@ -27,7 +27,7 @@ export default async function Kisa({ searchParams }: { searchParams: { avaa?: st
       <h1>Kuka on reippain?</h1>
       <p className="sub">Kisa päättyy {endDate} Eniten pisteitä keränneestä tulee <b>Reippain keiju</b>.</p>
       <Countdown to={contest.end} />
-      <p className="muted" style={{ marginTop: -4 }}><Link href="/ohje">Näin kisa toimii →</Link> · <Link href="/tekemiset">Kuka teki mitä →</Link></p>
+      <p className="muted" style={{ marginTop: -4 }}><Link href="/ohje">Näin kisa toimii →</Link> · <Link href="/paivat?nakyma=kaikki">Kaikkien tekemiset →</Link></p>
 
       <section className={`card secret ${over ? 'open' : ''}`}>
         {over ? (

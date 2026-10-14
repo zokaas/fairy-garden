@@ -5,6 +5,7 @@ import { loadGarden, loadRaw } from '@/lib/data';
 import { CONTEST_START, dayBefore, helsinkiDay, kindOf, sportPoints, stepPoints, weekStart } from '@/lib/garden';
 import { WEEK_GOAL, dayFlowers } from '@/lib/weekly';
 import { byDay } from '@/lib/stats';
+import TekemisetView from '@/components/TekemisetView';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,8 +14,16 @@ const fi = (n: number) => n.toLocaleString('fi-FI');
 const dm = (d: string) => `${Number(d.slice(8))}.${Number(d.slice(5, 7))}.`;
 const wdOf = (d: string) => WD[new Date(`${d}T12:00:00Z`).getUTCDay()];
 
-export default async function Paivat() {
+export default async function Paivat({ searchParams }: { searchParams: { nakyma?: string } }) {
   if (!cookies().get('fg_token')) redirect('/');
+  const all = searchParams.nakyma === 'kaikki';
+  const tabs = (
+    <div className="seg" role="tablist">
+      <Link role="tab" aria-selected={!all} className={!all ? 'on' : ''} href="/paivat">Minä</Link>
+      <Link role="tab" aria-selected={all} className={all ? 'on' : ''} href="/paivat?nakyma=kaikki">Kaikki</Link>
+    </div>
+  );
+  if (all) return <><h1>Päivät</h1>{tabs}<TekemisetView /></>;
   const [{ me }, raw] = await Promise.all([loadGarden(), loadRaw()]);
   if (!me) redirect('/');
   const mySteps = byDay(raw.steps.filter((r) => r.fairy_id === me.id));
@@ -59,8 +68,9 @@ export default async function Paivat() {
 
   return (
     <>
-      <h1>Päivä päivältä</h1>
-      <p className="sub">Omat askeleesi ja liikuntasi kisan alusta.</p>
+      <h1>Päivät</h1>
+      {tabs}
+      <p className="sub">Omat askeleesi ja liikuntasi päivä kerrallaan kisan alusta.</p>
 
       <section className="card">
         <div className="tiles">
