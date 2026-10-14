@@ -109,6 +109,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
   return (
     <>
       <AutoSyncEnable hasSteps={me.hasSteps} />
+      {contest.over && <Link className="btn" href="/loppu">🏆 Kisa on ohi: katso loppukatsaus</Link>}
       <Celebrate flowers={me.flowers} force={admin && !!searchParams.juhla} />
       <Garden
         flowers={me.flowers}
