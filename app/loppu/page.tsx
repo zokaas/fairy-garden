@@ -40,26 +40,25 @@ export default async function Loppu({ searchParams }: { searchParams: { avaa?: s
       {preview && <p className="toast">Esikatselu: kisa ei ole vielä päättynyt. Muut näkevät tämän sivun vasta päättymisen jälkeen.</p>}
 
       {top[0] && (
-        <section className="card center">
-          <div style={{ fontSize: 44 }}>👑</div>
-          <h2>Reippain keiju</h2>
-          <Avatar a={top[0]} size={96} stage={top[0].stageIdx} />
-          <p style={{ fontSize: '1.3rem', margin: '8px 0 0' }}><b>{top[0].name}</b></p>
-          <p className="muted">{fp(top[0].pts)} pistettä</p>
-          {contest.prize && <p>🎁 <b>{contest.prize}</b></p>}
+        <section className="card center winner">
+          <span className="crown" aria-hidden="true">👑</span>
+          <Link href={`/keiju/${top[0].id}`} className="w-av"><Avatar a={top[0]} size={104} stage={top[0].stageIdx} /></Link>
+          <small className="w-label">Reippain keiju ✨</small>
+          <h2 className="w-name">{top[0].name}</h2>
+          <p className="w-pts">{fp(top[0].pts)} pistettä</p>
+          {contest.prize && <p className="w-prize">🎁 {contest.prize}</p>}
+          {top.length > 1 && (
+            <div className="runners">
+              {top.slice(1).map((f, i) => (
+                <Link key={f.id} href={`/keiju/${f.id}`} className="pr-item">
+                  <Avatar a={f} size={52} badge={['🥈', '🥉'][i]} stage={f.stageIdx} />
+                  <b>{f.name}</b>
+                  <span>{fp(f.pts)} p</span>
+                </Link>
+              ))}
+            </div>
+          )}
         </section>
-      )}
-
-      {top.length > 1 && (
-        <div className="podium-row">
-          {top.map((f, i) => (
-            <Link key={f.id} href={`/keiju/${f.id}`} className="pr-item">
-              <Avatar a={f} size={i === 0 ? 56 : 46} badge={['🥇', '🥈', '🥉'][i]} stage={f.stageIdx} />
-              <b>{f.name}</b>
-              <span>{fp(f.pts)} p</span>
-            </Link>
-          ))}
-        </div>
       )}
 
       <section className="card">

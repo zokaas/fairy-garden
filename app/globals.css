@@ -626,3 +626,16 @@ details.dayfold[open] > summary { margin-bottom: 8px; }
 .feed .fd-time { margin-left: auto; font: 500 .72rem var(--mono); color: var(--fg-3); white-space: nowrap; }
 .chips .chip.on { background: var(--fg); color: var(--bg); border-color: transparent; }
 ol.rank .pt small.diff { color: var(--fg-3); font-weight: 500; }
+
+/* Loppukatsaus: voittajakortti */
+.winner { position: relative; padding-top: 28px; background: radial-gradient(120% 80% at 50% 0%, color-mix(in srgb, var(--pink) 16%, transparent), transparent 70%), var(--surface); border-color: color-mix(in srgb, var(--pink) 35%, var(--line-2)); }
+.winner .crown { display: block; font-size: 38px; line-height: 1; margin-bottom: -10px; position: relative; z-index: 1; filter: drop-shadow(0 4px 10px #0003); }
+.winner .w-av { display: inline-block; border-radius: 50%; box-shadow: 0 0 0 4px color-mix(in srgb, var(--yellow, #f5c542) 70%, transparent), 0 10px 30px color-mix(in srgb, var(--pink) 35%, transparent); }
+.winner .w-label { display: block; margin-top: 12px; font: 600 .72rem var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--fg-3); }
+.winner .w-name { margin: 2px 0 0; font-size: 1.7rem; letter-spacing: -.02em; }
+.winner .w-pts { margin: 2px 0 0; color: var(--fg-2); font-variant-numeric: tabular-nums; }
+.winner .w-prize { margin: 10px 0 0; padding: 8px 12px; border-radius: 10px; background: color-mix(in srgb, var(--yellow, #f5c542) 14%, transparent); }
+.winner .runners { display: flex; justify-content: center; gap: 28px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); }
+.winner .runners .pr-item { flex: 0 1 140px; display: flex; flex-direction: column; align-items: center; gap: 2px; text-decoration: none; color: inherit; min-width: 0; }
+.winner .runners .pr-item b { font: 600 .88rem var(--sans); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.winner .runners .pr-item span { font: 500 .75rem var(--mono); color: var(--fg-3); }
