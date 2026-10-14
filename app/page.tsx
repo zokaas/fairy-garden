@@ -221,24 +221,6 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
       })()}
 
 
-      {me.hasSteps && board.length > 1 && (() => {
-        const above = myRank > 1 ? board[myRank - 2] : null;
-        const below = myRank < board.length ? board[myRank] : null;
-        const line = above
-          ? `Keijuun ${above.name} on ${fp(above.pts - me.pts)} pistettä.`
-          : below ? `Johdat! ${below.name} on ${fp(me.pts - below.pts)} pisteen päässä.` : '';
-        const next = UNLOCKS.find((u) => me.flowers < u.at);
-        return (
-          <section className="card">
-            <h2>Seuraavaksi</h2>
-            <ul className="plain nextlist">
-              {line && <li>🏁 <b>Sijoitus {myRank} / {board.length}.</b> {line} <Link href="/kisa">Kärki →</Link></li>}
-              {next && <li>🌸 <b>{next.at - me.flowers} kukan päästä:</b> {next.text} <Link href="/kisa?nakyma=matka">Kaikki palkinnot →</Link></li>}
-            </ul>
-          </section>
-        );
-      })()}
-
       {me.hasSteps && <Journey steps={me.totalSteps} avatar={me} stageIdx={stageIdx} note={forecast(me.totalSteps, helsinkiDay(), new Date(contest.end).toLocaleDateString('sv-SE', { timeZone: 'Europe/Helsinki' }))?.text} />}
 
       <section className="card">
