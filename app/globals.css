@@ -609,3 +609,14 @@ ol.trail-list a { color: inherit; text-decoration: none; overflow: hidden; text-
 /* Etusivun "Seuraavaksi" */
 ul.nextlist { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
 ul.nextlist li { line-height: 1.4; }
+
+/* Kisa: tiivis podium, listan jakso-kytkin */
+.podium-row { display: flex; justify-content: space-around; gap: 8px; margin: 4px 0 14px; }
+.podium-row .pr-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; text-decoration: none; color: inherit; text-align: center; min-width: 0; }
+.podium-row .pr-item b { font: 600 .85rem var(--sans); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.podium-row .pr-item span { font: 500 .75rem var(--mono); color: var(--fg-3); }
+.rank-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+.rank-head h2 { margin: 0; }
+.mini-seg { display: inline-flex; border: 1px solid var(--line-2); border-radius: 999px; padding: 2px; }
+.mini-seg a { padding: 4px 12px; border-radius: 999px; font: 600 .78rem var(--sans); text-decoration: none; color: var(--fg-3); }
+.mini-seg a.on { background: var(--fg); color: var(--bg); }
