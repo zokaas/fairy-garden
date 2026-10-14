@@ -120,7 +120,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         avatar={me}
         lines={[
           me.today < me.goal.todayTarget ? `Vielä ${(me.goal.todayTarget - me.today).toLocaleString('fi-FI')} askelta päivän tavoitteeseen! 👟` : 'Päivän tavoite täynnä, mahtavaa! ✨',
-          'Jokainen tavoitepäivä kasvattaa yhden kukan 🌷',
+          'Tavoitepäivä kasvattaa kukan, ja jokainen 10 000 askelta lisää toisen 🌷',
           'Muista juoda vettä, keiju 💧',
           `${me.name}, sinä loistat! 🌸`,
         ]}
