@@ -1,7 +1,7 @@
 import { dayBefore, helsinkiDay, stepPoints, workoutPoints } from './garden.ts';
 
 export type StepRow = { fairy_id: string; day: string; steps: number };
-export type WorkRow = { fairy_id: string; day: string; sport: string; minutes: number; created_at?: string };
+export type WorkRow = { id?: string; fairy_id: string; day: string; sport: string; minutes: number; created_at?: string };
 
 export const sum = (a: number[]) => a.reduce((x, y) => x + y, 0);
 export const km = (steps: number) => steps * 0.00075;

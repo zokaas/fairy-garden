@@ -21,14 +21,14 @@ export function demoRows() {
   }));
   const today = helsinkiDay();
   const steps: { fairy_id: string; day: string; steps: number; updated_at: string }[] = [];
-  const workouts: { fairy_id: string; day: string; sport: string; minutes: number; created_at?: string }[] = [];
+  const workouts: { id?: string; fairy_id: string; day: string; sport: string; minutes: number; created_at?: string }[] = [];
   const sports = ['Juoksu', 'Sali', 'Jooga', 'Tanssi', 'Pyöräily', 'Vaellus', 'Piirtäminen', 'Lukeminen'];
   fairies.forEach((f, i) => {
     let d = today;
     const days = 40 - i * 3;
     for (let k = 0; k < days; k++) {
       if ((k > 0 || i !== 8) && !(i === 5 && (k === 1 || k === 2)) && !(i === 3 && k === 1)) steps.push({ fairy_id: f.id, day: d, steps: rnd(4000, 15500) + (8 - i) * 400, updated_at: new Date(Date.now() - k * 3_600_000).toISOString() });
-      if (rnd(0, 3) === 0) workouts.push({ fairy_id: f.id, day: d, sport: sports[rnd(0, 7)], minutes: rnd(15, 80), created_at: new Date(`${d}T${String(rnd(6, 23)).padStart(2, '0')}:30:00+02:00`).toISOString() });
+      if (rnd(0, 3) === 0) workouts.push({ id: `w${workouts.length}`, fairy_id: f.id, day: d, sport: sports[rnd(0, 7)], minutes: rnd(15, 80), created_at: new Date(`${d}T${String(rnd(6, 23)).padStart(2, '0')}:30:00+02:00`).toISOString() });
       d = dayBefore(d);
     }
   });

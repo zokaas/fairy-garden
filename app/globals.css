@@ -599,3 +599,10 @@ ol.trail-list { list-style: none; margin: 8px 0 10px; padding: 0; } ol.trail-lis
 ol.trail-list a { color: inherit; text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tl-pos { color: var(--fg-3); font: 500 .72rem var(--mono); } .tl-pct { text-align: right; color: var(--fg-2); font-variant-numeric: tabular-nums; font-size: .78rem; }
 .tl-bar { height: 6px; border-radius: 999px; background: var(--surface-2); overflow: hidden; } .tl-bar i { display: block; height: 100%; border-radius: 999px; background: var(--grad); opacity: .8; }
+
+/* Reaktiot (👏) syötteessä */
+.feed .rx { margin-left: auto; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.feed .rx button { border: 1px solid var(--line-2); background: transparent; color: var(--fg-2); border-radius: 999px; padding: 6px 12px; font-size: 15px; font-weight: 600; cursor: pointer; }
+.feed .rx button.on { background: var(--accent-soft, rgba(190,120,255,.18)); border-color: var(--accent, #b07cff); color: var(--fg); }
+.feed .rx small { font-size: 11px; color: var(--fg-3, var(--fg-2)); max-width: 120px; text-align: right; }
+.feed .rx-own { margin-left: auto; font-size: 14px; color: var(--fg-2); }

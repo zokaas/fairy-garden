@@ -9,6 +9,7 @@ import { AVATAR_BGS, AVATAR_EMOJIS } from '@/lib/avatar';
 import { loadGarden } from '@/lib/data';
 import { hashPin, verifyPin } from '@/lib/pin';
 import { sendPush } from '@/lib/push';
+import { DEMO } from '@/lib/demo';
 
 const COOKIE = 'fg_token';
 
@@ -65,6 +66,17 @@ export async function logWorkout(formData: FormData) {
   const { data: fairy } = await supabase.from('fairies').select('id').eq('token', token).maybeSingle();
   if (!fairy) return;
   await supabase.from('workouts').insert({ fairy_id: fairy.id, day, sport, minutes });
+  // Ilmoitus muille, kun kirjaus on tältä tai eiliseltä päivältä (takautuvista ei pingata).
+  if (day >= dayBefore(helsinkiDay())) {
+    try {
+      const [{ data: me }, { data: others }] = await Promise.all([
+        supabase.from('fairies').select('name').eq('id', fairy.id).single(),
+        supabase.from('fairies').select('id').neq('id', fairy.id),
+      ]);
+      const icon = (CREATIVE as readonly string[]).includes(sport) ? '🎨' : '💪';
+      await sendPush({ title: `${icon} ${me?.name ?? 'Joku'} kirjasi ${sport.toLowerCase()}`, body: `${minutes} min. Käy kehumassa 👏`, url: '/tekemiset' }, (others ?? []).map((o) => o.id as string));
+    } catch {}
+  }
   revalidatePath('/', 'layout');
   redirect('/kirjaa?ok=liikunta');
 }
@@ -82,6 +94,42 @@ export async function deleteWorkout(formData: FormData) {
   await supabase.from('workouts').delete().eq('id', id).eq('fairy_id', fairy.id).gte('day', oldest);
   revalidatePath('/', 'layout');
   redirect('/kirjaa?ok=poistettu');
+}
+
+/** 👏-reaktio tekemiseen: napautus lisää, toinen napautus poistaa. Omaan tekemiseen ei voi reagoida. */
+export async function react(formData: FormData) {
+  if (DEMO) return;
+  const target = String(formData.get('target') ?? '');
+  const wm = /^w:([0-9a-f-]{36})$/i.exec(target);
+  const sm = /^s:([0-9a-f-]{36}):(\d{4}-\d{2}-\d{2})$/i.exec(target);
+  if (!wm && !sm) return;
+  const me = await myFairy();
+  if (!me) return;
+  const supabase = db();
+  let toId: string | undefined;
+  let what = '';
+  if (wm) {
+    const { data: w } = await supabase.from('workouts').select('fairy_id, sport, minutes').eq('id', wm[1]).maybeSingle();
+    toId = w?.fairy_id as string | undefined;
+    what = w ? `${String(w.sport).toLowerCase()} ${w.minutes} min` : '';
+  } else if (sm) {
+    toId = sm[1];
+    what = 'päivän askeltavoitteen';
+  }
+  if (!toId || toId === me.id) return;
+  const { data: had } = await supabase.from('reactions').select('id').eq('from_id', me.id).eq('target', target).maybeSingle();
+  if (had) {
+    await supabase.from('reactions').delete().eq('id', had.id);
+  } else {
+    const { error } = await supabase.from('reactions').insert({ from_id: me.id, to_id: toId, target });
+    if (!error) {
+      try {
+        const { data: who } = await supabase.from('fairies').select('name').eq('id', me.id).single();
+        await sendPush({ title: `👏 ${who?.name ?? 'Joku'} kehui sinua`, body: what ? `Kohteena ${what}` : 'Hienoa työtä!', url: '/tekemiset' }, [toId]);
+      } catch {}
+    }
+  }
+  revalidatePath('/tekemiset');
 }
 
 async function myFairy() {
