@@ -186,7 +186,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
                 </li>
               ))}
             </ul>
-            <p className="muted" style={{ margin: '8px 0 0' }}><Link href="/kisa?lista=tanaan">Askeleet tänään →</Link> · <Link href="/paivat?nakyma=kaikki">Kaikkien tekemiset →</Link></p>
+            <p className="muted" style={{ margin: '8px 0 0' }}><Link href="/paivat?nakyma=kaikki">Kaikkien tekemiset →</Link></p>
           </section>
         );
       })()}
