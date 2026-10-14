@@ -7,6 +7,7 @@ import { awards } from '@/lib/awards';
 import { BADGES } from '@/lib/badges';
 import { getContest } from '@/lib/contest';
 import Avatar from '@/components/Avatar';
+import { GroupJourney } from '@/components/Journey';
 import Countdown from '@/components/Countdown';
 
 export const dynamic = 'force-dynamic';
@@ -58,6 +59,8 @@ export default async function Kisa({ searchParams }: { searchParams: { avaa?: st
           </div>
         )}
       </section>
+
+      <GroupJourney fairies={board} />
 
       <section className="card">
         <h2>{over ? 'Palkinnot ' : 'Kategoriat: kuka johtaa '}</h2>
