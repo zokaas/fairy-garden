@@ -84,7 +84,7 @@ export default async function KarkiView({ all, me, lista, nayta }: { all: Fairy[
             })}
           </ol>
         )}
-        <p className="muted">Pienet luvut oikealla: ▲ = edellä sinua, ▼ = perässä sinua. Pisteiden säännöt: <Link href="/ohje">Näin kisa toimii →</Link></p>
+        <p className="muted">Pisteiden säännöt: <Link href="/ohje">Näin kisa toimii →</Link></p>
       </section>
 
       <section className="card">
