@@ -64,8 +64,8 @@ export default async function Tekemiset() {
               const luova = kindOf(e.sport) === 'luova';
               return (
                 <li key={`${e.fairy_id}-${e.day}-${i}`} className={f.mine ? 'me' : ''}>
-                  <Avatar a={f} size={36} stage={f.stageIdx} />
-                  <span className="fd-t"><b>{f.name}{f.mine ? ' (sinä)' : ''}</b><small>{luova ? '🎨' : '💪'} {e.sport} · {e.minutes} min{e.created ? ` · klo ${clock(e.created)}` : ''}</small></span>
+                  <Link href={`/keiju/${f.id}`} aria-label={`Avaa ${f.name}`}><Avatar a={f} size={36} stage={f.stageIdx} /></Link>
+                  <span className="fd-t"><Link href={`/keiju/${f.id}`}><b>{f.name}{f.mine ? ' (sinä)' : ''}</b></Link><small>{luova ? '🎨' : '💪'} {e.sport} · {e.minutes} min{e.created ? ` · klo ${clock(e.created)}` : ''}</small></span>
                 </li>
               );
             })}

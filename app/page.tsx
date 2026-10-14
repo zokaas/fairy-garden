@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { loadGarden, loadRaw } from '@/lib/data';
 import { helsinkiDay, kindOf, GROWTH, UNLOCKS, fp, stepPoints, ago, phaseOf, type Phase } from '@/lib/garden';
 import type { Fairy } from '@/lib/data';
-import { dailyQuests } from '@/lib/quests';
 import Journey from '@/components/Journey';
 import { AutoSyncEnable } from '@/components/AutoSync';
 import { forecast } from '@/lib/forecast';
@@ -184,12 +183,12 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         }).sort((a, c) => c.b.today - a.b.today);
         return (
           <section className="card">
-            <h2>Tänään kaikilla</h2>
+            <h2>Tänään kaikilla <small className="muted">(napauta nimeä: profiili)</small></h2>
             <ul className="plain todaylist">
               {rows.map(({ b, sport, creative }) => (
                 <li key={b.id} className={b.mine ? 'me' : ''}>
-                  <Avatar a={b} size={32} stage={b.stageIdx} />
-                  <span className="tl-n"><b>{b.name}{b.mine ? ' (sinä)' : ''}</b>
+                  <Link href={`/keiju/${b.id}`} className="tl-av" aria-label={`Avaa ${b.name}`}><Avatar a={b} size={32} stage={b.stageIdx} /></Link>
+                  <span className="tl-n"><Link href={`/keiju/${b.id}`}><b>{b.name}{b.mine ? ' (sinä)' : ''}</b></Link>
                     {sport && <small>💪 {sport}</small>}
                     {creative && <small>🎨 {creative}</small>}
                     {!sport && !creative && <small className="muted">ei liikuntaa vielä</small>}
@@ -238,7 +237,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
 
       {me.hasSteps && (
         <details className="more">
-          <summary>Lisää: taistelu, päivän taika, polku ja merkit</summary>
+          <summary>Lisää: taistelu, polku ja merkit</summary>
       {me.hasSteps && board.length > 1 && (() => {
         const above = myRank > 1 ? board[myRank - 2] : null;
         const below = myRank < board.length ? board[myRank] : null;
@@ -263,23 +262,6 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         );
       })()}
 
-      {me.hasSteps && (() => {
-        const quests = dailyQuests({ today: me.today, yesterday: me.yesterday, sportToday: me.sportToday, creativeToday: me.creativeToday, sportDays: me.goal.sportDays, creativeDays: me.goal.creativeDays });
-        const all = quests.every((x) => x.done);
-        return (
-          <section className={`card quests ${all ? 'all' : ''}`}>
-            <h2>{all ? 'Taikapäivä täynnä!' : 'Päivän taika'}</h2>
-            <ul className="plain">
-              {quests.map((x) => (
-                <li key={x.id} className={x.done ? 'done' : ''}>
-                  <span className="check">{x.done ? '✓' : x.emoji}</span>
-                  <span>{x.text}<small>{x.progress}</small></span>
-                </li>
-              ))}
-            </ul>
-          </section>
-        );
-      })()}
 
 
 

@@ -30,6 +30,11 @@ export default async function Profiili({ searchParams }: { searchParams: { uusi?
           {!uusi && (
         <>
           <section className="card">
+            <h2>Profiilisi</h2>
+            <p className="muted">Näin muut näkevät sinut: puutarha, tavoitteet, päivät ja merkit.</p>
+            <a className="btn ghost" href={`/keiju/${me.id}`}>Katso profiilisi</a>
+          </section>
+          <section className="card">
             <h2>Ohjeet</h2>
             <p className="muted">Pisteet, viikkotavoite, kukat ja synkka lyhyesti.</p>
             <a className="btn ghost" href="/ohje">Näin kisa toimii</a>

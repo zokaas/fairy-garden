@@ -89,9 +89,9 @@ export default async function Karki({ searchParams }: { searchParams: { lista?: 
               return (
                 <li key={b.id} className={b.mine ? 'me' : ''}>
                   <span className="pos">{medal[i] ?? i + 1}</span>
-                  <span className="nm"><Avatar a={b} size={38} stage={b.stageIdx} />
+                  <Link href={`/keiju/${b.id}`} className="nm"><Avatar a={b} size={38} stage={b.stageIdx} />
                     <span>{b.name}<small>{sub(b)}</small>{(key === 'urheilu' || key === 'luova') && (acts(b.id) ? <small>{key === 'luova' ? '🎨' : '💪'} {acts(b.id)}</small> : <small>ei kirjauksia</small>)}{key === 'askeleet' && <small>synkattu {ago(b.lastSync)}</small>}</span>
-                  </span>
+                  </Link>
                   <span className="pt">{L.fmt(score(b))}{diff !== null && <small className={diff > 0 ? 'neg' : 'pos2'}>{diff > 0 ? '+' : diff < 0 ? '−' : ''}{fi(Math.abs(diff))}</small>}</span>
                 </li>
               );
