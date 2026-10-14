@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { loadGarden } from '@/lib/data';
@@ -29,7 +30,7 @@ export default async function Kirjaa({ searchParams }: { searchParams: { ok?: st
       <section className="card">
         <h2>Lisää kirjaus</h2>
         <WorkoutForm action={logWorkout} />
-        <p className="muted">1 piste / 30 min (0,5 p / 15 min). Urheilu on rajatonta, luovasta saa pisteitä enintään 2 h viikossa (kirjata voi enemmänkin). Kävely ratkaisee silti eniten: se kirjautuu itsestään askelista.</p>
+        <p className="muted">Luovasta saa pisteitä enintään 2 h viikossa (kirjata voi enemmänkin). Kaikki säännöt: <Link href="/ohje">Näin kisa toimii →</Link></p>
       </section>
 
       {me && (
@@ -55,8 +56,8 @@ export default async function Kirjaa({ searchParams }: { searchParams: { ok?: st
         <section className="card">
           <h2>Tämän viikon tavoite</h2>
           <ul className="plain">
-            <li>Urheilupäiviä <b>{me.goal.sportDays} / {WEEK_GOAL.sportDays}</b> (sali, lenkkeily, laskettelu, hiihto, lentopallo, tribe, pilates, tennis…)</li>
-            <li>Luova päivä <b>{me.goal.creativeDays} / {WEEK_GOAL.creativeDays}</b> (piirtäminen, virkkaaminen, lukeminen, soittaminen, ompelu…)</li>
+            <li>Urheilupäiviä <b>{me.goal.sportDays} / {WEEK_GOAL.sportDays}</b> (esim. sali, juoksu, jooga, tanssi, tennis, hiihto, uinti…)</li>
+            <li>Luova päivä <b>{me.goal.creativeDays} / {WEEK_GOAL.creativeDays}</b> (esim. piirtäminen, lukeminen, sudoku, ristikot, virkkaaminen, soittaminen…)</li>
           </ul>
         </section>
       )}

@@ -76,7 +76,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
           <ol>
             <li><b>Liity</b> nimellä, joka näkyy kärkilistalla.</li>
             <li><b>Yhdistä askeleet</b> iPhonen Terveydestä (5 min, kerran).</li>
-            <li><b>Kävele</b>: jokainen 2 500 askelta päivässä on 1 piste. Urheilu ja luova harrastus 1 p / 30 min (0,5 p / 15 min). Luovasta enintään 2 h viikossa.</li>
+            <li><b>Kerää pisteitä</b> kävelemällä ja liikkumalla. Säännöt: <Link href="/ohje">Näin kisa toimii →</Link></li>
           </ol>
         </section>
       </>
@@ -102,7 +102,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
         ))}
       </ol>
       {!me.hasSteps && <Link className="btn" href="/shortcut">Yhdistä askeleet nyt</Link>}
-      <p className="muted">Pisteet: 1 p / 2 500 askelta päivässä, 1 p / 30 min urheilua, 1 p / 30 min luovaa (max 2 h / vko; 0,5 p / 15 min), +10 p täydestä viikosta.</p>
+      <p className="muted">Pisteet ja säännöt: <Link href="/ohje">Näin kisa toimii →</Link></p>
     </section>
   ) : null;
 
@@ -147,16 +147,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
             <p className="muted">{searchParams.synkattu ? '✓ Synkkaus tehty. ' : ''}Askeleet synkattu: <b>{ago(me.lastSync)}</b></p>
             <SyncButton site={process.env.NEXT_PUBLIC_SITE_URL ?? ''} />
             <p className="muted" style={{ margin: '0 0 6px' }}><Link href="/paivat">Selaa edellisiä päiviä →</Link> · <Link href="/tekemiset">Kuka teki mitä →</Link></p>
-            <details className="how">
-              <summary>Miten pisteet lasketaan? (<Link href="/ohje">koko ohje</Link>)</summary>
-              <ul>
-                <li><b>Kukka</b> jokaisesta päivästä, jolloin saavutat askeltavoitteen (10 000, tai 7 000 jos urheilet).</li>
-                <li><b>1 piste</b> jokaisesta 2 500 askeleesta, laskettuna <b>jokaiselta päivältä erikseen</b> (esim. 5 100 askelta päivässä = 2 p).</li>
-                <li><b>1 piste</b> jokaisesta 30 minuutista urheilua (ei rajaa) tai luovaa harrastusta (pisteitä enintään 2 h viikossa). Puolikas piste jokaisesta 15 minuutista.</li>
-                <li><b>Putki</b>: peräkkäisten päivien määrä, joina kävelit vähintään 5 000 askelta.</li>
-                <li><b>+{WEEK_BONUS} pistettä</b> jokaisesta viikosta, jolloin täytät koko viikon tavoitteen.</li>
-              </ul>
-            </details>
+            <p className="muted" style={{ margin: '4px 0 0' }}>Miten pisteet lasketaan? <Link href="/ohje">Näin kisa toimii →</Link></p>
           </section>
         );
       })()}
@@ -224,12 +215,7 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
               ))}
             </div>
             {g.done ? <p className="toast">Viikon tavoite täynnä! +{WEEK_BONUS} pistettä</p> : <p className="muted">Täytä kaikki kolme, niin saat +{WEEK_BONUS} pistettä. {nDone} / {n} keijua on jo täyttänyt viikon tavoitteen.</p>}
-            <details className="how">
-              <summary>Mitä tavoite tarkoittaa?</summary>
-              <ul>
-                {rows.map((r) => <li key={r.label}><b>{r.label}:</b> {r.max} {r.hint}</li>)}
-              </ul>
-            </details>
+            <p className="muted" style={{ margin: '4px 0 0' }}>Mitä tavoite tarkoittaa? <Link href="/ohje">Näin kisa toimii →</Link></p>
           </section>
         );
       })()}
