@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/lib/db';
-import { CREATIVE, SPORTS, dayBefore, helsinkiDay, inContest, isDay, loggableDays } from '@/lib/garden';
+import { CREATIVE, SPORTS, dayBefore, helsinkiDay, isDay, loggableDays } from '@/lib/garden';
 import { AVATAR_BGS, AVATAR_EMOJIS } from '@/lib/avatar';
 import { loadGarden } from '@/lib/data';
 import { hashPin, verifyPin } from '@/lib/pin';
@@ -72,20 +72,22 @@ export async function logWorkout(formData: FormData) {
 }
 
 /**
- * Askeleet käsin (varakeino, jos synkka ei toimi): vain eilinen päivä, ja vain jos sillä ei ole yhtään askelta.
- * Käsin kirjattu päivä merkitään (✏️).
+ * Askeleet käsin (varakeino, jos synkka ei toimi): vain omalle tänään tai enintään 7 päivää taaksepäin.
+ * Päivän suurin arvo jää voimaan; käsin kirjattu luku merkitään (✏️), jos se ylittää synkatun.
  */
 export async function addManualSteps(formData: FormData) {
   const token = cookies().get(COOKIE)?.value;
   const steps = Math.round(Number(formData.get('steps')));
-  const day = dayBefore(helsinkiDay());
-  const to = (ok: string) => `/?ok=${ok}`;
-  if (!token || !(steps > 0 && steps <= MANUAL_STEPS_MAX) || !inContest(day)) redirect(to('askeleet-virhe'));
+  const day = String(formData.get('day') ?? '');
+  const back = formData.get('back') === 'etusivu' ? '/' : '/kirjaa';
+  const to = (ok: string) => `${back}?ok=${ok}`;
+  if (!token || !(steps > 0 && steps <= MANUAL_STEPS_MAX) || !isDay(day) || !loggableDays().includes(day)) redirect(to('askeleet-virhe'));
   const supabase = db();
   const { data: fairy } = await supabase.from('fairies').select('id').eq('token', token).maybeSingle();
   if (!fairy) return;
   const { data: had } = await supabase.from('steps').select('steps').eq('fairy_id', fairy.id).eq('day', day).maybeSingle();
-  if (((had?.steps as number | undefined) ?? 0) > 0) redirect(to('askeleet-pienempi'));
+  const current = (had?.steps as number | undefined) ?? 0;
+  if (steps <= current) redirect(to('askeleet-pienempi'));
   const row = { fairy_id: fairy.id, day, steps, updated_at: new Date().toISOString() };
   const { error } = await supabase.from('steps').upsert({ ...row, manual: true });
   if (error) {
