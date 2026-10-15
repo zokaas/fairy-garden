@@ -29,10 +29,17 @@ export default async function Kirjaa({ searchParams }: { searchParams: { ok?: st
     value: d,
     label: d === todayD ? 'Tänään' : d === dayBefore(todayD) ? 'Eilen' : `${WDN[new Date(`${d}T12:00:00Z`).getUTCDay()]} ${dm(d)}`,
   }));
+  // Käsin voi kirjata vain päivän, jolla ei ole yhtään askelta (eilisestä 7 päivää taaksepäin).
+  let haveSteps = new Set<string>();
+  if (me && !DEMO) {
+    const { data } = await db().from('steps').select('day, steps').eq('fairy_id', me.id).in('day', dayOptions.map((d) => d.value));
+    haveSteps = new Set((data ?? []).filter((r) => (r.steps as number) > 0).map((r) => r.day as string));
+  }
+  const missingDays = dayOptions.filter((d) => d.value !== todayD && !haveSteps.has(d.value));
   return (
     <>
       <h1>Kirjaa</h1>
-      {searchParams.ok && <p className="toast">{({ poistettu: 'Kirjaus poistettu', askeleet: 'Askeleet tallennettu ✏️', 'askeleet-pienempi': 'Päivällä on jo suurempi tai yhtä suuri askelmäärä, joten mitään ei muutettu.', 'askeleet-virhe': 'Tarkista päivä ja askelmäärä.' } as Record<string, string>)[searchParams.ok] ?? 'Kirjattu'}</p>}
+      {searchParams.ok && <p className="toast">{({ poistettu: 'Kirjaus poistettu', askeleet: 'Askeleet tallennettu ✏️', 'askeleet-pienempi': 'Päivällä on jo askelia, joten mitään ei muutettu.', 'askeleet-virhe': 'Tarkista päivä ja askelmäärä.' } as Record<string, string>)[searchParams.ok] ?? 'Kirjattu'}</p>}
 
       <section className="card">
         <h2>Lisää kirjaus</h2>
@@ -43,16 +50,20 @@ export default async function Kirjaa({ searchParams }: { searchParams: { ok?: st
 
       <details className="card">
         <summary><b>Askeleet käsin</b> <small className="muted">(jos synkka ei toimi)</small></summary>
-        <form action={addManualSteps} style={{ marginTop: 12 }}>
-          <label htmlFor="ms-day">Päivä</label>
-          <select id="ms-day" name="day" defaultValue={dayOptions[0]?.value}>
-            {dayOptions.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
-          </select>
-          <label htmlFor="ms-steps">Askelmäärä päivältä (Terveys-sovelluksen luku)</label>
-          <input id="ms-steps" name="steps" type="number" inputMode="numeric" min={1} max={MANUAL_STEPS_MAX} placeholder="esim. 8200" required />
-          <button className="btn">Tallenna askeleet</button>
-        </form>
-        <p className="muted">Käytä vain, jos synkka ei onnistu. Käsin kirjattu päivä näkyy kaikille ✏️-merkillä. Enintään {MANUAL_STEPS_MAX.toLocaleString('fi-FI')} askelta päivässä, ja vain tänään tai 7 päivää taaksepäin. Päivälle jää suurempi luku, joten synkka voi korjata arvon ylöspäin.</p>
+        {missingDays.length === 0 ? (
+          <p className="muted" style={{ marginTop: 12 }}>Ei puuttuvia päiviä: kaikilla viimeisen 7 päivän päivillä on jo askelia.</p>
+        ) : (
+          <form action={addManualSteps} style={{ marginTop: 12 }}>
+            <label htmlFor="ms-day">Päivä, jolta askeleet puuttuvat</label>
+            <select id="ms-day" name="day" defaultValue={missingDays[0]?.value}>
+              {missingDays.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
+            </select>
+            <label htmlFor="ms-steps">Askelmäärä päivältä (Terveys-sovelluksen luku)</label>
+            <input id="ms-steps" name="steps" type="number" inputMode="numeric" min={1} max={MANUAL_STEPS_MAX} placeholder="esim. 8200" required />
+            <button className="btn">Tallenna askeleet</button>
+          </form>
+        )}
+        <p className="muted">Käytä vain, jos synkka ei onnistu. Voit kirjata vain päivän, jolta ei ole yhtään askelta (eilisestä 7 päivää taaksepäin), enintään {MANUAL_STEPS_MAX.toLocaleString('fi-FI')} askelta. Käsin kirjattu päivä näkyy kaikille ✏️-merkillä. Jos synkka tuo luvun myöhemmin, se korvaa käsin kirjatun.</p>
       </details>
 
       {me && (

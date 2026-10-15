@@ -35,7 +35,7 @@ export default async function ShortcutGuide() {
         )}
       </section>
 
-      <p className="muted" style={{ marginTop: -4 }}>Jos synkka ei onnistu (esim. puhelimen muisti on täynnä), voit kirjata päivän askeleet käsin: <Link href="/kirjaa">Kirjaa › Askeleet käsin →</Link> Käsin kirjattu päivä näkyy kaikille ✏️-merkillä.</p>
+      <p className="muted" style={{ marginTop: -4 }}>Jos synkka ei onnistu (esim. puhelimen muisti on täynnä), voit kirjata puuttuvan päivän askeleet käsin: <Link href="/kirjaa">Kirjaa › Askeleet käsin →</Link> (etusivu kysyy myös eilisen luvun, jos se puuttuu). Käsin kirjattu päivä näkyy kaikille ✏️-merkillä.</p>
 
       {install ? (
         <section className="card">

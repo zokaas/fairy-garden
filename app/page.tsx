@@ -154,7 +154,7 @@ export default async function Home({ searchParams }: { searchParams: { ok?: stri
 
       {me.hasSteps && onboarding}
 
-      {searchParams.ok && <p className="toast">{({ askeleet: 'Askeleet tallennettu ✏️', 'askeleet-pienempi': 'Päivällä on jo suurempi tai yhtä suuri askelmäärä, joten mitään ei muutettu.', 'askeleet-virhe': 'Tarkista askelmäärä.' } as Record<string, string>)[searchParams.ok] ?? ''}</p>}
+      {searchParams.ok && <p className="toast">{({ askeleet: 'Askeleet tallennettu ✏️', 'askeleet-pienempi': 'Päivällä on jo askelia, joten mitään ei muutettu.', 'askeleet-virhe': 'Tarkista askelmäärä.' } as Record<string, string>)[searchParams.ok] ?? ''}</p>}
 
       {me.yesterday === 0 && inContest(dayBefore(helsinkiDay())) && (() => {
         const y = dayBefore(helsinkiDay());
