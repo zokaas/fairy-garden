@@ -154,7 +154,7 @@ export default async function Home({ searchParams }: { searchParams: { ok?: stri
 
       {me.hasSteps && onboarding}
 
-      {searchParams.ok && <p className="toast">{({ askeleet: 'Askeleet tallennettu ✏️', 'askeleet-pienempi': 'Päivällä on jo suurempi tai yhtä suuri askelmäärä, joten mitään ei muutettu.', 'askeleet-virhe': 'Tarkista askelmäärä.' } as Record<string, string>)[searchParams.ok] ?? ''}</p>}
+      {searchParams.ok && <p className="toast">{({ askeleet: 'Askeleet tallennettu ✏️', 'askeleet-pienempi': 'Eilisellä on jo askelia, joten mitään ei muutettu.', 'askeleet-virhe': 'Tarkista askelmäärä.' } as Record<string, string>)[searchParams.ok] ?? ''}</p>}
 
       {me.yesterday === 0 && inContest(dayBefore(helsinkiDay())) && (() => {
         const y = dayBefore(helsinkiDay());
@@ -163,8 +163,6 @@ export default async function Home({ searchParams }: { searchParams: { ok?: stri
           <section className="card nudge">
             <p><b>Eilisen ({lbl}) askeleet puuttuvat.</b> Paljonko askelia kertyi? Katso luku Terveys-sovelluksesta.</p>
             <form action={addManualSteps} className="row" style={{ alignItems: 'stretch' }}>
-              <input type="hidden" name="day" value={y} />
-              <input type="hidden" name="back" value="etusivu" />
               <input name="steps" type="number" inputMode="numeric" min={1} max={MANUAL_STEPS_MAX} placeholder="eilisen askeleet" aria-label="Eilisen askeleet" required />
               <button className="btn">Tallenna</button>
             </form>
