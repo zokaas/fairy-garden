@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { loadGarden, loadRaw } from '@/lib/data';
-import { helsinkiDay, kindOf, GROWTH, UNLOCKS, fp, stepPoints, ago, phaseOf, type Phase } from '@/lib/garden';
+import { dayBefore, inContest, helsinkiDay, kindOf, GROWTH, UNLOCKS, fp, stepPoints, ago, phaseOf, type Phase } from '@/lib/garden';
 import type { Fairy } from '@/lib/data';
 import Journey from '@/components/Journey';
 import { AutoSyncEnable } from '@/components/AutoSync';
@@ -10,7 +10,8 @@ import Avatar from '@/components/Avatar';
 import { WEEK_BONUS, WEEK_GOAL } from '@/lib/weekly';
 import NameDice from '@/components/NameDice';
 import { BADGES } from '@/lib/badges';
-import { join, login } from './actions';
+import { addManualSteps, join, login } from './actions';
+import { MANUAL_STEPS_MAX } from '@/lib/manual';
 import Countdown from '@/components/Countdown';
 import { getContest } from '@/lib/contest';
 import Garden from '@/components/Garden';
@@ -20,7 +21,7 @@ import SyncButton from '@/components/SyncButton';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Home({ searchParams }: { searchParams: { virhe?: string; synkattu?: string; kirjaudu?: string; d?: string; taso?: string; aika?: string; juhla?: string; tyhja?: string } }) {
+export default async function Home({ searchParams }: { searchParams: { ok?: string; virhe?: string; synkattu?: string; kirjaudu?: string; d?: string; taso?: string; aika?: string; juhla?: string; tyhja?: string } }) {
   const { board, me: realMe, myRank } = await loadGarden();
   const rawToday = realMe?.hasSteps ? await loadRaw() : null;
   // Ylläpitäjän esikatselu: ?taso=0..5, ?aika=night|dawn|day|dusk, ?juhla=1, ?tyhja=1 (uuden käyttäjän näkymä)
@@ -153,12 +154,24 @@ export default async function Home({ searchParams }: { searchParams: { virhe?: s
 
       {me.hasSteps && onboarding}
 
-      {me.hasSteps && me.yesterday === 0 && (
-        <section className="card nudge">
-          <p>Eilisen askeleet puuttuvat. Paina Synkkaa askeleet nyt, niin ne tulevat mukaan.</p>
-          <p className="muted">Viimeksi synkattu: {ago(me.lastSync)}</p>
-        </section>
-      )}
+      {searchParams.ok && <p className="toast">{({ askeleet: 'Askeleet tallennettu ✏️', 'askeleet-pienempi': 'Päivällä on jo suurempi tai yhtä suuri askelmäärä, joten mitään ei muutettu.', 'askeleet-virhe': 'Tarkista askelmäärä.' } as Record<string, string>)[searchParams.ok] ?? ''}</p>}
+
+      {me.yesterday === 0 && inContest(dayBefore(helsinkiDay())) && (() => {
+        const y = dayBefore(helsinkiDay());
+        const lbl = `${['su', 'ma', 'ti', 'ke', 'to', 'pe', 'la'][new Date(`${y}T12:00:00Z`).getUTCDay()]} ${Number(y.slice(8))}.${Number(y.slice(5, 7))}.`;
+        return (
+          <section className="card nudge">
+            <p><b>Eilisen ({lbl}) askeleet puuttuvat.</b> Paljonko askelia kertyi? Katso luku Terveys-sovelluksesta.</p>
+            <form action={addManualSteps} className="row" style={{ alignItems: 'stretch' }}>
+              <input type="hidden" name="day" value={y} />
+              <input type="hidden" name="back" value="etusivu" />
+              <input name="steps" type="number" inputMode="numeric" min={1} max={MANUAL_STEPS_MAX} placeholder="eilisen askeleet" aria-label="Eilisen askeleet" required />
+              <button className="btn">Tallenna</button>
+            </form>
+            <p className="muted">Merkitään ✏️ (käsin kirjattu). Tai paina <b>Synkkaa askeleet</b>, niin ne tulevat itsestään. Viimeksi synkattu: {ago(me.lastSync)}</p>
+          </section>
+        );
+      })()}
 
       {me.hasSteps && rawToday && (() => {
         const t = helsinkiDay();
