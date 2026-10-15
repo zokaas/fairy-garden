@@ -6,6 +6,7 @@ import { CONTEST_START, dayBefore, helsinkiDay, kindOf, sportPoints, stepPoints,
 import { WEEK_GOAL, dayFlowers } from '@/lib/weekly';
 import { byDay } from '@/lib/stats';
 import TekemisetView from '@/components/TekemisetView';
+import { loadManualDays } from '@/lib/manual';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,6 +27,7 @@ export default async function Paivat({ searchParams }: { searchParams: { nakyma?
   if (all) return <><h1>Päivät</h1>{tabs}<TekemisetView paivia={searchParams.paivia} /></>;
   const [{ me }, raw] = await Promise.all([loadGarden(), loadRaw()]);
   if (!me) redirect('/');
+  const manual = await loadManualDays();
   const mySteps = byDay(raw.steps.filter((r) => r.fairy_id === me.id));
   const myWork = raw.workouts.filter((r) => r.fairy_id === me.id);
 
@@ -92,7 +94,7 @@ export default async function Paivat({ searchParams }: { searchParams: { nakyma?
                 <li key={r.day} className={r.day === today ? 'today' : ''}>
                   <span className="dl-d"><b>{wdOf(r.day)}</b> {dm(r.day)}{r.day === today && <small> tänään</small>}</span>
                   <span className="dl-bar" aria-hidden="true"><i style={{ width: `${Math.min(100, (r.steps / r.target) * 100)}%` }} className={r.flower ? 'ok' : ''} /></span>
-                  <span className="dl-s"><b>{fi(r.steps)}</b>{r.flowerN > 0 ? ` ${'🌸'.repeat(Math.min(r.flowerN, 4))}${r.flowerN > 4 ? `×${r.flowerN}` : ''}` : ''}</span>
+                  <span className="dl-s"><b>{fi(r.steps)}</b>{manual.has(`${me.id}|${r.day}`) ? ' ✏️' : ''}{r.flowerN > 0 ? ` ${'🌸'.repeat(Math.min(r.flowerN, 4))}${r.flowerN > 4 ? `×${r.flowerN}` : ''}` : ''}</span>
                   <span className="dl-x">{r.parts.length ? r.parts.join(' · ') : <span className="muted">{r.day === today ? 'ei vielä kirjauksia' : 'ei kirjauksia'}</span>}</span>
                 </li>
               ))}
@@ -100,7 +102,7 @@ export default async function Paivat({ searchParams }: { searchParams: { nakyma?
           </section>
         );
       })}
-      <p className="muted">Palkki täyttyy päivän tavoitteeseen (10 000 askelta, urheilupäivänä 7 000). 🌸 = päivän kukka, ja jokainen täysi 10 000 askelta tavoitteen yli tuo lisäkukan.</p>
+      <p className="muted">✏️ = käsin kirjattu. Palkki täyttyy päivän tavoitteeseen (10 000 askelta, urheilupäivänä 7 000). 🌸 = päivän kukka, ja jokainen täysi 10 000 askelta tavoitteen yli tuo lisäkukan.</p>
       <Link className="btn ghost" href="/tilastot">Tilastot</Link>
     </>
   );

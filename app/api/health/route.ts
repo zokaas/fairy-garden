@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 
 const CHECKS: Record<string, string> = {
   fairies: 'id, name, token, avatar_emoji, avatar_bg, avatar_path, avatar_acc, pin_hash, is_admin',
-  steps: 'fairy_id, day, steps, updated_at',
+  steps: 'fairy_id, day, steps, updated_at, manual',
   workouts: 'id, fairy_id, day, sport, minutes',
   cheers: 'id, from_id, to_id, day',
   announced: 'key, created_at',

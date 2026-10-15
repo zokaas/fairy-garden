@@ -29,10 +29,24 @@ export async function POST(req: Request) {
   if (!fairy) return NextResponse.json({ error: 'Tuntematon token' }, { status: 401 });
 
   // Pidetään päivän suurin arvo, jotta myöhäinen nollasynkronointi ei tyhjennä päivää.
-  const { data: existing } = await supabase.from('steps').select('day, steps').eq('fairy_id', fairy.id).in('day', entries.map((e) => e.day));
+  // Käsin kirjattu (✏️) luku säilyy vain, jos se on suurempi kuin synkattu; muuten synkka korvaa merkinnän.
+  let hasManual = true;
+  let existing: { day: string; steps: number; manual?: boolean }[] | null = null;
+  const withManual = await supabase.from('steps').select('day, steps, manual').eq('fairy_id', fairy.id).in('day', entries.map((e) => e.day));
+  if (withManual.error) {
+    hasManual = false;
+    existing = (await supabase.from('steps').select('day, steps').eq('fairy_id', fairy.id).in('day', entries.map((e) => e.day))).data;
+  } else {
+    existing = withManual.data;
+  }
   const had = new Map((existing ?? []).map((r) => [r.day as string, r.steps as number]));
+  const wasManual = new Set((existing ?? []).filter((r) => r.manual).map((r) => r.day as string));
   const now = new Date().toISOString();
-  const rows = entries.map((e) => ({ fairy_id: fairy.id, day: e.day, steps: Math.max(e.steps, had.get(e.day) ?? 0), updated_at: now }));
+  const rows = entries.map((e) => {
+    const prev = had.get(e.day) ?? 0;
+    const row = { fairy_id: fairy.id, day: e.day, steps: Math.max(e.steps, prev), updated_at: now };
+    return hasManual ? { ...row, manual: wasManual.has(e.day) && prev > e.steps } : row;
+  });
   const { error } = await supabase.from('steps').upsert(rows);
   if (error) return NextResponse.json({ error: 'Tallennus epäonnistui' }, { status: 500 });
 

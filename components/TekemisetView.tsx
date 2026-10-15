@@ -4,6 +4,7 @@ import { loadGarden, loadRaw } from '@/lib/data';
 import { dayBefore, helsinkiDay, kindOf, weekStart } from '@/lib/garden';
 import Avatar from '@/components/Avatar';
 import { WEEK_GOAL, dayFlowers } from '@/lib/weekly';
+import { loadManualDays } from '@/lib/manual';
 
 const WD = ['sunnuntai', 'maanantai', 'tiistai', 'keskiviikko', 'torstai', 'perjantai', 'lauantai'];
 const dm = (d: string) => `${Number(d.slice(8))}.${Number(d.slice(5, 7))}.`;
@@ -19,6 +20,7 @@ export default async function TekemisetView({ paivia }: { paivia?: string }) {
   const [{ board, me }, raw] = await Promise.all([loadGarden(), loadRaw()]);
   if (!me) redirect('/');
   const shown = Math.min(60, Math.max(PAGE, Number(paivia) || PAGE));
+  const manual = await loadManualDays();
   const who = new Map(board.map((b) => [b.id, b]));
   const today = helsinkiDay();
   const yesterday = dayBefore(today);
@@ -69,7 +71,7 @@ export default async function TekemisetView({ paivia }: { paivia?: string }) {
 
   return (
     <>
-      <p className="sub">Kaikkien keijujen päivät: askeleet, urheilu ja luovat harrastukset. 🌸 = päivän tavoite täyttyi. Yksi rivi per keiju per päivä, keijut aina kisan sijajärjestyksessä.</p>
+      <p className="sub">Kaikkien keijujen päivät: askeleet, urheilu ja luovat harrastukset. 🌸 = päivän tavoite täyttyi, ✏️ = käsin kirjattu. Yksi rivi per keiju per päivä, keijut aina kisan sijajärjestyksessä.</p>
 
       <section className="card">
         <div className="tiles">
@@ -106,7 +108,7 @@ export default async function TekemisetView({ paivia }: { paivia?: string }) {
                       <Link href={`/keiju/${f.id}`} aria-label={`Avaa ${f.name}`}><Avatar a={f} size={36} stage={f.stageIdx} /></Link>
                       <span className="fd-t">
                         <Link href={`/keiju/${f.id}`}><b>{f.name}{f.mine ? ' (sinä)' : ''}</b></Link>
-                        {showSt && <small>{p.flowers > 0 ? '🌸'.repeat(Math.min(p.flowers, 4)) : '👟'} {fi(p.steps)} askelta</small>}
+                        {showSt && <small>{p.flowers > 0 ? '🌸'.repeat(Math.min(p.flowers, 4)) : '👟'} {fi(p.steps)} askelta{manual.has(`${p.id}|${p.day}`) ? ' ✏️' : ''}</small>}
                         {showSp && <small>💪 {list(p.sport)}</small>}
                         {showCr && <small>🎨 {list(p.creative)}</small>}
                       </span>
