@@ -9,6 +9,7 @@ import { byDay } from '@/lib/stats';
 import Garden from '@/components/Garden';
 import Journey from '@/components/Journey';
 import { forecast } from '@/lib/forecast';
+import { loadManualDays } from '@/lib/manual';
 import { getContest } from '@/lib/contest';
 
 export const dynamic = 'force-dynamic';
@@ -19,7 +20,7 @@ const dm = (d: string) => `${Number(d.slice(8))}.${Number(d.slice(5, 7))}.`;
 
 export default async function Keiju({ params }: { params: { id: string } }) {
   if (!cookies().get('fg_token')) redirect('/');
-  const [{ board, me }, raw, contest] = await Promise.all([loadGarden(), loadRaw(), getContest()]);
+  const [{ board, me }, raw, contest, manual] = await Promise.all([loadGarden(), loadRaw(), getContest(), loadManualDays()]);
   if (!me) redirect('/');
   const f = board.find((b) => b.id === params.id);
   if (!f) notFound();
@@ -84,7 +85,7 @@ export default async function Keiju({ params }: { params: { id: string } }) {
             <li key={r.day}>
               <span className="fd-t">
                 <b>{WD[new Date(`${r.day}T12:00:00Z`).getUTCDay()]} {dm(r.day)}{r.day === today ? ' · tänään' : ''}</b>
-                <small>{fi(r.steps)} askelta{r.sport ? ` · 💪 ${r.sport}` : ''}{r.creative ? ` · 🎨 ${r.creative}` : ''}</small>
+                <small>{fi(r.steps)} askelta{manual.has(`${f.id}|${r.day}`) ? ' ✏️' : ''}{r.sport ? ` · 💪 ${r.sport}` : ''}{r.creative ? ` · 🎨 ${r.creative}` : ''}</small>
               </span>
             </li>
           ))}

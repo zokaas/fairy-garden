@@ -27,7 +27,9 @@ export async function adminSetSteps(formData: FormData) {
   const dayRaw = formData.get('day');
   const day = isDay(dayRaw) ? dayRaw : helsinkiDay();
   if (!id || !Number.isFinite(steps) || steps < 0 || steps > 200_000) return;
-  await db().from('steps').upsert({ fairy_id: id, day, steps, updated_at: new Date().toISOString() });
+  const row = { fairy_id: id, day, steps, updated_at: new Date().toISOString() };
+  const { error } = await db().from('steps').upsert({ ...row, manual: false });
+  if (error) await db().from('steps').upsert(row);
   done('Askeleet tallennettu');
 }
 

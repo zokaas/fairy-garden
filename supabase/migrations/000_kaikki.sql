@@ -75,3 +75,4 @@ create table if not exists public.announced (
   created_at timestamptz not null default now()
 );
 alter table public.announced enable row level security;
+alter table public.steps add column if not exists manual boolean not null default false;
