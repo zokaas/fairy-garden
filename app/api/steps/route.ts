@@ -5,6 +5,7 @@ import { dayBefore, helsinkiDay, kindOf } from '@/lib/garden';
 import { WEEK_GOAL, dayFlowers } from '@/lib/weekly';
 import { sendPush } from '@/lib/push';
 import { announceAchievements } from '@/lib/announce';
+import { bustData } from '@/lib/cache';
 
 export const dynamic = 'force-dynamic';
 
@@ -49,6 +50,7 @@ export async function POST(req: Request) {
   });
   const { error } = await supabase.from('steps').upsert(rows);
   if (error) return NextResponse.json({ error: 'Tallennus epäonnistui' }, { status: 500 });
+  bustData();
 
   // Ilmoitus muille, kun tämän tai eilisen päivän kukka (tai lisäkukka) puhkeaa. Takautuvista päivistä ei pingata.
   try {

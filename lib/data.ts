@@ -1,5 +1,7 @@
 import 'server-only';
 import { cookies } from 'next/headers';
+import { unstable_cache } from 'next/cache';
+import { DATA_TAG } from '@/lib/cache';
 import { db } from '@/lib/db';
 import { DEMO, demoRows } from '@/lib/demo';
 import { WEEK_BONUS, flowerDays, weekGoal, weeksDone, type WeekGoal } from '@/lib/weekly';
@@ -54,16 +56,28 @@ export type Fairy = {
   avgSession: number;
 };
 
-async function fetchRows() {
+async function fetchRowsDb(strict: boolean) {
   const supabase = db();
-  const [{ data: fairies }, { data: steps }, { data: workouts }, { data: cheers }] = await Promise.all([
+  const [{ data: fairies, error: e1 }, { data: steps, error: e2 }, { data: workouts, error: e3 }, { data: cheers }] = await Promise.all([
     supabase.from('fairies').select('id, name, token, avatar_emoji, avatar_bg, avatar_path, avatar_acc, is_admin'),
     supabase.from('steps').select('fairy_id, day, steps, updated_at'),
     supabase.from('workouts').select('fairy_id, minutes, day, sport'),
     supabase.from('cheers').select('from_id, to_id, day'),
   ]);
+  // Virheellistä tulosta ei saa jäädä välimuistiin: välimuistitettu haku heittää virheen, jolloin haetaan suoraan uudelleen.
+  if (strict && (e1 || e2 || e3)) throw new Error('db');
   return { fairies: fairies ?? [], steps: (steps ?? []).filter((r) => inContest(r.day)), workouts: (workouts ?? []).filter((r) => inContest(r.day)), cheers: cheers ?? [] };
 }
+
+/** Jaettu data välimuistissa (30 s) ja tyhjennetään kirjoituksissa; ei sisällä käyttäjäkohtaista tietoa. */
+const cachedRows = unstable_cache(() => fetchRowsDb(true), ['fg-rows-v1'], { revalidate: 30, tags: [DATA_TAG] });
+const fetchRows = async () => {
+  try {
+    return await cachedRows();
+  } catch {
+    return fetchRowsDb(false);
+  }
+};
 
 export async function loadGarden() {
   const token = cookies().get('fg_token')?.value;
@@ -154,16 +168,30 @@ export async function loadGarden() {
 }
 
 /** Raakadata tilastoja varten: kaikkien askeleet ja liikunnat. */
+async function fetchRawDb(strict: boolean) {
+  const supabase = db();
+  const [{ data: steps, error: e1 }, { data: workouts, error: e2 }, { data: cheers }] = await Promise.all([
+    supabase.from('steps').select('fairy_id, day, steps'),
+    supabase.from('workouts').select('fairy_id, day, sport, minutes, created_at'),
+    supabase.from('cheers').select('from_id, to_id, day'),
+  ]);
+  if (strict && (e1 || e2)) throw new Error('db');
+  return { steps: ((steps ?? []) as import('./stats').StepRow[]).filter((r) => inContest(r.day)), workouts: ((workouts ?? []) as import('./stats').WorkRow[]).filter((r) => inContest(r.day)), cheers: (cheers ?? []) as { from_id: string; to_id: string; day: string }[] };
+}
+
+const cachedRaw = unstable_cache(() => fetchRawDb(true), ['fg-raw-v1'], { revalidate: 30, tags: [DATA_TAG] });
+const fetchRaw = async () => {
+  try {
+    return await cachedRaw();
+  } catch {
+    return fetchRawDb(false);
+  }
+};
+
 export async function loadRaw() {
   if (DEMO) {
     const r = demoRows();
     return { steps: r.steps as import('./stats').StepRow[], workouts: r.workouts as import('./stats').WorkRow[], cheers: r.cheers as { from_id: string; to_id: string; day: string }[] };
   }
-  const supabase = db();
-  const [{ data: steps }, { data: workouts }, { data: cheers }] = await Promise.all([
-    supabase.from('steps').select('fairy_id, day, steps'),
-    supabase.from('workouts').select('fairy_id, day, sport, minutes, created_at'),
-    supabase.from('cheers').select('from_id, to_id, day'),
-  ]);
-  return { steps: ((steps ?? []) as import('./stats').StepRow[]).filter((r) => inContest(r.day)), workouts: ((workouts ?? []) as import('./stats').WorkRow[]).filter((r) => inContest(r.day)), cheers: (cheers ?? []) as { from_id: string; to_id: string; day: string }[] };
+  return fetchRaw();
 }

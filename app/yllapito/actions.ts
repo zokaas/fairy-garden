@@ -2,6 +2,7 @@
 import { randomBytes } from 'node:crypto';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
+import { bustData } from '@/lib/cache';
 import { db } from '@/lib/db';
 import { loadGarden } from '@/lib/data';
 import { AVATAR_BGS, AVATAR_EMOJIS } from '@/lib/avatar';
@@ -17,6 +18,7 @@ async function requireAdmin() {
 }
 const done = (msg: string) => {
   revalidatePath('/', 'layout');
+  bustData();
   redirect(`/yllapito?ok=${encodeURIComponent(msg)}`);
 };
 

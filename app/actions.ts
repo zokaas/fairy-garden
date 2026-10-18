@@ -3,6 +3,7 @@ import { randomBytes } from 'node:crypto';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
+import { bustData } from '@/lib/cache';
 import { db } from '@/lib/db';
 import { CREATIVE, SPORTS, dayBefore, helsinkiDay, isDay, loggableDays } from '@/lib/garden';
 import { AVATAR_BGS, AVATAR_EMOJIS } from '@/lib/avatar';
@@ -29,6 +30,7 @@ export async function join(formData: FormData) {
   const token = randomBytes(18).toString('base64url');
   const { error } = await supabase.from('fairies').insert({ name, token, pin_hash: hashPin(pin) });
   if (error) redirect(`/?virhe=tallennus&d=${encodeURIComponent(error.message.slice(0, 120))}`);
+  bustData();
   setSession(token);
   redirect('/profiili?uusi=1');
 }
@@ -68,6 +70,7 @@ export async function logWorkout(formData: FormData) {
   await supabase.from('workouts').insert({ fairy_id: fairy.id, day, sport, minutes });
   await announceAchievements();
   revalidatePath('/', 'layout');
+  bustData();
   redirect('/kirjaa?ok=liikunta');
 }
 
@@ -95,6 +98,7 @@ export async function addManualSteps(formData: FormData) {
   }
   await announceAchievements();
   revalidatePath('/', 'layout');
+  bustData();
   redirect(to('askeleet'));
 }
 
@@ -110,6 +114,7 @@ export async function deleteWorkout(formData: FormData) {
   for (let i = 0; i < 7; i++) oldest = dayBefore(oldest);
   await supabase.from('workouts').delete().eq('id', id).eq('fairy_id', fairy.id).gte('day', oldest);
   revalidatePath('/', 'layout');
+  bustData();
   redirect('/kirjaa?ok=poistettu');
 }
 
@@ -135,6 +140,7 @@ export async function saveAvatar(formData: FormData) {
   }
   await supabase.from('fairies').update(patch).eq('id', fairy.id);
   revalidatePath('/', 'layout');
+  bustData();
   redirect(formData.get('uusi') ? '/' : '/profiili?ok=1');
 }
 
@@ -155,6 +161,7 @@ export async function uploadPhoto(formData: FormData): Promise<{ ok: boolean }> 
   await supabase.from('fairies').update({ avatar_path: path }).eq('id', fairy.id);
   if (fairy.avatar_path) await supabase.storage.from('avatars').remove([fairy.avatar_path]);
   revalidatePath('/', 'layout');
+  bustData();
   return { ok: true };
 }
 
@@ -165,6 +172,7 @@ export async function removePhoto() {
   await supabase.from('fairies').update({ avatar_path: null }).eq('id', fairy.id);
   if (fairy.avatar_path) await supabase.storage.from('avatars').remove([fairy.avatar_path]);
   revalidatePath('/', 'layout');
+  bustData();
   redirect('/profiili?ok=1');
 }
 
