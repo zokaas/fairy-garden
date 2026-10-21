@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { loadGarden, loadRaw } from '@/lib/data';
+import { loadGarden, loadRaw, visibleBoard } from '@/lib/data';
 import { dayBefore, inContest, helsinkiDay, kindOf, GROWTH, UNLOCKS, fp, stepPoints, ago, phaseOf, type Phase } from '@/lib/garden';
 import type { Fairy } from '@/lib/data';
 import Journey from '@/components/Journey';
@@ -22,7 +22,10 @@ import SyncButton from '@/components/SyncButton';
 export const dynamic = 'force-dynamic';
 
 export default async function Home({ searchParams }: { searchParams: { ok?: string; virhe?: string; synkattu?: string; kirjaudu?: string; d?: string; taso?: string; aika?: string; juhla?: string; tyhja?: string } }) {
-  const [{ board, me: realMe, myRank }, raw, contest] = await Promise.all([loadGarden(), loadRaw(), getContest()]);
+  const [{ board: fullBoard, me: realMe }, raw, contest] = await Promise.all([loadGarden(), loadRaw(), getContest()]);
+  // Passiiviset (ei synkannut 4 päivään) piilotetaan listoista; oma rivi näkyy aina.
+  const board = visibleBoard(fullBoard);
+  const myRank = board.findIndex((b) => b.mine) + 1;
   const rawToday = realMe?.hasSteps ? raw : null;
   // Ylläpitäjän esikatselu: ?taso=0..5, ?aika=night|dawn|day|dusk, ?juhla=1, ?tyhja=1 (uuden käyttäjän näkymä)
   const admin = !!realMe?.isAdmin;

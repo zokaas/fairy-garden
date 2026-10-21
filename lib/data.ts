@@ -5,7 +5,7 @@ import { DATA_TAG } from '@/lib/cache';
 import { db } from '@/lib/db';
 import { DEMO, demoRows } from '@/lib/demo';
 import { WEEK_BONUS, flowerDays, weekGoal, weeksDone, type WeekGoal } from '@/lib/weekly';
-import { CREATIVE_WEEK_CAP, creativeCountedMins, creativePointsOf, inContest, sportPointsOf, workoutPoints, ACTIVE_DAY, DAILY_GOAL, bestStreak, kindOf, dayBefore, helsinkiDay, points, sportPoints, growthIdx, stepPointsOf, streak, weekStart } from '@/lib/garden';
+import { INACTIVE_DAYS, CREATIVE_WEEK_CAP, creativeCountedMins, creativePointsOf, inContest, sportPointsOf, workoutPoints, ACTIVE_DAY, DAILY_GOAL, bestStreak, kindOf, dayBefore, helsinkiDay, points, sportPoints, growthIdx, stepPointsOf, streak, weekStart } from '@/lib/garden';
 import { BADGES } from '@/lib/badges';
 
 export type Fairy = {
@@ -19,6 +19,7 @@ export type Fairy = {
   streak: number;
   hasSteps: boolean;
   lastSync: string | null;
+  inactive: boolean;
   avatarEmoji: string | null;
   avatarBg: string | null;
   avatarPath: string | null;
@@ -79,6 +80,9 @@ const fetchRows = async () => {
   }
 };
 
+/** Piilottaa passiiviset keijut (ei synkannut 4 päivään); oma rivi näkyy aina. */
+export const visibleBoard = (board: Fairy[]) => board.filter((b) => !b.inactive || b.mine);
+
 export async function loadGarden() {
   const token = cookies().get('fg_token')?.value;
   const { fairies, steps, workouts, cheers } = DEMO ? demoRows() : await fetchRows();
@@ -111,6 +115,7 @@ export async function loadGarden() {
         streak: streak(st, today),
         hasSteps: st.length > 0,
         lastSync: last,
+        inactive: !last || Date.now() - Date.parse(last) > INACTIVE_DAYS * 86_400_000,
         avatarEmoji: f.avatar_emoji,
         avatarBg: f.avatar_bg,
         avatarPath: f.avatar_path,

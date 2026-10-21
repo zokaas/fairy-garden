@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
-import { loadGarden } from '@/lib/data';
+import { loadGarden, visibleBoard } from '@/lib/data';
 import { fp } from '@/lib/garden';
 import { awards } from '@/lib/awards';
 import { getContest } from '@/lib/contest';
@@ -12,9 +12,12 @@ import KarkiView from '@/components/KarkiView';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Kisa({ searchParams }: { searchParams: { avaa?: string; nakyma?: string; lista?: string; nayta?: string } }) {
+export default async function Kisa({ searchParams }: { searchParams: { avaa?: string; nakyma?: string; lista?: string; nayta?: string; passiiviset?: string } }) {
   if (!cookies().get('fg_token')) redirect('/');
-  const [{ board, me }, contest] = await Promise.all([loadGarden(), getContest()]);
+  const [{ board: fullBoard, me }, contest] = await Promise.all([loadGarden(), getContest()]);
+  const showInactive = searchParams.passiiviset === '1';
+  const board = showInactive ? fullBoard : visibleBoard(fullBoard);
+  const hiddenCount = fullBoard.length - visibleBoard(fullBoard).length;
   const view = searchParams.nakyma === 'matka' ? 'matka' : 'karki';
   const over = contest.over || (!!me?.isAdmin && !!searchParams.avaa);
   const prizes = awards(board);
@@ -40,13 +43,13 @@ export default async function Kisa({ searchParams }: { searchParams: { avaa?: st
               {contest.prize && <p>🎁 Palkinto: <b>{contest.prize}</b></p>}
             </section>
           )}
-          <KarkiView all={board} me={me} lista={searchParams.lista} nayta={searchParams.nayta} />
+          <KarkiView all={board} me={me} lista={searchParams.lista} nayta={searchParams.nayta} showInactive={showInactive} hiddenCount={hiddenCount} />
         </>
       )}
 
       {view === 'matka' && (
         <>
-        <GroupJourney fairies={board} />
+        <GroupJourney fairies={visibleBoard(fullBoard)} />
 
         <section className="card">
           <h2>{over ? 'Palkinnot ' : 'Kategoriat: kuka johtaa '}</h2>
