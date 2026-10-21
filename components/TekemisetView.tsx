@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { loadGarden, loadRaw } from '@/lib/data';
+import { loadGarden, loadRaw, visibleBoard } from '@/lib/data';
 import { dayBefore, helsinkiDay, kindOf, weekStart } from '@/lib/garden';
 import Avatar from '@/components/Avatar';
 import { WEEK_GOAL, dayFlowers } from '@/lib/weekly';
@@ -17,7 +17,8 @@ const PAGE = 7;
  * tuoreimmat päivät auki ja vanhemmat kokoon taitettuna, suodattimena kaikki / urheilu / luova / kukat.
  */
 export default async function TekemisetView({ paivia }: { paivia?: string }) {
-  const [{ board, me }, raw] = await Promise.all([loadGarden(), loadRaw()]);
+  const [{ board: fullBoard, me }, raw] = await Promise.all([loadGarden(), loadRaw()]);
+  const board = visibleBoard(fullBoard);
   if (!me) redirect('/');
   const shown = Math.min(60, Math.max(PAGE, Number(paivia) || PAGE));
   const manual = await loadManualDays();

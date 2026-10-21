@@ -160,6 +160,8 @@ export function weekStart(day = helsinkiDay()): string {
 
 
 /** Päivät, joille liikunnan voi kirjata: tänään ja enintään 7 päivää taaksepäin (ei ennen kisan alkua). Uusin ensin. */
+/** Keiju on passiivinen, jos askeleita ei ole synkattu tähän päivämäärään mennessä kuluneen 4 päivän aikana (tai ei koskaan). */
+export const INACTIVE_DAYS = 4;
 export const LOG_BACK_DAYS = 7;
 export function loggableDays(today = helsinkiDay()): string[] {
   const days: string[] = [];

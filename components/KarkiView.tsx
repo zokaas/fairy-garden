@@ -9,7 +9,7 @@ const fi = (n: number, d = 0) => n.toLocaleString('fi-FI', { maximumFractionDigi
 const key0IsActivity = (l?: string) => l === 'urheilu' || l === 'luova';
 
 /** Kisa-sivun Kärki-välilehti: kärkilistat (pisteet, tänään, askeleet, urheilu, nousu, luova). */
-export default async function KarkiView({ all, me, lista, nayta }: { all: Fairy[]; me: Fairy | null; lista?: string; nayta?: string }) {
+export default async function KarkiView({ all, me, lista, nayta, showInactive = false, hiddenCount = 0 }: { all: Fairy[]; me: Fairy | null; lista?: string; nayta?: string; showInactive?: boolean; hiddenCount?: number }) {
   const raw = key0IsActivity(lista) ? await loadRaw() : null;
   const key: ListKey = isList(lista) ? lista : 'kaikki';
   const week = nayta === 'viikko';
@@ -29,7 +29,8 @@ export default async function KarkiView({ all, me, lista, nayta }: { all: Fairy[
     const shown = list.slice(0, 3).map(([sp, min]) => `${sp} ${min} min`).join(' · ');
     return list.length > 3 ? `${shown} · +${list.length - 3} muuta` : shown;
   };
-  const href = (l: ListKey, w: boolean) => `/kisa?lista=${l}${w ? '&nayta=viikko' : ''}`;
+  const pass = showInactive ? '&passiiviset=1' : '';
+  const href = (l: ListKey, w: boolean, p = pass) => `/kisa?lista=${l}${w ? '&nayta=viikko' : ''}${p}`;
 
   const vals = all.map(score);
   const avg = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
@@ -85,6 +86,14 @@ export default async function KarkiView({ all, me, lista, nayta }: { all: Fairy[
         )}
         <p className="muted">Pisteiden säännöt: <Link href="/ohje">Näin kisa toimii →</Link></p>
       </section>
+
+      {(hiddenCount > 0 || showInactive) && (
+        <p className="muted" style={{ textAlign: 'center' }}>
+          {showInactive
+            ? <>Näytetään myös passiiviset (ei synkannut 4 päivään). <Link href={href(key, week, '')}>Piilota passiiviset</Link></>
+            : <>{hiddenCount} passiivista piilossa (ei synkannut 4 päivään). <Link href={href(key, week, '&passiiviset=1')}>Näytä</Link></>}
+        </p>
+      )}
 
       <section className="card">
         <h2>Sinä ja ryhmä</h2>

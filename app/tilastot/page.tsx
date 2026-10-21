@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
-import { loadGarden, loadRaw } from '@/lib/data';
+import { loadGarden, loadRaw, visibleBoard } from '@/lib/data';
 import { ACTIVE_DAY, DAILY_GOAL, creativePointsOf, fp, helsinkiDay, kindOf, sportPoints, stepPointsOf, weekStart, workoutPoints } from '@/lib/garden';
 import { goalHistory, WEEK_GOAL } from '@/lib/weekly';
 import { timeOfDay } from '@/lib/stats';
@@ -63,7 +63,8 @@ function Compare({ rows }: { rows: { label: string; me: number; group: number; f
 
 export default async function Tilastot({ searchParams }: { searchParams: { nayta?: string; vs?: string; jakso?: string } }) {
   if (!cookies().get('fg_token')) redirect('/');
-  const [{ board, me }, rawFull] = await Promise.all([loadGarden(), loadRaw()]);
+  const [{ board: fullBoard, me }, rawFull] = await Promise.all([loadGarden(), loadRaw()]);
+  const board = visibleBoard(fullBoard);
   if (!me) redirect('/');
   // Aikajakso: 7 pv, 30 pv tai koko kausi (0). Rajaa kaikki laskettavat rivit; ennätykset ja vertailu käyttävät koko kautta.
   const jakso = searchParams.jakso === '7' ? 7 : searchParams.jakso === '30' ? 30 : 0;
