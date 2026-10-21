@@ -64,8 +64,8 @@ export default async function KarkiView({ all, me, lista, nayta, showInactive = 
           <h2>{key === 'nousu' ? 'Nousu viime viikkoon verrattuna' : L.label}</h2>
           {key !== 'nousu' && (
             <span className="mini-seg">
-              <Link href={href(key, false)} className={!week ? 'on' : ''}>Kausi</Link>
-              <Link href={href(key, true)} className={week ? 'on' : ''}>Viikko</Link>
+              <Link scroll={false} href={href(key, false)} className={!week ? 'on' : ''}>Kausi</Link>
+              <Link scroll={false} href={href(key, true)} className={week ? 'on' : ''}>Viikko</Link>
             </span>
           )}
         </div>
@@ -90,8 +90,8 @@ export default async function KarkiView({ all, me, lista, nayta, showInactive = 
       {(hiddenCount > 0 || showInactive) && (
         <p className="muted" style={{ textAlign: 'center' }}>
           {showInactive
-            ? <>Näytetään myös passiiviset (ei synkannut 4 päivään). <Link href={href(key, week, '')}>Piilota passiiviset</Link></>
-            : <>{hiddenCount} passiivista piilossa (ei synkannut 4 päivään). <Link href={href(key, week, '&passiiviset=1')}>Näytä</Link></>}
+            ? <>Näytetään myös passiiviset (ei synkannut 4 päivään). <Link scroll={false} href={href(key, week, '')}>Piilota passiiviset</Link></>
+            : <>{hiddenCount} passiivista piilossa (ei synkannut 4 päivään). <Link scroll={false} href={href(key, week, '&passiiviset=1')}>Näytä</Link></>}
         </p>
       )}
 
