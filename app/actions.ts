@@ -67,6 +67,10 @@ export async function logWorkout(formData: FormData) {
   const supabase = db();
   const { data: fairy } = await supabase.from('fairies').select('id').eq('token', token).maybeSingle();
   if (!fairy) return;
+  // Tuplanapautuksen esto: sama keiju, päivä, laji ja kesto 15 sekunnin sisällä ohitetaan. Tarkoituksella tehty toinen samanlainen kirjaus onnistuu tämän jälkeen.
+  const since = new Date(Date.now() - 15_000).toISOString();
+  const { data: dupe } = await supabase.from('workouts').select('id').eq('fairy_id', fairy.id).eq('day', day).eq('sport', sport).eq('minutes', minutes).gte('created_at', since).limit(1);
+  if ((dupe ?? []).length > 0) redirect('/kirjaa?ok=tupla');
   await supabase.from('workouts').insert({ fairy_id: fairy.id, day, sport, minutes });
   await announceAchievements();
   revalidatePath('/', 'layout');
