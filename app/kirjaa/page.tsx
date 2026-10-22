@@ -39,7 +39,7 @@ export default async function Kirjaa({ searchParams }: { searchParams: { ok?: st
   return (
     <>
       <h1>Kirjaa</h1>
-      {searchParams.ok && <p className="toast">{({ poistettu: 'Kirjaus poistettu', tupla: 'Sama kirjaus tehtiin juuri äsken, joten toista ei lisätty.', askeleet: 'Askeleet tallennettu ✏️', 'askeleet-pienempi': 'Päivällä on jo askelia, joten mitään ei muutettu.', 'askeleet-virhe': 'Tarkista päivä ja askelmäärä.' } as Record<string, string>)[searchParams.ok] ?? 'Kirjattu'}</p>}
+      {searchParams.ok && <p className="toast">{({ poistettu: 'Kirjaus poistettu', tupla: 'Kirjaus oli jo tallentunut (tuplanapautus), joten toista ei lisätty.', askeleet: 'Askeleet tallennettu ✏️', 'askeleet-pienempi': 'Päivällä on jo askelia, joten mitään ei muutettu.', 'askeleet-virhe': 'Tarkista päivä ja askelmäärä.' } as Record<string, string>)[searchParams.ok] ?? 'Kirjattu'}</p>}
 
       <section className="card">
         <h2>Lisää kirjaus</h2>
