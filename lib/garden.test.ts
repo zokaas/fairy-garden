@@ -139,3 +139,9 @@ assert.equal(dayFlowers(20000, 10000), 2);
 assert.equal(dayFlowers(30000, 10000), 3);
 assert.equal(dayFlowers(17000, 7000), 2);
 assert.equal(flowerDays([{ day: '2026-10-12', steps: 30000 }], []), 3);
+
+// Puhelimen oma päivä (aikavyöhyke): Portugalissa klo 01 Suomen aikaa puhelimen päivä on vielä edellinen.
+assert.deepEqual(parseDays({ values: '7120\n8234', today: '2026-10-13' }, '2026-10-14'), [{ day: '2026-10-12', steps: 7120 }, { day: '2026-10-13', steps: 8234 }]);
+assert.deepEqual(parseDays({ values: '7120\n8234', today: '2026-10-15' }, '2026-10-14'), [{ day: '2026-10-14', steps: 7120 }, { day: '2026-10-15', steps: 8234 }]);
+assert.deepEqual(parseDays({ values: '7120\n8234', today: '2026-10-20' }, '2026-10-14'), [{ day: '2026-10-13', steps: 7120 }, { day: '2026-10-14', steps: 8234 }]);
+assert.deepEqual(parseDays({ values: '8234', today: 'roskaa' }, '2026-10-14'), [{ day: '2026-10-14', steps: 8234 }]);
