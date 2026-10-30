@@ -32,14 +32,12 @@ export default async function KomentoOhje() {
           <li><b>Etsi terveysnäytteitä</b> (Find Health Samples): Tyyppi <i>Askelmäärä</i> (Steps), Alkamispäivä <i>on viimeisen</i> (is in the last) <b>7 päivää</b>. Alla: Yksikkö <i>count</i>, <b>Ryhmittele: Päivä</b> (Group by Day), <b>Täytä puuttuvat</b> (Fill Missing) päälle.</li>
           <li><b>Toista jokaiselle</b> (Repeat with Each) näytteelle. Sisään: <b>Laske tilastot</b> (Calculate Statistics), <i>Summa</i> (Sum) kohteesta <i>Toiston kohde</i>, sitten <b>Lisää muuttujaan</b> (Add to Variable): <b>Summa</b> muuttujaan <b>values</b>.</li>
           <li>Toiston jälkeen: <b>Yhdistä tekstit</b> (Combine Text): <b>values</b>, erotin <i>Uusi rivi</i> (New Lines).</li>
-          <li><b>Nykyinen päivämäärä</b> (Current Date), sen perään <b>Muotoile päivämäärä</b> (Format Date): <i>Päivämäärän muoto</i> → <b>Mukautettu</b> (Custom), muoto <code>yyyy-MM-dd</code>. Näin luvut kohdistuvat puhelimen omaan päivään myös ulkomailla.</li>
           <li><b>Hae URL-osoitteen sisältö</b> (Get Contents of URL):
             <ul>
               <li>URL <code>{url}</code> <CopyButton text={url} label="Kopioi osoite" /></li>
-              <li>Tapa <b>POST</b>, Pyynnön runko <b>JSON</b>, lisää kolme tekstikenttää:</li>
+              <li>Tapa <b>POST</b>, Pyynnön runko <b>JSON</b>, lisää kaksi tekstikenttää:</li>
               <li><code>token</code> = <i>(kirjoita tähän väliaikaisesti oma avaimesi, ks. kohta 2)</i></li>
               <li><code>values</code> = <b>Yhdistetty teksti</b></li>
-              <li><code>today</code> = <b>Muotoiltu päivämäärä</b> (Formatted Date, valitse muuttuja, älä kirjoita tekstiä). Kenttä on vapaaehtoinen, vanha komento toimii ilman sitä.</li>
             </ul>
           </li>
         </ol>

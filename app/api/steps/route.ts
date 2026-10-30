@@ -22,6 +22,17 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Virheellinen JSON' }, { status: 400 });
   }
   const token = typeof body.token === 'string' ? body.token.trim() : '';
+  // Puhelimen päivä: Vercel kertoo pyynnön sijainnin aikavyöhykkeen (x-vercel-ip-timezone), joten uutta komentoa ei tarvita. Kenttä today ohittaa tämän, jos komento lähettää sen.
+  if (body.today === undefined) {
+    const tz = req.headers.get('x-vercel-ip-timezone');
+    if (tz) {
+      try {
+        body.today = new Intl.DateTimeFormat('sv-SE', { timeZone: tz }).format(new Date());
+      } catch {
+        /* tuntematon aikavyöhyke: käytetään Suomen päivää */
+      }
+    }
+  }
   const entries = parseDays(body);
   if (!token || entries.length === 0) return NextResponse.json({ error: 'Tarkista token ja askelmäärät' }, { status: 400 });
 
