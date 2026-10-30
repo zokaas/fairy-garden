@@ -10,15 +10,25 @@ const clean = (v: unknown): number => {
   return Math.round(Number(s));
 };
 
+/** Palauttaa puhelimen ilmoittaman päivän, jos se on korkeintaan yhden päivän päässä palvelimen (Suomen) päivästä, muuten palvelimen päivän. */
+export function phoneDay(claimed: unknown, serverToday: string): string {
+  if (!isDay(claimed)) return serverToday;
+  const t = (d: string) => Date.parse(`${d}T12:00:00Z`);
+  return Math.abs(t(claimed) - t(serverToday)) <= 86_400_000 ? claimed : serverToday;
+}
+
 /**
  * Muuntaa oikotien lähettämät päivät listaksi. Tukee kolmea muotoa:
  *  - { days: [{ day: "2026-10-09", steps: 8234 }, ...] }
  *  - { lines: "2026-10-09=8234\n2026-10-08=7120" } (rivit tai pilkuilla/puolipisteillä erotettuna)
  *  - { values: "7120\n8234" } (vain summat, vanhin ensin, viimeinen = tänään; newest:"first" kääntää)
  *  - { steps: 8234, day?: "2026-10-09" } (vain tämä päivä)
+ *  - lisäksi valinnainen today: "2026-10-09" = puhelimen oma päivä (aikavyöhykkeet)
  * Hylkää tulevat ja yli 14 päivää vanhat päivät sekä mahdottomat luvut. Samalle päivälle jää suurin arvo.
  */
-export function parseDays(body: { days?: unknown; lines?: unknown; values?: unknown; values2?: unknown; newest?: unknown; steps?: unknown; day?: unknown }, today = helsinkiDay()): DayEntry[] {
+export function parseDays(body: { days?: unknown; lines?: unknown; values?: unknown; values2?: unknown; newest?: unknown; steps?: unknown; day?: unknown; today?: unknown }, serverToday = helsinkiDay()): DayEntry[] {
+  // Puhelimen oma päivä (kenttä today, yyyy-MM-dd): kohdistaa luvut Terveyden päiviin myös ulkomailla. Hyväksytään vain enintään yksi päivä Suomen päivästä.
+  const today = phoneDay(body.today, serverToday);
   const raw: { day: unknown; steps: unknown }[] = [];
   if (Array.isArray(body.days)) for (const d of body.days) raw.push({ day: (d as { day?: unknown })?.day, steps: (d as { steps?: unknown })?.steps });
   if (typeof body.lines === 'string') {
