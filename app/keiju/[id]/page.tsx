@@ -31,6 +31,7 @@ export default async function Keiju({ params }: { params: { id: string } }) {
   const today = helsinkiDay();
   const days: string[] = [];
   for (let d = today, i = 0; i < 7; d = dayBefore(d), i++) days.push(d);
+  const gateDate = new Date(contest.end).toLocaleDateString('fi-FI', { timeZone: 'Europe/Helsinki', day: 'numeric', month: 'numeric' });
   const recent = days.map((day) => {
     const w = work.filter((x) => x.day === day);
     const names = (k: 'urheilu' | 'luova') => {
@@ -66,7 +67,7 @@ export default async function Keiju({ params }: { params: { id: string } }) {
         </div>
       </section>
 
-      <Journey steps={f.totalSteps} avatar={f} stageIdx={f.stageIdx} note={!f.mine ? undefined : forecast(f.totalSteps, helsinkiDay(), new Date(contest.end).toLocaleDateString('sv-SE', { timeZone: 'Europe/Helsinki' }))?.text} />
+      <Journey steps={f.totalSteps} avatar={f} stageIdx={f.stageIdx} gateOpen={contest.over} gateDate={gateDate} note={!f.mine ? undefined : forecast(f.totalSteps, helsinkiDay(), new Date(contest.end).toLocaleDateString('sv-SE', { timeZone: 'Europe/Helsinki' }))?.text} />
 
       <section className="card">
         <h2>Viikon tavoite</h2>

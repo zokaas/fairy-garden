@@ -135,12 +135,15 @@ export function phaseOf(d = new Date()): Phase {
 
 /** Haltijan polku: matka kotipuutarhasta Albertinkadulle askelilla mitattuna. */
 export const JOURNEY_GOAL = 350_000;
+/** Gaalan portti: polku päättyy porttiin, joka aukeaa kisan päättyessä, jolloin kaikki saapuvat Albertinkadulle yhdessä. */
+export const JOURNEY_GATE = 315_000;
 export const STOPS = [
   { at: 0, emoji: '🏡', name: 'Kotipuutarha' },
   { at: 45_000, emoji: '🍄', name: 'Sienimetsä' },
   { at: 105_000, emoji: '🌼', name: 'Kukkaniitty' },
   { at: 175_000, emoji: '🌊', name: 'Kimalteleva joki' },
   { at: 260_000, emoji: '🏰', name: 'Keijukuninkaan portti' },
+  { at: 315_000, emoji: '🚪', name: 'Gaalan portti' },
   { at: 350_000, emoji: '🥂', name: 'Albertinkatu' },
 ] as const;
 
