@@ -29,7 +29,7 @@ export default async function Home({ searchParams }: { searchParams: { ok?: stri
   const rawToday = realMe?.hasSteps ? raw : null;
   // Ylläpitäjän esikatselu: ?taso=0..5, ?aika=night|dawn|day|dusk, ?juhla=1, ?tyhja=1 (uuden käyttäjän näkymä)
   const admin = !!realMe?.isAdmin;
-  let me: Fairy | null = admin && searchParams.tyhja ? { ...realMe!, hasSteps: false, today: 0, yesterday: 0, totalSteps: 0, pts: 0, stageIdx: 0, badges: [], streak: 0, workouts: 0, flowers: 0, avatarEmoji: null } : realMe;
+  let me: Fairy | null = admin && searchParams.tyhja ? { ...realMe!, hasSteps: false, today: 0, yesterday: 0, totalSteps: 0, journeySteps: 0, pts: 0, stageIdx: 0, badges: [], streak: 0, workouts: 0, flowers: 0, avatarEmoji: null } : realMe;
   if (me && admin && searchParams.taso !== undefined) {
     const idx = Math.max(0, Math.min(5, Number(searchParams.taso) || 0));
     me = { ...me, stageIdx: idx, flowers: GROWTH[idx] + (idx > 0 ? 2 : 0), hasSteps: true };
@@ -235,7 +235,7 @@ export default async function Home({ searchParams }: { searchParams: { ok?: stri
       })()}
 
 
-      {me.hasSteps && <Journey steps={me.totalSteps} avatar={me} stageIdx={stageIdx} note={forecast(me.totalSteps, helsinkiDay(), new Date(contest.end).toLocaleDateString('sv-SE', { timeZone: 'Europe/Helsinki' }))?.text} />}
+      {me.hasSteps && <Journey steps={me.journeySteps} avatar={me} stageIdx={stageIdx} note={forecast(me.journeySteps, helsinkiDay(), new Date(contest.end).toLocaleDateString('sv-SE', { timeZone: 'Europe/Helsinki' }))?.text} />}
 
       <section className="card">
         <h2>Merkit {me.badges.length}/{BADGES.length}</h2>

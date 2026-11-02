@@ -5,7 +5,7 @@ import { DATA_TAG } from '@/lib/cache';
 import { db } from '@/lib/db';
 import { DEMO, demoRows } from '@/lib/demo';
 import { WEEK_BONUS, flowerDays, weekGoal, weeksDone, type WeekGoal } from '@/lib/weekly';
-import { INACTIVE_DAYS, CREATIVE_WEEK_CAP, creativeCountedMins, creativePointsOf, inContest, sportPointsOf, workoutPoints, ACTIVE_DAY, DAILY_GOAL, bestStreak, kindOf, dayBefore, helsinkiDay, points, sportPoints, growthIdx, stepPointsOf, streak, weekStart } from '@/lib/garden';
+import { journeyStepsOf, INACTIVE_DAYS, CREATIVE_WEEK_CAP, creativeCountedMins, creativePointsOf, inContest, sportPointsOf, workoutPoints, ACTIVE_DAY, DAILY_GOAL, bestStreak, kindOf, dayBefore, helsinkiDay, points, sportPoints, growthIdx, stepPointsOf, streak, weekStart } from '@/lib/garden';
 import { BADGES } from '@/lib/badges';
 
 export type Fairy = {
@@ -13,6 +13,7 @@ export type Fairy = {
   name: string;
   mine: boolean;
   totalSteps: number;
+  journeySteps: number;
   mins: number;
   today: number;
   pts: number;
@@ -109,6 +110,7 @@ export async function loadGarden() {
         name: f.name,
         mine: !!token && f.token === token,
         totalSteps,
+        journeySteps: journeyStepsOf(st),
         mins,
         today: st.find((s) => s.day === today)?.steps ?? 0,
         pts,

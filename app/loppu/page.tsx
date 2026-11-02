@@ -28,9 +28,9 @@ export default async function Loppu({ searchParams }: { searchParams: { avaa?: s
   const creativeMins = total((b) => b.creativeMins);
   const sessions = total((b) => b.workouts);
   const weeks = total((b) => b.weeksDone);
-  const leader = [...board].sort((a, b) => b.totalSteps - a.totalSteps)[0];
-  const stop = leader ? STOPS.filter((s) => leader.totalSteps >= s.at).pop() : null;
-  const arrived = board.filter((b) => b.totalSteps >= JOURNEY_GOAL).length;
+  const leader = [...board].sort((a, b) => b.journeySteps - a.journeySteps)[0];
+  const stop = leader ? STOPS.filter((s) => leader.journeySteps >= s.at).pop() : null;
+  const arrived = board.filter((b) => b.journeySteps >= JOURNEY_GOAL).length;
   const myRank = me ? board.findIndex((b) => b.id === me.id) + 1 : 0;
   const preview = !contest.over;
 
@@ -72,7 +72,7 @@ export default async function Loppu({ searchParams }: { searchParams: { avaa?: s
           <div><b>{weeks}</b><span>täyttä viikkoa</span><small>viikkotavoite täynnä</small></div>
           <div><b>{board.length}</b><span>keijua mukana</span></div>
         </div>
-        <p className="muted">🥂 Matka Albertinkadulle: {leader ? <><b>{leader.name}</b> pääsi pisimmälle ({fi(leader.totalSteps)} askelta{stop ? `, ${stop.emoji} ${stop.name}` : ''}).</> : ''} {arrived > 0 ? `${arrived} / ${board.length} keijua perillä.` : `Perille (${fi(JOURNEY_GOAL)} askelta) ei vielä kukaan päässyt.`}</p>
+        <p className="muted">🥂 Matka Albertinkadulle: {leader ? <><b>{leader.name}</b> pääsi pisimmälle ({fi(leader.journeySteps)} matka-askelta{stop ? `, ${stop.emoji} ${stop.name}` : ''}).</> : ''} {arrived > 0 ? `${arrived} / ${board.length} keijua perillä.` : `Perille (${fi(JOURNEY_GOAL)} askelta) ei vielä kukaan päässyt.`}</p>
       </section>
 
       {prizes.length > 0 && (

@@ -1,4 +1,4 @@
-import { JOURNEY_GOAL, STOPS } from '@/lib/garden';
+import { JOURNEY_DAY_CAP, JOURNEY_GOAL, STOPS } from '@/lib/garden';
 import Avatar, { type AvatarData } from './Avatar';
 
 const PTS: [number, number][] = [[8, 88], [60, 60], [120, 84], [180, 44], [240, 70], [292, 24]];
@@ -36,19 +36,20 @@ export default function Journey({ steps, avatar, stageIdx = 2, note }: { steps: 
         {next ? <>Seuraava etappi: {next.emoji} <b>{next.name}</b>, vielä {(next.at - steps).toLocaleString('fi-FI')} askelta.</> : <>Perillä Albertinkadulla. Olet todellinen reippailija.</>}
       </p>
       {note && <p className="muted forecast">{note}</p>}
+      <p className="muted">🌙 Polulle lasketaan enintään {JOURNEY_DAY_CAP.toLocaleString('fi-FI')} askelta päivässä: haltija tarvitsee lepoa. Loput askeleet kasvattavat silti pisteitä ja kukkia.</p>
     </section>
   );
 }
 
-type Walker = AvatarData & { id: string; name: string; totalSteps: number; stageIdx: number; mine: boolean };
+type Walker = AvatarData & { id: string; name: string; journeySteps: number; stageIdx: number; mine: boolean };
 
 /** Yhteinen matka: kaikki keijut samalla polulla kisan askelten mukaan. */
 export function GroupJourney({ fairies }: { fairies: Walker[] }) {
-  const sorted = [...fairies].sort((a, b) => b.totalSteps - a.totalSteps);
+  const sorted = [...fairies].sort((a, b) => b.journeySteps - a.journeySteps);
   const leader = sorted[0];
-  const arrived = sorted.filter((f) => f.totalSteps >= JOURNEY_GOAL).length;
+  const arrived = sorted.filter((f) => f.journeySteps >= JOURNEY_GOAL).length;
   const d = PTS.map((p, i) => `${i ? 'L' : 'M'}${p[0]},${p[1]}`).join(' ');
-  const furthest = leader ? STOPS.filter((s) => leader.totalSteps >= s.at).pop() : null;
+  const furthest = leader ? STOPS.filter((s) => leader.journeySteps >= s.at).pop() : null;
   return (
     <section className="card journey">
       <h2>Yhteinen matka Albertinkadulle</h2>
@@ -58,25 +59,25 @@ export function GroupJourney({ fairies }: { fairies: Walker[] }) {
         </svg>
         {STOPS.map((s) => {
           const [sx, sy] = at(s.at / JOURNEY_GOAL);
-          const reached = sorted.some((f) => f.totalSteps >= s.at);
+          const reached = sorted.some((f) => f.journeySteps >= s.at);
           return <span key={s.name} className={`stop ${reached ? 'on' : ''}`} style={{ left: `${(sx / 300) * 100}%`, top: `${(sy / 110) * 100}%` }} title={s.name}>{s.emoji}</span>;
         })}
         {sorted.map((f, i) => {
-          const [x, y] = at(Math.min(1, f.totalSteps / JOURNEY_GOAL));
+          const [x, y] = at(Math.min(1, f.journeySteps / JOURNEY_GOAL));
           // pienet porrastukset, ettei samaan kohtaan osuvat avatarit peity kokonaan
           const dx = ((i % 3) - 1) * 5;
           const dy = (i % 2) * 6;
           return (
-            <a key={f.id} href={`/keiju/${f.id}`} className={`walker mini ${f.mine ? 'me' : ''}`} style={{ left: `calc(${(x / 300) * 100}% + ${dx}px)`, top: `calc(${(y / 110) * 100}% + ${dy}px)`, zIndex: f.mine ? 5 : 2 }} title={`${f.name}: ${f.totalSteps.toLocaleString('fi-FI')} askelta`}>
+            <a key={f.id} href={`/keiju/${f.id}`} className={`walker mini ${f.mine ? 'me' : ''}`} style={{ left: `calc(${(x / 300) * 100}% + ${dx}px)`, top: `calc(${(y / 110) * 100}% + ${dy}px)`, zIndex: f.mine ? 5 : 2 }} title={`${f.name}: ${f.journeySteps.toLocaleString('fi-FI')} askelta`}>
               <Avatar a={f} size={f.mine ? 30 : 24} stage={f.stageIdx} />
             </a>
           );
         })}
       </div>
-      {leader && <p className="muted">Kärjessä <b>{leader.name}</b> ({leader.totalSteps.toLocaleString('fi-FI')} askelta){furthest ? <>, viimeisin etappi {furthest.emoji} {furthest.name}</> : null}.{arrived > 0 ? ` ${arrived} keijua on jo perillä.` : ''}</p>}
+      {leader && <p className="muted">Kärjessä <b>{leader.name}</b> ({leader.journeySteps.toLocaleString('fi-FI')} askelta){furthest ? <>, viimeisin etappi {furthest.emoji} {furthest.name}</> : null}.{arrived > 0 ? ` ${arrived} keijua on jo perillä.` : ''}</p>}
       <ol className="plain trail-list">
         {sorted.map((f, i) => {
-          const pct = Math.min(100, Math.round((f.totalSteps / JOURNEY_GOAL) * 100));
+          const pct = Math.min(100, Math.round((f.journeySteps / JOURNEY_GOAL) * 100));
           return (
             <li key={f.id} className={f.mine ? 'me' : ''}>
               <span className="tl-pos">{i + 1}.</span>
@@ -87,7 +88,7 @@ export function GroupJourney({ fairies }: { fairies: Walker[] }) {
           );
         })}
       </ol>
-      <p className="muted">Polun pituus {JOURNEY_GOAL.toLocaleString('fi-FI')} askelta. Napauta avataria tai nimeä nähdäksesi keijun profiilin.</p>
+      <p className="muted">Polun pituus {JOURNEY_GOAL.toLocaleString('fi-FI')} askelta, päivässä enintään {JOURNEY_DAY_CAP.toLocaleString('fi-FI')} (haltija tarvitsee lepoa). Napauta avataria tai nimeä nähdäksesi keijun profiilin.</p>
     </section>
   );
 }

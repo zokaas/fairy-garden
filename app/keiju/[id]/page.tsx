@@ -66,7 +66,7 @@ export default async function Keiju({ params }: { params: { id: string } }) {
         </div>
       </section>
 
-      <Journey steps={f.totalSteps} avatar={f} stageIdx={f.stageIdx} note={!f.mine ? undefined : forecast(f.totalSteps, helsinkiDay(), new Date(contest.end).toLocaleDateString('sv-SE', { timeZone: 'Europe/Helsinki' }))?.text} />
+      <Journey steps={f.journeySteps} avatar={f} stageIdx={f.stageIdx} note={!f.mine ? undefined : forecast(f.journeySteps, helsinkiDay(), new Date(contest.end).toLocaleDateString('sv-SE', { timeZone: 'Europe/Helsinki' }))?.text} />
 
       <section className="card">
         <h2>Viikon tavoite</h2>

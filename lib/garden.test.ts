@@ -27,6 +27,7 @@ assert.equal(weekStart('2026-10-18'), '2026-10-12');
 assert.equal(weekStart('2026-10-12'), '2026-10-12');
 import { series, weekdayAvg, sportStats, trend, route, routeText, weeklyMinutes, daysBetween, weeklySteps, dayRange, cumulative, movingAvg, stepBuckets, weekdayVsWeekend, weeklyTotals, bestOf, heatCells, pointsOverTime } from './stats.ts';
 import { challengeFor, groupTarget } from './challenge.ts';
+import { JOURNEY_DAY_CAP, journeyStepsOf } from './garden.ts';
 import { weekGoal, weeksDone, goalHistory, flowerDays, dayFlowers } from './weekly.ts';
 import { parseDays } from './sync.ts';
 import { syncWatch } from './watch.ts';
@@ -145,3 +146,6 @@ assert.deepEqual(parseDays({ values: '7120\n8234', today: '2026-10-13' }, '2026-
 assert.deepEqual(parseDays({ values: '7120\n8234', today: '2026-10-15' }, '2026-10-14'), [{ day: '2026-10-14', steps: 7120 }, { day: '2026-10-15', steps: 8234 }]);
 assert.deepEqual(parseDays({ values: '7120\n8234', today: '2026-10-20' }, '2026-10-14'), [{ day: '2026-10-13', steps: 7120 }, { day: '2026-10-14', steps: 8234 }]);
 assert.deepEqual(parseDays({ values: '8234', today: 'roskaa' }, '2026-10-14'), [{ day: '2026-10-14', steps: 8234 }]);
+
+assert.equal(JOURNEY_DAY_CAP, 15000);
+assert.equal(journeyStepsOf([{ steps: 8000 }, { steps: 20000 }, { steps: 15000 }, { steps: 0 }]), 8000 + 15000 + 15000);

@@ -135,6 +135,10 @@ export function phaseOf(d = new Date()): Phase {
 
 /** Haltijan polku: matka kotipuutarhasta Albertinkadulle askelilla mitattuna. */
 export const JOURNEY_GOAL = 350_000;
+/** Polulle (Haltijan matka) lasketaan enintään tämä määrä askelia päivässä; loput kasvattavat silti pisteitä ja kukkia. */
+export const JOURNEY_DAY_CAP = 15_000;
+/** Matka-askeleet: jokaisen päivän askeleet rajattuna JOURNEY_DAY_CAP:iin. */
+export const journeyStepsOf = (rows: { steps: number }[]): number => rows.reduce((a, r) => a + Math.min(r.steps, JOURNEY_DAY_CAP), 0);
 export const STOPS = [
   { at: 0, emoji: '🏡', name: 'Kotipuutarha' },
   { at: 45_000, emoji: '🍄', name: 'Sienimetsä' },

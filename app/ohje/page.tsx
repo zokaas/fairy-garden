@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { getContest } from '@/lib/contest';
-import { CONTEST_START, CREATIVE_WEEK_CAP, GROWTH, JOURNEY_GOAL, STEPS_PER_POINT } from '@/lib/garden';
+import { CONTEST_START, CREATIVE_WEEK_CAP, GROWTH, JOURNEY_DAY_CAP, JOURNEY_GOAL, STEPS_PER_POINT } from '@/lib/garden';
 import { WEEK_BONUS, WEEK_GOAL } from '@/lib/weekly';
 
 export const dynamic = 'force-dynamic';
@@ -51,7 +51,8 @@ export default async function Ohje() {
 
       <section className="card">
         <h2>🥂 Matka Albertinkadulle</h2>
-        <p>Haltijasi kulkee polkua omilla askelillasi. Perillä olet, kun olet kävellyt <b>{fi(JOURNEY_GOAL)} askelta</b>. Polku on etusivun Lisää-osiossa.</p>
+        <p>Haltijasi kulkee polkua omilla askelillasi. Perillä olet, kun olet kävellyt <b>{fi(JOURNEY_GOAL)} askelta</b>.</p>
+        <p>🌙 <b>Päivämatka on rajattu:</b> polulle lasketaan enintään <b>{fi(JOURNEY_DAY_CAP)} askelta päivässä</b>, sillä haltija tarvitsee lepoa ja Albertinkatu on tarkoitus saavuttaa kisan aikana, ei ensimmäisillä viikoilla. Rajan ylittävät askeleet eivät katoa: ne kasvattavat edelleen pisteitä (1 p / 2 500 askelta) ja kukkia (+1 joka 10 000 yli).</p>
       </section>
 
       <section className="card">

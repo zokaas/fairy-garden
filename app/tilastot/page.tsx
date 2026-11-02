@@ -104,7 +104,7 @@ export default async function Tilastot({ searchParams }: { searchParams: { nayta
   ];
 
   const contestInfo = await getContest();
-  const fc = forecast(me.totalSteps, today, new Date(contestInfo.end).toLocaleDateString('sv-SE', { timeZone: 'Europe/Helsinki' }));
+  const fc = forecast(me.journeySteps, today, new Date(contestInfo.end).toLocaleDateString('sv-SE', { timeZone: 'Europe/Helsinki' }));
   const tr = trend(mySteps, today);
   const trG = trend(raw.steps, today);
   const wdMe = weekdayAvg(mySteps);
