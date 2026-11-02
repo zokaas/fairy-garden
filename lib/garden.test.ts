@@ -117,9 +117,9 @@ assert.deepEqual(parseDays({ values: '0\n0', values2: '7000\n8800' }, '2026-10-1
 import { forecast } from './forecast.ts';
 const f1 = forecast(40_000, '2026-10-19', '2026-11-27')!; // 5 000 / pv -> 62 pv -> jää haaveeksi
 assert.equal(f1.onTrack, false);
-const f2 = forecast(80_000, '2026-10-19', '2026-11-27')!; // 10 000 / pv -> 27 pv -> 15.11.
+const f2 = forecast(80_000, '2026-10-19', '2026-11-27')!; // 10 000 / pv, portille 315 000: 24 pv -> 12.11.
 assert.equal(f2.onTrack, true);
-assert.equal(f2.finish, '2026-11-15');
+assert.equal(f2.finish, '2026-11-12');
 assert.equal(forecast(0, '2026-10-19', '2026-11-27'), null);
 assert.equal(forecast(400_000, '2026-10-19', '2026-11-27')!.onTrack, true);
 // askelpisteet lasketaan päivittäin: 2 400 + 2 400 = 0 p, 5 000 + 2 600 = 2 + 1 = 3 p
@@ -145,3 +145,6 @@ assert.deepEqual(parseDays({ values: '7120\n8234', today: '2026-10-13' }, '2026-
 assert.deepEqual(parseDays({ values: '7120\n8234', today: '2026-10-15' }, '2026-10-14'), [{ day: '2026-10-14', steps: 7120 }, { day: '2026-10-15', steps: 8234 }]);
 assert.deepEqual(parseDays({ values: '7120\n8234', today: '2026-10-20' }, '2026-10-14'), [{ day: '2026-10-13', steps: 7120 }, { day: '2026-10-14', steps: 8234 }]);
 assert.deepEqual(parseDays({ values: '8234', today: 'roskaa' }, '2026-10-14'), [{ day: '2026-10-14', steps: 8234 }]);
+import { JOURNEY_GATE, STOPS } from './garden.ts';
+assert.ok(STOPS.some((x) => x.at === JOURNEY_GATE && x.name === 'Gaalan portti'));
+assert.equal(STOPS[STOPS.length - 1].name, 'Albertinkatu');

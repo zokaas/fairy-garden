@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { loadGarden } from '@/lib/data';
-import { fp, JOURNEY_GOAL, STOPS } from '@/lib/garden';
+import { fp, JOURNEY_GATE } from '@/lib/garden';
 import { awards } from '@/lib/awards';
 import { getContest } from '@/lib/contest';
 import { km } from '@/lib/stats';
@@ -29,8 +29,7 @@ export default async function Loppu({ searchParams }: { searchParams: { avaa?: s
   const sessions = total((b) => b.workouts);
   const weeks = total((b) => b.weeksDone);
   const leader = [...board].sort((a, b) => b.totalSteps - a.totalSteps)[0];
-  const stop = leader ? STOPS.filter((s) => leader.totalSteps >= s.at).pop() : null;
-  const arrived = board.filter((b) => b.totalSteps >= JOURNEY_GOAL).length;
+  const atGate = board.filter((b) => b.totalSteps >= JOURNEY_GATE).length;
   const myRank = me ? board.findIndex((b) => b.id === me.id) + 1 : 0;
   const preview = !contest.over;
 
@@ -72,7 +71,7 @@ export default async function Loppu({ searchParams }: { searchParams: { avaa?: s
           <div><b>{weeks}</b><span>täyttä viikkoa</span><small>viikkotavoite täynnä</small></div>
           <div><b>{board.length}</b><span>keijua mukana</span></div>
         </div>
-        <p className="muted">🥂 Matka Albertinkadulle: {leader ? <><b>{leader.name}</b> pääsi pisimmälle ({fi(leader.totalSteps)} askelta{stop ? `, ${stop.emoji} ${stop.name}` : ''}).</> : ''} {arrived > 0 ? `${arrived} / ${board.length} keijua perillä.` : `Perille (${fi(JOURNEY_GOAL)} askelta) ei vielä kukaan päässyt.`}</p>
+        <p className="muted">🥂 <b>Gaalan portti aukesi, ja kaikki {board.length} keijua saapuivat Albertinkadulle yhdessä.</b> {atGate} / {board.length} ehti portille omin askelin{leader ? <>, ja eniten matkaa kertyi keijulle <b>{leader.name}</b> ({fi(leader.totalSteps)} askelta)</> : ''}. Kukaan ei jäänyt taakse.</p>
       </section>
 
       {prizes.length > 0 && (
