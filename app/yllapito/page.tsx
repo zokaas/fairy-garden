@@ -90,6 +90,8 @@ export default async function Yllapito({ searchParams }: { searchParams: { ok?: 
           <Link className="chip" href="/kisa">🏁 Kisa (käynnissä)</Link>
           <Link className="chip" href="/kisa?avaa=1">🏆 Kisa (päättynyt)</Link>
           <Link className="chip" href="/loppu?avaa=1">🥂 Loppukatsaus (esikatselu)</Link>
+          <Link className="chip" href="/?portti=1">🚪 Portti auki: oma polku</Link>
+          <Link className="chip" href="/kisa?nakyma=matka&avaa=1">🚪 Portti auki: yhteinen matka</Link>
           <Link className="chip" href="/profiili?uusi=1">🧚 Avatarin valinta</Link>
           <Link className="chip" href="/shortcut">Synkka-ohje</Link>
         </div>

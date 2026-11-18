@@ -21,7 +21,7 @@ import SyncButton from '@/components/SyncButton';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Home({ searchParams }: { searchParams: { ok?: string; virhe?: string; synkattu?: string; kirjaudu?: string; d?: string; taso?: string; aika?: string; juhla?: string; tyhja?: string } }) {
+export default async function Home({ searchParams }: { searchParams: { portti?: string; ok?: string; virhe?: string; synkattu?: string; kirjaudu?: string; d?: string; taso?: string; aika?: string; juhla?: string; tyhja?: string } }) {
   const [{ board: fullBoard, me: realMe }, raw, contest] = await Promise.all([loadGarden(), loadRaw(), getContest()]);
   // Passiiviset (ei synkannut 4 päivään) piilotetaan listoista; oma rivi näkyy aina.
   const board = visibleBoard(fullBoard);
@@ -235,7 +235,7 @@ export default async function Home({ searchParams }: { searchParams: { ok?: stri
       })()}
 
 
-      {me.hasSteps && <Journey steps={me.totalSteps} avatar={me} stageIdx={stageIdx} note={forecast(me.totalSteps, helsinkiDay(), new Date(contest.end).toLocaleDateString('sv-SE', { timeZone: 'Europe/Helsinki' }))?.text} />}
+      {me.hasSteps && <Journey steps={me.totalSteps} avatar={me} stageIdx={stageIdx} gateOpen={contest.over || (admin && !!searchParams.portti)} gateDate={new Date(contest.end).toLocaleDateString('fi-FI', { timeZone: 'Europe/Helsinki', day: 'numeric', month: 'numeric' })} note={forecast(me.totalSteps, helsinkiDay(), new Date(contest.end).toLocaleDateString('sv-SE', { timeZone: 'Europe/Helsinki' }))?.text} />}
 
       <section className="card">
         <h2>Merkit {me.badges.length}/{BADGES.length}</h2>

@@ -49,7 +49,7 @@ export default async function Kisa({ searchParams }: { searchParams: { avaa?: st
 
       {view === 'matka' && (
         <>
-        <GroupJourney fairies={visibleBoard(fullBoard)} />
+        <GroupJourney fairies={visibleBoard(fullBoard)} gateOpen={over} gateDate={endDate} />
 
         <section className="card">
           <h2>{over ? 'Palkinnot ' : 'Kategoriat: kuka johtaa '}</h2>

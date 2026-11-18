@@ -625,3 +625,13 @@ details.dayfold[open] > summary { margin-bottom: 8px; }
 .chips .chip.on { background: var(--fg); color: var(--bg); border-color: transparent; }
 ol.rank .pt small.diff { color: var(--fg-3); font-weight: 500; }
 .ed-grp { margin: 12px 0 6px; font-size: .78rem; color: var(--fg-3); }
+
+/* Gaalan portti ja yhteinen saapuminen */
+.stop.gate { font-size: 1.05rem; }
+.stop.gate.open { filter: none; border-color: var(--yellow); box-shadow: 0 0 18px color-mix(in srgb, var(--yellow) 60%, transparent); animation: gate-glow 1.4s ease-out 3; }
+@keyframes gate-glow { 0% { transform: translate(-50%, -50%) scale(1); } 40% { transform: translate(-50%, -50%) scale(1.5) rotate(8deg); } 100% { transform: translate(-50%, -50%) scale(1); } }
+@keyframes arrive { from { left: var(--fx); top: var(--fy); } }
+.walker.arriving { animation: hover 2.8s ease-in-out infinite, arrive 3.6s cubic-bezier(.5, 0, .2, 1) .8s both; }
+.walker.mini.arriving { animation: arrive 3.6s cubic-bezier(.5, 0, .2, 1) .8s both; }
+@media (prefers-reduced-motion: reduce) { .stop.gate.open, .walker.arriving, .walker.mini.arriving { animation: none !important; } }
+ol.trail-list li { grid-template-columns: 22px minmax(70px, 120px) 1fr 46px; } .tl-pct { white-space: nowrap; }

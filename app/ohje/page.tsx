@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { getContest } from '@/lib/contest';
-import { CONTEST_START, CREATIVE_WEEK_CAP, GROWTH, JOURNEY_GOAL, STEPS_PER_POINT } from '@/lib/garden';
+import { CONTEST_START, CREATIVE_WEEK_CAP, GROWTH, JOURNEY_GATE, JOURNEY_GOAL, STEPS_PER_POINT } from '@/lib/garden';
 import { WEEK_BONUS, WEEK_GOAL } from '@/lib/weekly';
 
 export const dynamic = 'force-dynamic';
@@ -51,7 +51,8 @@ export default async function Ohje() {
 
       <section className="card">
         <h2>🥂 Matka Albertinkadulle</h2>
-        <p>Haltijasi kulkee polkua omilla askelillasi. Perillä olet, kun olet kävellyt <b>{fi(JOURNEY_GOAL)} askelta</b>. Polku on etusivun Lisää-osiossa.</p>
+        <p>Haltijasi kulkee polkua omilla askelillasi kohti <b>Gaalan porttia</b> ({fi(JOURNEY_GATE)} askelta). Se on niin kaukana, että portille ehtii vain ahkera kävelijä.</p>
+        <p>🚪 <b>Portti aukeaa kisan päättyessä</b>, juuri ennen gaalaa. Silloin kaikki keijut kulkevat viimeisen osuuden yhdessä Albertinkadulle ({fi(JOURNEY_GOAL)} askeleen kohdalle): ne, jotka ehtivät portille aiemmin, odottivat siellä, ja ne, jotka eivät ehtineet, kuljetetaan taikavaunulla mukaan. Kukaan ei jää taakse, ja kaikki saapuvat samaan aikaan.</p>
       </section>
 
       <section className="card">
